@@ -1649,9 +1649,9 @@ body.live-editing .header { z-index: 1; }
 /* Live-editor geometry: exact saved size/offset on desktop (same as in the editor); fluid on tablet/phone */
 #public-site [style*="--ed-w"] { width: min(var(--ed-w), 100%) !important; max-width: 100% !important; }
 @media (min-width: 961px) {
-  #public-site [style*="--ed-w"] { width: var(--ed-w) !important; max-width: none !important; }
-  #public-site [style*="--ed-h"] { height: var(--ed-h) !important; }
-  #public-site [style*="--ed-t"] { transform: var(--ed-t) !important; }
+  body:not(.live-editing) #public-site [style*="--ed-w"] { width: var(--ed-w) !important; max-width: none !important; }
+  body:not(.live-editing) #public-site [style*="--ed-h"] { height: var(--ed-h) !important; }
+  body:not(.live-editing) #public-site [style*="--ed-t"] { transform: var(--ed-t) !important; }
 }
 /* While editing, always show the exact saved geometry so resize/move responds at any screen width */
 body.live-editing #public-site [style*="--ed-w"] { width: var(--ed-w) !important; max-width: none !important; }
@@ -1668,7 +1668,7 @@ body.live-editing #public-site [style*="--ed-t"] { transform: var(--ed-t) !impor
   html #public-site.site #site-header .header-inner, html #public-site #site-footer > .wrap { max-width: 1440px !important; margin-inline: auto !important; }
   #public-site.site #site-header .header-inner { background: #fff; }
 }
-@media (max-width: 1439px) {
+@media (max-width: 960px) {
   #public-site figure.photo[style*="--ed-h"] { height: auto !important; }
   #public-site figure.photo[style*="--ed-ar"] > .photo-frame > img { height: auto !important; aspect-ratio: var(--ed-ar) !important; }
 }
