@@ -1,0 +1,28 @@
+{
+  "summary": "Frontend-only retest of the Theatre hero fix from iteration_7, using the preview URL. FIXED: figure.theatre-split-art keeps position:absolute (computed style) after resize+move, Save, Close editor and reload, and on the public page while logged out. Tested at 1366x768 (translate -52,+23) and 1920x1080 (translate -96,+46). The inline style no longer contains 'position: relative'. The photo stays on the right half of the hero at full hero height (724x508 at 1366, 763x536 at 1920) and does not drop below the text. A resize alone (no move) changes nothing, as designed: the photo stays at x=594 with size 724x508 across editor, saved, closed and reload states, and the public page matches. Regressions at 1366, all PASS: shrinking cards.0.image on home (408x349 to 328x269), the Rakhigarhi hero (722x963 to 642x883) and the craft hero (1270x953 to 1190x873) gives identical box and img sizes after Save, Close, reload and on the public page. Moving the Theatre heading (+60,+38) persisted exactly after Close and on the public page. Content was restored with backup_restore_content.py and the diff is clean.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "Theatre hero photo resize handles", "issue": "The resize handles show on figure.theatre-split-art and the save writes --ed-w/--ed-h/--ed-ar, but the stylesheet pins the photo to the hero height, so resizing has no visible effect. Users get no feedback. Consider hiding the resize handles for this pinned field, or not saving the unused geometry.", "selector": "figure.theatre-split-art [data-testid=live-resize-se]", "priority": "LOW"},
+      {"component": "Theatre hero photo move", "issue": "Moving the photo adds z-index:5, so it slides over the H1 (the heading text gets covered). Moving it down clips its bottom because of the hero's overflow:hidden. This follows from what the user did, but the translate is stored in px, so a move saved at 1920 shifts the photo by the same px at 1366.", "selector": "figure.theatre-split-art", "priority": "LOW"},
+      {"component": "Live editor close", "issue": "After live-exit-btn the URL still ends in ?edit=1, so a browser reload reopens the live editor.", "selector": "[data-testid=live-exit-btn]", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": ["/app/tests/live_image_resize_check.py", "/app/tests/live_geom_check.py", "/app/tests/backup_restore_content.py"],
+  "action_items": [
+    "Optional: hide the resize handles, or skip saving width/height, for stylesheet-pinned images such as theatre-split-art",
+    "Optional: remove ?edit=1 from the URL when the live editor is closed"
+  ],
+  "critical_code_review_comments": [
+    "Blocks.jsx sx(): when pinned, the ref skips position/alignSelf/justifySelf in applyProps, but React's style prop still writes inline 'place-self: flex-start start' (not !important). It is harmless for this absolute element but redundant.",
+    "The pinned check uses getComputedStyle inside the ref after removing inline position. That is correct for the current breakpoint only. Under 960px the stylesheet switches the element to position:relative, and the check only re-runs on re-render, not on viewport resize. Low risk."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (skipped)", "frontend": "100% (Theatre fix at 1366 and 1920 + 3 image regressions + text move all pass)"},
+  "seed_data_creation": "None. Content was backed up before the tests and restored after; the diff is clean.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Use the browser_automation tool (python playwright is not installed locally). Image indices: theatre idx0 = figure.theatre-split-art; home idx1 = cards.0.image; rakhigarhi idx0; craft idx0. Home cards use a reveal animation, so scroll them into view and wait about 2.5s before measuring x, otherwise x reads 29 instead of 48. Always run backup_restore_content.py backup/restore/diff."
+}

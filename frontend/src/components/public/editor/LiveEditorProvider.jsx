@@ -30,6 +30,10 @@ export function LiveEditorProvider({ children, preview = false }) {
     if (!next && dirty && !window.confirm("Discard unsaved changes and close the editor?")) return;
     setActive(next); if (!next) setPending({ page: false, site: false, header: false });
     if (!next) updateScope("page");
+    if (!next) {
+      const u = new URL(window.location.href);
+      if (u.searchParams.has("edit")) { u.searchParams.delete("edit"); window.history.replaceState(window.history.state, "", u.pathname + u.search + u.hash); }
+    }
   };
   useEffect(() => {
     if (user === false) { setActive(false); setPending({ page: false, site: false, header: false }); }
