@@ -1,5 +1,6 @@
 import "@/App.css";
-import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { BrowserRouter, Routes, Route, Navigate, useParams, useLocation, useNavigationType } from "react-router-dom";
 import { Toaster } from "./components/ui/sonner";
 import { SiteProvider } from "./lib/site";
 import { AuthProvider, RequireAuth } from "./lib/auth";
@@ -33,11 +34,21 @@ function WorkChild() {
   return CHILDREN.includes(child) ? <PageView pageKey={child} key={child} /> : <NotFound />;
 }
 
+function ScrollToTop() {
+  const { pathname, hash } = useLocation();
+  const nav = useNavigationType();
+  useEffect(() => {
+    if (nav !== "POP" && !hash) window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [pathname, hash, nav]);
+  return null;
+}
+
 function App() {
   return (
     <AuthProvider>
       <SiteProvider>
         <BrowserRouter>
+          <ScrollToTop />
           <Routes>
             <Route element={<PublicLayout />}>
               <Route path="/" element={<PageView pageKey="home" key="home" />} />
