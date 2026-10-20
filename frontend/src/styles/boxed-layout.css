@@ -456,7 +456,7 @@ html body #public-site#public-site.site #site-header#site-header .brand { color:
 html body #public-site#public-site.site #site-header#site-header .brand-name { font-size: 32px !important; font-weight: 300 !important; line-height: 1.2 !important; letter-spacing: 0 !important; color: #575757 !important; }
 html body #public-site#public-site.site #site-header#site-header .brand-sub { font-size: 11px !important; font-weight: 400 !important; line-height: 1.4 !important; letter-spacing: normal !important; margin-top: 6px !important; color: #575757 !important; }
 html body #public-site#public-site.site #site-header#site-header .nav-list .nav-link { font-size: 12px !important; font-weight: 400 !important; line-height: 24px !important; letter-spacing: normal !important; }
-html body #public-site#public-site.site #site-header#site-header .nav-list .nav-link:not([aria-current="page"]):not(:hover) { color: #606060 !important; }
+html body #public-site#public-site.site #site-header#site-header .nav-list .nav-link:is(*, :hover, :focus, :active, [aria-current="page"]) { color: #606060 !important; font-weight: 400 !important; background: transparent !important; border-bottom-color: transparent !important; text-decoration: none !important; }
 html body #public-site#public-site.site #site-header#site-header .menu-toggle { letter-spacing: 2.2px !important; }
 @media (min-width: 961px) {
   html body #public-site#public-site.site #site-header#site-header .nav-list > li::before { border-left-color: #7a7a7a !important; top: 35% !important; height: 33% !important; }
