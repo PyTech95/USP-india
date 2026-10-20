@@ -1,0 +1,37 @@
+{
+  "summary": "Frontend-only retest of the live-editor move/resize persistence fix (public site now applies --ed-t/--ed-w/--ed-h at >=961px). IMPORTANT: when testing started, the dev server was serving a STALE bundle: hot reload had not picked up the LiveEditor.jsx edit (bundle still had innerWidth < 1440 and the '1440px and wider' note), although the index.css change had compiled. Touching the file didn't help, so I ran `sudo supervisorctl restart frontend`. After the restart all checks passed: 7/7 desktop persistence runs and 4/4 tablet/phone overflow checks. The narrow-screen note boundary is correct. Content was restored afterwards and the diff is clean.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Live editor - move", "issues": ["Minor/observation: on /about at 1920, dragging the full-width heading with the move grip also shrank its box from 1113px to 337px wide (it now fits the text, probably because the move sets place-self:start). Position persisted correctly. Just check this is intended."]},
+      {"screen": "Tablet/phone", "issues": ["Observation: a saved --ed-w is still applied on tablet/phone as min(--ed-w, 100%). For example, a heading resized to 162px stays 162px wide at 390 and 820. There is no overflow, but the text wraps more ('WHO WE / ARE'). This is by design, not a bug."]}
+    ]
+  },
+  "test_results": [
+    "1280x800 / tagline move +250px: editor = after close = after reload = logged-out public (x 354, y 565) PASS",
+    "1366x768 / tagline resize 281->431px width: persisted in all states PASS",
+    "1920x1080 /about heading move: persisted (x 652, y 261) PASS",
+    "1280x800 /about heading resize 282->162px: persisted PASS",
+    "1920x1080 / hero heading move +250px: persisted PASS",
+    "Public 820 and 390 on / and /about with saved geometry: scrollWidth == viewport, no elements overflowing, transform none (fluid) PASS",
+    "Editor narrow note: hidden at 1280 and 961, shown at 960 and 820, with text '961px and wider' PASS"
+  ],
+  "test_report_links": ["/app/tests/live_geom_check.py"],
+  "action_items": [
+    "Hot reload on /app/frontend did not pick up the LiveEditor.jsx edit (it served the old 1440 logic until I restarted the frontend with supervisorctl). After editing, check that changes reach the served bundle, e.g. curl localhost:3000/static/js/bundle.js | grep for the new code, or restart the frontend.",
+    "Optional: confirm that a move shrinking a full-width heading's box is intended."
+  ],
+  "critical_code_review_comments": [
+    "The photo-only rules under @media (max-width:1439px) (figure.photo height:auto, aspect-ratio) still use 1440, while the --ed-h rule now applies from 961px. At 961-1439, a resized photo gets --ed-h height from the 961 rule but height:auto from the 1439 rule (photo rule wins on specificity). So photo height in the public view may differ from the editor at 961-1439. Not tested; check that this is intended.",
+    "LiveEditor.jsx is 704 lines (just over 700); consider splitting it."
+  ],
+  "updated_files": ["/app/tests/live_geom_check.py (new helper; requires local playwright, which isn't installed - logic was run via the browser tool)"],
+  "success_rate": {"backend": "N/A", "frontend": "100% (after frontend restart)"},
+  "seed_data_creation": "None. Edits saved to the home and about pages during the test were reverted with backup_restore_content.py restore; diff is clean. Verified public home/about are back to their original geometry.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Use the browser tool with page.context.browser.new_context(viewport=...) for each width. Log in at /admin/login (login-email, login-password, login-submit), open /?edit=1, click 'main [data-edit=\"tagline\"]', then drag [data-testid=live-move-grip] or live-resize-e with mouse down/move/up. Press Esc, click live-save-btn, wait for live-status 'Everything is saved', then live-exit-btn. Run backup_restore_content.py backup before and restore after. If behaviour looks old, check that the served bundle is fresh.",
+  "test_credentials": "admin@uspindia.org / M-8iH7yaR-980GZW (from /app/memory/test_credentials.md)"
+}
