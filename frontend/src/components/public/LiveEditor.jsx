@@ -444,8 +444,10 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
       const typing = !!e.target.closest?.("input, textarea, select, [contenteditable=true]");
       if (e.target.closest?.("[role=dialog]")) return;
       if (mod && k === "s") { e.preventDefault(); if (dirty && !busy) save(); return; }
-      if (mod && !typing && k === "z") { e.preventDefault(); if (e.shiftKey) redo(); else undo(); return; }
-      if (mod && !typing && k === "y") { e.preventDefault(); redo(); return; }
+      const nativeUndo = typing && !(e.target.closest?.("[contenteditable=true]") && !inlineDraft.current);
+      if (k === "escape" && device !== "desktop") { e.preventDefault(); setDevice("desktop"); return; }
+      if (mod && !nativeUndo && k === "z") { e.preventDefault(); if (e.shiftKey) redo(); else undo(); return; }
+      if (mod && !nativeUndo && k === "y") { e.preventDefault(); redo(); return; }
       if (k === "escape" && sel) { e.preventDefault(); if (typing) e.target.blur?.(); selectField(null); return; }
       if (!typing && sel && !isText && k.startsWith("arrow")) {
         e.preventDefault();

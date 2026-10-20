@@ -11,7 +11,7 @@ export const HeaderStyleTag = ({ styles = {} }) => {
     if (css) rules.push(`${selectors.map((s) => `html body #public-site#public-site#public-site.site #site-header#site-header${s}`).join(", ")} { ${css}; }`);
   };
   rule([""], { background: styles.backgroundColor, "padding-top": styles.paddingTop, "padding-bottom": styles.paddingBottom, position: styles.position });
-  rule([" .header-inner"], { "padding-left": styles.paddingLeft, "padding-right": styles.paddingRight, "min-height": styles.minHeight });
+  rule([" .header-inner"], { background: styles.backgroundColor, "padding-left": styles.paddingLeft, "padding-right": styles.paddingRight, "min-height": styles.minHeight });
   rule([" .brand-name", " .brand-sub", " .nav-link", " .dropdown a"], {
     color: styles.color,
   });
