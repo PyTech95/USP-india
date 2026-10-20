@@ -1,0 +1,29 @@
+{
+  "summary": "Frontend-only retest (iteration 4). All FIXED items pass. (1) The header is identical on all 8 pages at 1440/1100/1000/960/900/850/820/750/700/390: header, brand and nav boxes match, brand-name is 32px rgb(87,87,87) weight 300, brand-sub is 11px, non-active nav links are 12px rgb(96,96,96), and the separators match. Workshops is full width at 700-1000px, there is no horizontal overflow, and the mobile menu opens on every page with 5 links and aria-expanded=true. (2) Hero alignment regression passes: the hero box left/right edges are the same on every page (1440: 50/1390, 1100: 39/1062, 820: 29/791, 390: 24/366). (3) Header background now colours .header-inner and the brand area live and on the public pages at 1440 and 820, and the brand/subtitle/menu size and colour overrides still beat the global 4-ID rules. This only worked after the dev server picked up the change (see the stale hot-reload note). (4) Ctrl+Z with a text element focused undoes a drag, a resize and a font-size change, and native text undo still works while typing. (5) Site text: choosing a Field sets Location to the area where it actually is, for every field on the page (94 options checked on /connect and 8 on /field-notes). (6) Esc closes the mobile and tablet preview, and Back to editing works. (7) Regressions pass: site-text font size on brand_label and full_name, text edit/undo/redo/save with public persistence, crop shape/zoom/pan with Ctrl+Z, and media replace with Ctrl+Z / Ctrl+Shift+Z. All test content was restored, and the DB diff is clean.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "LiveEditor keyboard undo", "issue": "Edge case: type in a text element, then drag or resize it (focus stays in the contenteditable, inlineDraft is set), then press Ctrl+Z. The browser's native undo runs and removes the typed text, and the drag is not undone, so the order is not last-in-first-out. Cause: nativeUndo stays true while inlineDraft.current is set, even after a non-text action. Fix idea: commit or clear inlineDraft when a drag, resize or style change starts.", "selector": "[data-testid=live-move-grip]", "priority": "LOW"},
+      {"component": "SiteChromeEditor Location", "issue": "For fields that are not rendered on the current page (for example ui_text.* or display.notes-title on /connect), Location keeps the previous area, which is often Header and misleading. Consider a better default per field (menus.footer, contact.phone and logo go to footer; ui_text and display.notes go to main).", "selector": "[data-testid=live-site-area]", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": ["/app/tests/backup_restore_content.py"],
+  "action_items": [
+    "Environment note: at the start of testing, the served dev bundle had an OLD HeaderStyleTag without the .header-inner background rule (CRA hot reload missed the 08:52 edit). It only worked after `touch` of the edited files. After editing, check that the change is actually compiled (hard reload, or touch the file or restart the frontend) before handing off.",
+    "Optional: make Ctrl+Z follow LIFO order when typing is followed by a drag/resize on the same text element.",
+    "Optional: give site-text Location a better default for fields that are not on the current page."
+  ],
+  "critical_code_review_comments": [
+    "LiveEditor.jsx is 700 lines (at the split threshold). Consider moving the keyboard handler and the drag/resize logic into hooks.",
+    "LiveEditor keyboard useEffect has no deps array, so it re-binds on every render. It works, but it is wasteful.",
+    "SiteChromeEditor Field onChange picks the first area found in header > main > footer order. Fields present in both header and footer always resolve to header, which is fine for now."
+  ],
+  "updated_files": ["(none - only touched HeaderStyleTag.jsx, LiveEditor.jsx, SiteChromeEditor.jsx, boxed-layout.css mtime to force recompile; no content changes)"],
+  "success_rate": {"backend": "N/A (skipped)", "frontend": "100% of requested items (2 low-priority edge cases noted)"},
+  "seed_data_creation": "None. Saved header styles and the about tagline (TESTX) were saved during testing and then restored from /tmp/content_backup.json (also /tmp/content_backup_iter4_start.json). The DB diff is clean.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Use 'import asyncio' when adding page.on('dialog', ...) handlers. Header measurement: use '#site-header .nav-list .nav-link', because the first .nav-link is the hidden Menu toggle (11px #444). Image tests: use /our-work/rakhigarhi main [data-sec] [data-edit=\"image\"] (the /about cards are placeholders). Back up and restore with /app/tests/backup_restore_content.py."
+}

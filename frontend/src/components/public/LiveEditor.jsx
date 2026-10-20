@@ -152,11 +152,15 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
   };
   const setStyles = (patch) => {
     if (!sel) return;
-    patchSec(sel.sec, (s) => {
-      const f = { ...((s.styles || {})[field] || {}), ...patch };
+    const draft = inlineDraft.current;
+    inlineDraft.current = null;
+    commit(sections.map((s) => {
+      const t = draft && s.id === draft.sec ? { ...s, data: setPath(s.data, draft.field, draft.value) } : s;
+      if (t.id !== sel.sec) return t;
+      const f = { ...((t.styles || {})[field] || {}), ...patch };
       Object.keys(f).forEach((k) => (f[k] === "" || f[k] == null) && delete f[k]);
-      return { ...s, styles: { ...(s.styles || {}), [field]: f } };
-    });
+      return { ...t, styles: { ...(t.styles || {}), [field]: f } };
+    }));
   };
 
   const undo = () => {
