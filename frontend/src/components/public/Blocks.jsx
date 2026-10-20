@@ -60,7 +60,10 @@ export function sx(s, field) {
     style: Object.keys(style).length ? style : undefined,
     ref: (node) => {
       if (!isImageField(field)) applyTypography(node, raw);
-      applyProps(node, style, LAYOUT_PROPS);
+      // Elements pinned by the stylesheet (position absolute/fixed) keep their positioning.
+      if (node && style.position) node.style.removeProperty("position");
+      const pinned = node && style.position && /^(absolute|fixed)$/.test(getComputedStyle(node).position);
+      applyProps(node, style, pinned ? LAYOUT_PROPS.filter((p) => !["position", "alignSelf", "justifySelf"].includes(p)) : LAYOUT_PROPS);
       if (node && !node.dataset.testid) node.dataset.testid = `editable-${s?.id || "text"}-${field.replaceAll(".", "-")}`;
     },
     ...(isImageField(field) ? { captionEd: sx(s, `${field}.caption`), creditEd: sx(s, `${field}.credit`) } : {}),

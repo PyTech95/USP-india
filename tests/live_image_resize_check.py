@@ -1,0 +1,4 @@
+# Browser-tool snippet (paste body into browser_automation): image shrink via live-resize-se persists editor -> public
+# Set VW/VH and CASES before running. CASES = [(path, index_in_image_list)]
+BASE = "https://launch-pad-462.preview.emergentagent.com"
+JS = """(i) => { const l = Array.from(document.querySelectorAll('main [data-edit]')).filter(e => e.querySelector('img') || e.tagName == 'FIGURE' || e.tagName == 'IMG'); const e = l[i]; if (!e) return null; const r = e.getBoundingClientRect(); const im = e.querySelector('img'); const ir = im ? im.getBoundingClientRect() : r; return {key: e.getAttribute('data-edit'), x: Math.round(r.left + scrollX), y: Math.round(r.top + scrollY), w: Math.round(r.width), h: Math.round(r.height), iw: Math.round(ir.width), ih: Math.round(ir.height), style: (e.getAttribute('style') || '').replace(/--f[xy]-[dm]: 50%; /g, ''), sw: document.documentElement.scrollWidth}; }"""
