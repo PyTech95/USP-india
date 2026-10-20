@@ -1,0 +1,18 @@
+{
+  "summary": "Frontend-only test of ScrollToTop (App.js). Tested at desktop 1440x900 and mobile 390x844. Every in-app link to a new page now starts at scrollY 0 with the header visible: header menu (Who we are, Our work submenu, Field notes, Connect, logo), homepage content links (4 Our work cards, /field-notes, /connect?topic=...), and Related Field Notes links on /field-notes/:slug. The mobile menu closes after navigation. Found and fixed one regression: on /field-notes, the first time a note was opened in the overlay (?note=slug) after a fresh page load, the list behind it jumped to the top, so closing the note lost the user's place. Retested after the fix: the list position is kept across open/close. Browser Back/Forward works and restores the previous position (POP is not forced to top). Admin sidebar navigation works. Opening the live editor (/?edit=1) and closing it works, and closing it does not move the page. The footer has no internal page links (only mailto, social links and the Privacy Policy toggle), so there was nothing to test there.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": [],
+  "action_items": ["None blocking. Please review the one-line fix to ScrollToTop in App.js."],
+  "critical_code_review_comments": [
+    "ScrollToTop had useNavigationType() in its effect deps. The first push after a page load changes navType from POP to PUSH, so the effect ran again even when only the query string changed (NoteReader ?note=). That scrolled the field-notes list to the top. Fixed by depending on [pathname] only; nav and hash are still read inside the effect body.",
+    "NoteReader calls closeRef.current.focus() without {preventScroll:true}. No real-user problem seen, but adding preventScroll would be safer."
+  ],
+  "updated_files": ["/app/frontend/src/App.js (ScrollToTop effect deps: [pathname, hash, nav] -> [pathname])"],
+  "success_rate": {"backend": "N/A (skipped)", "frontend": "100% after fix"},
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Field note cards on /field-notes are buttons that open an overlay via ?note=slug (body overflow hidden), not page navigations. /field-notes/:slug is a full page whose related links are a[data-testid=note-link-*]. Mobile nav testids: mobile-menu-toggle, nav-m-about, nav-m-work-toggle, nav-m-rak/the/cra/wor, nav-m-notes, nav-m-connect. Playwright's own scroll-on-click can shift scrollY; use JS click when measuring whether the overlay keeps the background position.",
+  "rca of the issue": "Repro: load /field-notes, scroll to the last card (y=1404), click it, close the overlay. Before the fix y was 0. Cause: the nav type going from POP to PUSH re-ran the ScrollToTop effect. Fix: effect deps set to [pathname]. Verified: y stays 1404 on open and close."
+}

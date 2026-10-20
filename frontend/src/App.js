@@ -39,7 +39,8 @@ function ScrollToTop() {
   const nav = useNavigationType();
   useEffect(() => {
     if (nav !== "POP" && !hash) window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-  }, [pathname, hash, nav]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
   return null;
 }
 
