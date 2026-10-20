@@ -105,7 +105,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
   const fileRef = useRef(null);
   const inlineDraft = useRef(null);
   const dragging = useRef(null);
-  const [narrow, setNarrow] = useState(() => typeof window !== "undefined" && window.innerWidth < 1440);
+  const [narrow, setNarrow] = useState(() => typeof window !== "undefined" && window.innerWidth < 961);
 
   useEffect(() => {
     if (!on || noteId) return undefined;
@@ -290,7 +290,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
   }, [on, sel, device]);
 
   useEffect(() => {
-    const onResize = () => setNarrow(window.innerWidth < 1440);
+    const onResize = () => setNarrow(window.innerWidth < 961);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
@@ -518,7 +518,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
           ))}
         </div>
 
-        {narrow && <p className="live-narrow-note" data-testid="live-narrow-note">Sizes and positions you set apply to screens 1440px and wider; smaller screens get an automatic layout. Check them with the tablet/phone buttons.</p>}
+        {narrow && <p className="live-narrow-note" data-testid="live-narrow-note">Sizes and positions you set apply to desktop screens (961px and wider); tablets and phones get an automatic layout. Check them with the tablet/phone buttons.</p>}
 
         {!sel || !sec ? (
           <>
