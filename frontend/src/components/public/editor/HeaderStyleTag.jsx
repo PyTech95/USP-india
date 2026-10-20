@@ -8,7 +8,7 @@ export const HeaderStyleTag = ({ styles = {} }) => {
   const rule = (selectors, declarations) => {
     const css = Object.entries(declarations).filter(([, v]) => v && /^[#0-9a-zA-Z .,%()\-'\"]{1,100}$/.test(v))
       .map(([k, v]) => `${k}: ${v} !important`).join("; ");
-    if (css) rules.push(`${selectors.map((s) => `#public-site #site-header${s}`).join(", ")} { ${css}; }`);
+    if (css) rules.push(`${selectors.map((s) => `html body #public-site#public-site#public-site.site #site-header#site-header${s}`).join(", ")} { ${css}; }`);
   };
   rule([""], { background: styles.backgroundColor, "padding-top": styles.paddingTop, "padding-bottom": styles.paddingBottom, position: styles.position });
   rule([" .header-inner"], { "padding-left": styles.paddingLeft, "padding-right": styles.paddingRight, "min-height": styles.minHeight });

@@ -21,7 +21,7 @@
 }
 #public-site #home-reference .hfn .hfn-title {
   font-family: inherit !important; font-weight: 300 !important;
-  font-size: var(--ts-h2) !important; line-height: 1.3 !important;
+  font-size: 28px !important; line-height: 1.3 !important;
   color: var(--hfn-ink) !important;
   margin: 0 0 clamp(2px, .28vw, 4px) !important; padding: 0; border: 0;
 }

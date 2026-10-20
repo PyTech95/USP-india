@@ -439,3 +439,11 @@ html body #public-site#public-site#public-site main #rakhigarhi-reference #archa
 html body #public-site#public-site#public-site main #rakhigarhi-reference #archaeology .prose p { font-size: 15px !important; line-height: 1.75 !important; }
 #public-site .rak-hero-ph figcaption { font-size: 12px !important; color: #76716b !important; border: 0 !important; padding-left: 0 !important; margin-top: 10px !important; }
 #public-site .rak-hero-ph figcaption::before { display: none !important; }
+
+
+/* Hero boxes line up with the header box on every page (About and Craft wrappers are narrower than the page). */
+html body #public-site#public-site#public-site#public-site#public-site main#main .page-about > .hb.hb-hero:first-child {
+  justify-self: start !important; margin-left: calc((100% - var(--box-w)) / 2) !important; margin-right: 0 !important;
+}
+html body #public-site#public-site#public-site#public-site main .hb.hb-hero .craft-reference-hero:not([style*="--ed-w"]) { width: 100% !important; margin-left: 0 !important; margin-right: 0 !important; }
+html body #public-site#public-site#public-site#public-site main .hb.hb-hero .craft-reference-hero > .craft-hero-frame:not([style*="--ed-w"]) { width: 100% !important; margin-left: 0 !important; }

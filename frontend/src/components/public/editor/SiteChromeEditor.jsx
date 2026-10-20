@@ -15,7 +15,7 @@ export const SiteChromeEditor = () => {
   const { on, scope, setScope, registerDirty, setTextStylePreview } = useLiveEditor();
   const { can } = useAuth();
   const site = useSite(), refresh = useRefreshSite();
-  const [path, setPath] = useState("tagline"), [area, setArea] = useState("footer"), [value, setValue] = useState("");
+  const [path, setPath] = useState("contact.email"), [area, setArea] = useState("footer"), [value, setValue] = useState("");
   const [styles, setStyles] = useState({}), [currentSize, setCurrentSize] = useState("");
   const [busy, setBusy] = useState(false), [picker, setPicker] = useState(false), [dirty, setDirty] = useState(false), [error, setError] = useState("");
   const visible = on && scope === "site" && can("config");

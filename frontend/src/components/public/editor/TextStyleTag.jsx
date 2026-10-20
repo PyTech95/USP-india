@@ -24,7 +24,7 @@ export const TextStyleTag = ({ entries, testid = "site-text-style-overrides" }) 
     const declarations = Object.entries(styles).filter(([key, value]) => ["fontSize", "fontWeight", "color", "lineHeight"].includes(key) && /^[#0-9a-zA-Z .-]{1,80}$/.test(value))
       .map(([key, value]) => `${key.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)}: ${key === "fontFamily" ? `"${value}", sans-serif` : value} !important`).join(";");
     if (!declarations) return "";
-    const target = textSelector(path, area);
+    const target = `html body #public-site#public-site#public-site#public-site#public-site${textSelector(path, area).slice("#public-site".length)}`;
     return `${target}, ${target} :is(p,span,a,strong,em,li,h2,h3,time) {${declarations}}`;
   }).join("\n");
   return rules ? <style data-testid={testid}>{rules}</style> : null;

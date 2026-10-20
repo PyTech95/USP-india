@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import {
   X, Save, Upload, Images, RotateCcw, AlignLeft, AlignCenter, AlignRight,
@@ -158,18 +159,18 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
     });
   };
 
-  const undo = () => setHist((h) => {
-    if (!h.past.length) return h;
-    const prev = h.past[h.past.length - 1];
+  const undo = () => {
+    if (!hist.past.length) return;
+    const prev = hist.past[hist.past.length - 1];
+    setHist({ past: hist.past.slice(0, -1), future: [content, ...hist.future].slice(0, 50) });
     setContent(prev); setDirty(prev !== base); remount();
-    return { past: h.past.slice(0, -1), future: [content, ...h.future].slice(0, 50) };
-  });
-  const redo = () => setHist((h) => {
-    if (!h.future.length) return h;
-    const next = h.future[0];
+  };
+  const redo = () => {
+    if (!hist.future.length) return;
+    const next = hist.future[0];
+    setHist({ past: [...hist.past, content].slice(-50), future: hist.future.slice(1) });
     setContent(next); setDirty(true); remount();
-    return { past: [...h.past, content].slice(-50), future: h.future.slice(1) };
-  });
+  };
 
   // section operations
   const idx = (id) => sections.findIndex((s) => s.id === id);
@@ -591,7 +592,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
 
             {(isImage || isText || field === "_section") && (
               <Group title="Size & position" testid="live-group-layout">
-                <p className="live-hint live-hint-small">Tip: drag the grip or red handles on the page, or use the arrow keys (Shift = 10px).</p>
+                <p className="live-hint live-hint-small">{isText ? "Tip: drag the grip or red handles on the page." : "Tip: drag the grip or red handles on the page, or use the arrow keys (Shift = 10px)."}</p>
                 <div className="live-row">
                   <label className="live-field">Width (px)<input type="number" value={px(st.width)} placeholder="auto" onChange={(e) => setStyles({ width: e.target.value ? `${e.target.value}px` : "" })} data-testid="live-width" /></label>
                   <label className="live-field">Height (px)<input type="number" value={px(st.height)} placeholder="auto" onChange={(e) => setStyles({ height: e.target.value ? `${e.target.value}px` : "" })} data-testid="live-height" /></label>
@@ -650,7 +651,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
 
       <MediaPicker open={picker} onClose={() => setPicker(false)} onPick={setImage} />
 
-      {device !== "desktop" && (
+      {device !== "desktop" && createPortal(
         <div className="live-ui live-preview" data-testid="live-preview-overlay">
           <div className="live-preview-bar">
             <span>{device === "mobile" ? "Mobile preview (375px)" : "Tablet preview (768px)"} — view only. Edits are made in desktop view.</span>
@@ -663,7 +664,8 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
           <div className="live-preview-stage">
             <iframe title="Responsive preview" src={previewSrc} className={`live-frame live-frame-${device}`} data-testid="live-preview-frame" />
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

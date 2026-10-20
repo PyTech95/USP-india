@@ -92,7 +92,7 @@ function Footer({ site }) {
   return (
     <footer className="footer usp-footer" id="site-footer" data-testid="site-footer">
       <div className="usp-footer-row">
-        <a href={`mailto:${email}`} className="usp-footer-email" data-testid="footer-email">{email}</a>
+        <a href={`mailto:${email}`} className="usp-footer-email" data-site-edit="contact.email" data-testid="footer-email">{email}</a>
         <div className="usp-footer-social">
           {SOCIALS.map(({ key, label, Icon }) => {
             const url = (site?.social || []).find((s) => `${s.label} ${s.url}`.toLowerCase().includes(key))?.url || "#";
@@ -101,7 +101,7 @@ function Footer({ site }) {
         </div>
       </div>
       <div className="usp-footer-row usp-footer-meta">
-        <span data-testid="footer-copyright">© {new Date().getFullYear()} {site?.full_name || "Urban Suburban Perspectives"}</span>
+        <span data-site-style="display.copyright" data-testid="footer-copyright">© {new Date().getFullYear()} {site?.full_name || "Urban Suburban Perspectives"}</span>
         <details data-testid="footer-privacy" className="footer-privacy">
           <summary data-testid="footer-privacy-toggle">Privacy Policy</summary>
           <HtmlDiv data-site-edit="privacy_html" data-testid="footer-privacy-body" html={site?.privacy_html || ""} />
