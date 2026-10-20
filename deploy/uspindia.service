@@ -1,0 +1,16 @@
+# systemd service for the USP India website.
+# Copy to /etc/systemd/system/uspindia.service, adjust the paths/user, then:
+#   sudo systemctl daemon-reload && sudo systemctl enable --now uspindia
+[Unit]
+Description=USP India website (FastAPI + built React frontend)
+After=network.target mongod.service
+
+[Service]
+User=www-data
+WorkingDirectory=/var/www/uspindia/backend
+ExecStart=/var/www/uspindia/backend/.venv/bin/uvicorn server:app --host 127.0.0.1 --port 8001 --proxy-headers --forwarded-allow-ips=127.0.0.1
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

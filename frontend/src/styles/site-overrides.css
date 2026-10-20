@@ -1,0 +1,81 @@
+/* Page background white; sections that have their own colour keep it. */
+html, body, #root { background: #fff !important; }
+html body #public-site.site {
+  --home-bg: #fff; --m-bg: #fff; --workshops-paper: #fff; --about-paper: #fff; --about-core: #fff; --j-bg: #fff; --c-background: #fff;
+  background-color: #fff !important;
+}
+html body #public-site#public-site :is(#home-reference, #workshops-reference, #craft-reference, #rakhigarhi-reference, #theatre-reference, #about-reference, main, #site-footer),
+html body #public-site#public-site #about-reference #team,
+html body #public-site#public-site .page-craft-livelihood .hb.hb-hero { background-color: #fff !important; }
+
+/* ===== Red accent lines: one thickness site-wide ===== */
+:root { --accent-line: 3px; --accent-line-w: 64px; }
+/* Vertical lines: 80% of the text height, vertically centred */
+html body #public-site :is(
+  .page-workshops-learning #learning-intro .stacked.has-aside > div,
+  #workshops-reference #learning-intro .prose,
+  .page-rakhigarhi #rakhigarhi-intro .aside-statement,
+  #rakhigarhi-reference #archaeology .aside-statement,
+  #about-reference .about-intro-grid > .hb:last-child,
+  #about-reference .about-principles ul
+) { border-left: 0 !important; position: relative !important; }
+html body #public-site .page-workshops-learning #learning-intro .stacked.has-aside > div::after,
+html body #public-site #workshops-reference #learning-intro .prose::after,
+html body #public-site .page-rakhigarhi #rakhigarhi-intro .aside-statement::after,
+html body #public-site #rakhigarhi-reference #archaeology .aside-statement::after,
+html body #public-site #about-reference .about-intro-grid > .hb:last-child::after,
+html body #public-site #about-reference .about-principles ul::after { content: "" !important; position: absolute !important; left: 0 !important; top: 10% !important; height: 80% !important; width: var(--accent-line) !important; background: #D41445 !important; margin: 0 !important; display: block !important; }
+/* Horizontal lines: same length and thickness, starting at the text's left edge */
+html body #public-site .page-craft-livelihood [data-testid="block-1"] .text-cols-head .h2::after,
+html body #public-site .page-craft-livelihood [data-testid="block-9"] .aside-statement::before,
+html body #public-site .page-workshops-learning #restoration-skills .prose::after,
+html body #public-site .page-workshops-learning #the-ambition .aside-statement::before,
+html body #public-site .page-home [data-testid="block-0"] .lede::after,
+html body #public-site .page-home #our-work .sec-head .h2::after,
+html body #public-site .page-rakhigarhi [data-testid="block-0"] .hero-text::before,
+html body #public-site .page-rakhigarhi #haveli-chaupal .eyebrow::after,
+html body #public-site .page-rakhigarhi #the-ambition .eyebrow::after,
+html body #public-site #about-reference .about-title::after,
+html body #public-site #theatre-reference .theatre-split-intro::after,
+html body #public-site #theatre-reference .theatre-intro-heading::after,
+html body #public-site #theatre-reference .theatre-production .h2::after,
+html body #public-site #theatre-reference #theatre-ambition .aside-statement::after,
+html body #public-site .ps-hero-copy .eyebrow::after,
+html body #public-site #rakhigarhi-reference .rak-hero-copy::before,
+html body #public-site #rakhigarhi-reference #the-ambition .eyebrow::after,
+html body #public-site #workshops-reference #ambition .aside-statement::before
+{ width: var(--accent-line-w) !important; height: var(--accent-line) !important; margin-left: 0 !important; margin-right: auto !important; }
+
+/* ===== Photos are never cropped: show the whole picture ===== */
+html body #public-site#public-site#public-site img { object-fit: contain !important; }
+
+/* Work cards: arrow-only link, no label gap */
+html body #public-site .more-link.more-link-icon { gap: 0 !important; padding: 0 !important; border: 0 !important; margin-left: 0 !important; transform: none !important; }
+html body #public-site .more-link.more-link-icon svg { transform: none; margin: 0 !important; }
+html body #public-site .more-link.more-link-icon:hover svg { transform: translateX(3px); }
+
+/* Mobile menu uses the navigation colour */
+@media (max-width: 960px) {
+  html body #public-site#public-site #site-header nav[aria-label="Main"] .nav-list.open,
+  html body #public-site#public-site #site-header nav[aria-label="Main"] .nav-list.open .dropdown { background: var(--nav-peach, #ebe7eb) !important; }
+}
+/* Whole photo shown in the craft hero; dark surround keeps the white title readable */
+html body #public-site .craft-hero-frame { background: #2b2b2b !important; }
+html body #public-site .more-link.more-link-icon { color: #2b2b2b !important; }
+html body #public-site .more-link.more-link-icon:hover { color: #D41445 !important; }
+html body #public-site .craft-hero-frame { overflow: hidden !important; }
+html body #public-site .craft-hero-frame :is(figure, img) { max-width: 100% !important; }
+
+/* Header sits in the same box as the page: menu band ends where the sections end */
+@media (min-width: 961px) {
+  html body #public-site#public-site.site #site-header { background: #fff !important; }
+  html body #public-site#public-site.site #site-header .header-inner { max-width: 1440px !important; margin-inline: auto !important; }
+}
+/* Home: hero box and middle band fill the same box as the header */
+html body #public-site#public-site .page-home :is(.hb.hb-hero, .hb.hb-text.band):not([style*="--ed-w"]) { --ed-w: 100% !important; width: 100% !important; max-width: 100% !important; align-self: stretch !important; justify-self: stretch !important; }
+/* 5px white gap between header and the home hero box */
+@media (min-width: 961px) { html body #public-site#public-site .page-home .hb.hb-hero { margin-top: 5px !important; } }
+@media (min-width: 961px) {
+  html body #public-site#public-site.site #site-header { box-shadow: none !important; border-bottom: 0 !important; }
+  html body #public-site#public-site.site #site-header .header-inner { box-shadow: 0 1px 0 rgba(0,0,0,.06) !important; }
+}

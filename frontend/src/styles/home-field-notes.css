@@ -1,0 +1,123 @@
+/* Home page — Field Notes teaser (notes_feed with layout "home-editorial").
+   Sizes are taken from the approved mockup at a 1440px-wide screen and scale down
+   with the viewport. The long selectors are needed to win over the site-wide
+   overrides in boxed-layout.css / home-reference.css. */
+#public-site #home-reference .hfn {
+  --hfn-ink: #000;
+  --hfn-lede: #2c3341;
+  --hfn-body: #464c58;
+  --hfn-note: #4e525d;
+  --hfn-accent: #f4755b;
+  font-family: "Public Sans", var(--site-font, "Helvetica Neue"), Helvetica, Arial, sans-serif !important;
+}
+
+/* ---- Head: title + intro on the left, featured object on the right ---- */
+#public-site #home-reference .hfn .hfn-head {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 32px;
+  margin: 0 0 clamp(24px, 2.47vw, 35.6px);
+}
+#public-site #home-reference .hfn .hfn-title {
+  font-family: inherit !important; font-weight: 300 !important;
+  font-size: clamp(38px, 3.75vw, 54px) !important; line-height: 1.12 !important;
+  color: var(--hfn-ink) !important;
+  margin: 0 0 clamp(2px, .28vw, 4px) !important; padding: 0; border: 0;
+}
+#public-site #home-reference .hfn .hfn-title::before,
+#public-site #home-reference .hfn .hfn-title::after { content: none !important; }
+#public-site #home-reference .hfn .hfn-lede {
+  font-family: inherit !important; font-weight: 300 !important;
+  font-size: clamp(18px, 1.58vw, 22.7px) !important; line-height: 1.326 !important;
+  max-width: 27.4em; margin: 0 !important;
+}
+
+#public-site #home-reference .hfn .hfn-feature {
+  display: flex !important; align-items: flex-start; gap: clamp(28px, 4.37vw, 63px);
+  margin: calc(-1 * clamp(20px, 2.65vw, 38px)) clamp(0px, 1.6vw, 23px) 0 0;
+}
+#public-site #home-reference .hfn .hfn-feature-text { width: clamp(160px, 12.64vw, 182px); padding-top: clamp(40px, 3.82vw, 55px); }
+#public-site #home-reference .hfn .hfn-feature-title {
+  font-family: inherit !important; font-weight: 400 !important;
+  font-size: clamp(17px, 1.375vw, 19.8px) !important; line-height: 1.25 !important;
+  color: var(--hfn-ink) !important; margin: 0 0 clamp(4px, .42vw, 6px) !important; padding: 0; border: 0;
+}
+#public-site #home-reference .hfn .hfn-feature-desc {
+  font-family: inherit !important; font-weight: 300 !important;
+  font-size: clamp(14px, 1.09vw, 15.7px) !important; line-height: 1.37 !important; margin: 0 !important;
+}
+#public-site #home-reference .hfn .hfn-feature-media { display: block; position: relative; width: clamp(80px, 6.95vw, 100px); }
+#public-site #home-reference .hfn .hfn-feature-media::after {
+  content: ""; position: absolute; left: 22%; right: -18%; bottom: -3%; height: 9%;
+  background: radial-gradient(closest-side, rgba(0, 0, 0, .22), rgba(0, 0, 0, 0)); filter: blur(2px); z-index: 0;
+}
+#public-site #home-reference .hfn .hfn-feature-media .photo { position: relative; z-index: 1; margin: 0; }
+#public-site #home-reference .hfn .hfn-feature-media .photo-frame { background: transparent !important; border: 0 !important; box-shadow: none !important; }
+#public-site #home-reference .hfn .hfn-feature-media img { width: 100%; height: auto; }
+
+/* ---- Cards ---- */
+#public-site #home-reference .hfn .hfn-cards { display: grid !important; gap: clamp(20px, 2.04vw, 29.3px); }
+#public-site #home-reference .hfn .hfn-cards-3 { grid-template-columns: 501fr 488fr 501fr; }
+#public-site #home-reference .hfn .hfn-cards-1 { grid-template-columns: minmax(0, 1fr); max-width: 520px; }
+#public-site #home-reference .hfn .hfn-cards-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+#public-site #home-reference .hfn .hfn-cards:not(.hfn-cards-1):not(.hfn-cards-2):not(.hfn-cards-3) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+#public-site #home-reference .hfn .hfn-card { min-width: 0; margin: 0; }
+#public-site #home-reference .hfn .hfn-card-media { display: block; }
+#public-site #home-reference .hfn .hfn-card .photo { margin: 0; }
+#public-site #home-reference .hfn .hfn-card .photo-frame { border: 0 !important; border-radius: 0 !important; background: #eee; }
+#public-site #home-reference .hfn .hfn-card .photo img { width: 100%; transition: transform .6s cubic-bezier(.2, .7, .2, 1); }
+#public-site #home-reference .hfn .hfn-card:hover .photo:not([style*="--ed-zoom"]) img { transform: scale(1.025); }
+#public-site #home-reference .hfn .hfn-card .photo figcaption,
+#public-site #home-reference .hfn .hfn-card .photo-original { display: none; }
+#public-site #home-reference .hfn .hfn-card-title {
+  font-family: inherit !important; font-weight: 400 !important;
+  font-size: clamp(19px, 1.63vw, 23.5px) !important; line-height: 1.25 !important;
+  color: var(--hfn-ink) !important; margin: clamp(9px, .79vw, 11.4px) 0 clamp(5px, .49vw, 7px) 2px !important; padding: 0; border: 0;
+}
+#public-site #home-reference .hfn .hfn-card-text {
+  font-family: inherit !important; font-weight: 300 !important;
+  font-size: clamp(15px, 1.174vw, 16.9px) !important; line-height: 1.38 !important;
+  margin: 0 0 0 2px !important; max-width: 400px;
+}
+#public-site #home-reference .hfn a { color: inherit !important; text-decoration: none !important; }
+#public-site #home-reference .hfn h3 a:hover { text-decoration: underline !important; text-underline-offset: 4px; text-decoration-thickness: 1px !important; }
+
+/* ---- "Explore Field Notes" ---- */
+#public-site #home-reference .hfn .hfn-more { display: flex; justify-content: flex-end; margin: clamp(10px, .83vw, 12px) 0 0 0; }
+#public-site #home-reference .hfn .hfn-more-link {
+  display: inline-flex !important; align-items: center; gap: 9px; margin-right: calc(-1 * clamp(0px, .75vw, 11px));
+  font-family: inherit !important; font-weight: 400 !important; font-size: clamp(14px, 1.04vw, 15px) !important;
+  color: var(--hfn-ink) !important; padding-bottom: 3px;
+  border-bottom: 2px solid var(--hfn-accent); letter-spacing: 0 !important;
+}
+#public-site #home-reference .hfn .hfn-more-link svg { flex: 0 0 auto; transition: transform .25s ease; }
+#public-site #home-reference .hfn .hfn-more-link:hover svg { transform: translateX(3px); }
+
+/* The site shows every photo uncropped (object-fit: contain, 3-ID rule) and the old
+   block-index rule fixes this block's image height; these cards fill their frames. */
+html body #public-site#public-site#public-site#public-site main #home-reference .hfn .hfn-card .photo img {
+  object-fit: cover !important; height: auto !important; aspect-ratio: var(--ratio, 501 / 428) !important;
+}
+@media (max-width: 640px) {
+  html body #public-site#public-site#public-site#public-site main #home-reference .hfn .hfn-card .photo img { aspect-ratio: var(--ratio-m, 4 / 3) !important; }
+}
+
+/* Body copy colours and spacing (the site forces black text and 0.3px tracking with 4-ID rules). */
+html body #public-site#public-site#public-site#public-site#public-site main #home-reference .hfn :is(h2, h3, p, a, span) { letter-spacing: 0 !important; }
+html body #public-site#public-site#public-site#public-site#public-site main #home-reference .hfn .hfn-lede { color: var(--hfn-lede) !important; }
+html body #public-site#public-site#public-site#public-site#public-site main #home-reference .hfn .hfn-card-text { color: var(--hfn-body) !important; }
+html body #public-site#public-site#public-site#public-site#public-site main #home-reference .hfn .hfn-feature-desc { color: var(--hfn-note) !important; }
+
+/* ---- Smaller screens ---- */
+@media (max-width: 1024px) {
+  #public-site #home-reference .hfn .hfn-feature { margin-top: 0; }
+}
+@media (max-width: 860px) {
+  #public-site #home-reference .hfn .hfn-head { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  #public-site #home-reference .hfn .hfn-feature { margin: 0; justify-content: flex-start; }
+  #public-site #home-reference .hfn .hfn-feature-text { padding-top: 18px; }
+  #public-site #home-reference .hfn .hfn-cards { grid-template-columns: minmax(0, 1fr) !important; gap: 40px; max-width: 560px; }
+  #public-site #home-reference .hfn .hfn-card-text { max-width: none; width: auto !important; }
+  #public-site #home-reference .hfn .hfn-more { justify-content: flex-start; margin-right: 0; margin-top: 32px; }
+}

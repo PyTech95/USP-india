@@ -1,0 +1,441 @@
+/* Boxed layout on every public page: menu and coloured sections share the home page's left/right edges. */
+#public-site.site { container-type: inline-size; }
+:root { --box-w: min(calc(100cqw - 2 * max(24px, 3.5cqw)), 1339.2px); }
+
+@media (min-width: 961px) {
+  html body #public-site#public-site.site #site-header .header-inner { padding-right: max(24px, min(3.5%, 50.4px)) !important; padding-left: calc(max(24px, min(3.5%, 50.4px)) + 50px) !important; box-shadow: none !important; }
+  #public-site.site #site-header .nav-list .nav-link { white-space: nowrap; }
+  html body #public-site#public-site.site #site-header nav[aria-label="Main"] { margin-left: 50px !important; margin-right: 0 !important; }
+}
+
+html body #public-site#public-site main :is(
+  .ps-plain-hero, .ps-hero, .hero-type, .theatre-split, .craft-hero-frame, .craft-hero-intro,
+  .hb.band, .hb.hb-bg, #archaeology, #active-use-summary, #the-ambition, #restoration-skills
+):not([style*="--ed-w"]) {
+  width: var(--box-w) !important; max-width: none !important; box-sizing: border-box !important;
+  margin-left: calc(50% - var(--box-w) / 2) !important; margin-right: 0 !important;
+  overflow: hidden;
+}
+html body #public-site#public-site #site-header .nav-list button.nav-link { opacity: 1 !important; }
+html body #public-site#public-site main :is(.hb.band, .hb.hb-bg, .craft-hero-intro, #archaeology, #active-use-summary, #the-ambition, #restoration-skills) [style*="--ed-w"] {
+  max-width: 100% !important; box-sizing: border-box !important;
+}
+
+/* ===== Connect page ===== */
+html body #public-site#public-site .page-connect .hb.hb-hero { display: none !important; }
+#public-site .ps-connect-page { --pcc-pad: clamp(20px, 5.8%, 72px); color: #2b2926; }
+html body #public-site#public-site main .pcc-hero {
+  width: var(--box-w); margin: 5px 0 0 calc(50% - var(--box-w) / 2); box-sizing: border-box;
+  background: #eeeae7; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 2rem;
+  padding: clamp(56px, 6vw, 84px) var(--pcc-pad);
+}
+#public-site .pcc-title { font: 300 clamp(40px, 4.4vw, 60px)/1.1 var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif); letter-spacing: -.01em; margin: 0; color: #1f1d1b; text-transform: none; }
+#public-site .pcc-intro { margin: 0; padding-left: 24px; border-left: 3px solid #a3234a; font-size: 18px; line-height: 1.65; font-weight: 300; color: #55514c; max-width: 480px; }
+#public-site .pcc-grid {
+  width: var(--box-w); margin-left: calc(50% - var(--box-w) / 2); box-sizing: border-box;
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2.5rem; padding: 88px var(--pcc-pad) 120px;
+}
+#public-site .pcc-label { font-size: 12px; letter-spacing: .22em; text-transform: uppercase; color: #55514c; margin: 0 0 18px; font-weight: 400; }
+#public-site .pcc-kicker { margin: 34px 0 44px; }
+#public-site .pcc-detail { margin-bottom: 56px; }
+#public-site .pcc-email { font-size: clamp(22px, 2.2vw, 30px); font-weight: 300; color: #1f1d1b; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 6px; text-decoration-color: #b9b4ae; }
+#public-site .pcc-address { margin: 0; font-size: 20px; line-height: 1.65; font-weight: 300; color: #2b2926; }
+#public-site .pcc-address .ps-line { display: block; }
+#public-site .cf-compact { max-width: 575px; }
+#public-site .cf-compact .cf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
+#public-site .cf-compact .form-field { margin: 0 0 26px; display: flex; flex-direction: column; }
+#public-site .cf-compact label { font-size: 14px; color: #2b2926; margin-bottom: 10px; letter-spacing: 0; text-transform: none; font-weight: 400; }
+#public-site .cf-compact .cf-optional { font-size: 12px; color: #76716b; margin-left: 8px; }
+#public-site .cf-compact :is(input, textarea) { border: 1px solid #cfcac4; border-radius: 0; background: #fff; padding: 14px 16px; font: 300 15px/1.4 var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif); color: #2b2926; width: 100%; box-sizing: border-box; }
+#public-site .cf-compact textarea { min-height: 152px; resize: vertical; }
+#public-site .cf-compact :is(input, textarea):focus { outline: none; border-color: #a3234a; }
+#public-site .cf-compact .field-error { color: #a3234a; font-size: 13px; margin-top: 6px; }
+#public-site .cf-submit { display: inline-flex; align-items: center; gap: 30px; background: #a3234a; color: #fff; border: 0; border-radius: 0; padding: 14px 22px; font: 400 15px/1 var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif); cursor: pointer; transition: background-color .18s ease; margin-top: 6px; }
+#public-site .cf-submit:hover { background: #861a3c; }
+#public-site .cf-submit:disabled { opacity: .7; cursor: wait; }
+@media (max-width: 860px) {
+  html body #public-site#public-site main .pcc-hero, #public-site .pcc-grid { grid-template-columns: 1fr; }
+  #public-site .pcc-grid { padding: 56px var(--pcc-pad) 72px; gap: 0; }
+  #public-site .pcc-kicker { margin-top: 0; }
+  #public-site .cf-compact .cf-row { grid-template-columns: 1fr; gap: 0; }
+}
+
+/* ===== Footer (all pages) ===== */
+html body #public-site#public-site #site-footer.usp-footer {
+  width: var(--box-w) !important; max-width: none !important; box-sizing: border-box !important;
+  margin: 0 auto !important; background: #eeeae7 !important; color: #2b2926 !important; border: 0 !important;
+  padding: 44px clamp(20px, 5.8%, 72px) 34px !important; align-self: center;
+}
+#public-site .usp-footer-row { display: flex; justify-content: space-between; align-items: center; gap: 1rem 2rem; flex-wrap: wrap; }
+#public-site .usp-footer-meta { margin-top: 36px; align-items: flex-start; }
+html body #public-site#public-site .usp-footer a.usp-footer-email { font: 300 20px/1.3 var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif) !important; letter-spacing: 0 !important; text-transform: none !important; color: #2b2926 !important; opacity: 1 !important; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 5px; text-decoration-color: #b9b4ae; }
+#public-site .usp-footer-social { display: flex; align-items: center; gap: 30px; padding-right: 10px; }
+html body #public-site#public-site .usp-footer-social a { color: #2b2926 !important; opacity: 1 !important; display: inline-flex; transition: color .18s ease; }
+html body #public-site#public-site .usp-footer-social a:hover { color: #a3234a !important; }
+html body #public-site#public-site .usp-footer-meta :is(span, summary) { font: 400 13px/1.4 var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif) !important; letter-spacing: 0 !important; text-transform: none !important; color: #6b665f !important; }
+#public-site .usp-footer .footer-privacy { margin-left: auto; max-width: 48ch; text-align: right; }
+#public-site .usp-footer .footer-privacy summary { cursor: pointer; list-style: none; }
+#public-site .usp-footer .footer-privacy summary::-webkit-details-marker { display: none; }
+#public-site .usp-footer .footer-privacy[open] > div { text-align: left; font-size: 13px; color: #55514c; margin-top: .75rem; }
+html body #public-site#public-site .usp-footer .footer-privacy > div :is(p, li, span) { color: #55514c !important; }
+html body #public-site#public-site .page-connect :is(.hb, .hb > section) { border: 0 !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; max-width: none !important; background: transparent !important; }
+html body #public-site#public-site .page-connect :is(.hb, .hb > section)::before,
+html body #public-site#public-site .page-connect :is(.hb, .hb > section)::after { content: none !important; }
+
+/* 5px white gap between header and the first section on every page */
+html body #public-site#public-site main > div > .hb:first-child:not(.hb-hero[style*="display: none"]) { margin-top: 5px !important; }
+html body #public-site#public-site .page-connect > .hb:first-child { margin-top: 0 !important; }
+html body #public-site#public-site main > .hero-type:first-child,
+html body #public-site#public-site main > :first-child > .hero-type:first-child { margin-top: 5px !important; }
+
+/* Rakhigarhi top section: coloured box like the other pages */
+html body #public-site#public-site #rakhigarhi-reference .rak-hero {
+  width: var(--box-w) !important; max-width: none !important; box-sizing: border-box !important;
+  margin-left: calc(50% - var(--box-w) / 2) !important; margin-right: 0 !important;
+  background: #eeeae7 !important; padding-inline: clamp(20px, 5.8%, 72px) !important; margin-bottom: 5px !important;
+}
+
+/* Craft & Livelihood hero: full, uncropped photo on the hero background */
+html body #public-site#public-site #craft-reference .craft-hero-frame { position: relative; display: block !important; height: clamp(520px, 50cqw, 720px); background: #2b2b2b; overflow: hidden; }
+html body #public-site#public-site #craft-reference .craft-hero-photo.craft-hero-full { position: absolute; inset: 0; margin: 0; display: flex; justify-content: center; }
+html body #public-site#public-site #craft-reference figure.craft-hero-photo.craft-hero-full img { height: clamp(520px, 50cqw, 720px) !important; max-height: none !important; min-height: 0 !important; transform: none !important; width: auto !important; max-width: 100%; aspect-ratio: auto !important; object-fit: contain !important; display: block; }
+html body #public-site#public-site #craft-reference .craft-hero-frame::after { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; background: linear-gradient(to top, rgba(0,0,0,.55), rgba(0,0,0,.12) 32%, transparent 60%); }
+html body #public-site#public-site #craft-reference .craft-hero-frame .craft-hero-copy { position: absolute; left: 0; bottom: 0; z-index: 6; }
+@media (max-width: 760px) {
+  html body #public-site#public-site #craft-reference .craft-hero-frame { height: auto; }
+  html body #public-site#public-site #craft-reference .craft-hero-photo.craft-hero-full { position: relative; }
+  html body #public-site#public-site #craft-reference figure.craft-hero-photo.craft-hero-full img { width: 100% !important; height: auto !important; }
+  html body #public-site#public-site #craft-reference .craft-hero-frame::after { display: none; }
+  html body #public-site#public-site #craft-reference .craft-hero-frame .craft-hero-copy { position: static; padding-top: 24px !important; }
+}
+
+/* Theatre hero: matches supplied "Stories Brought to Life" artwork */
+html body #public-site#public-site #theatre-reference .theatre-split {
+  --tw: var(--box-w); position: relative !important; display: block !important; height: calc(var(--tw) / 2.5) !important; min-height: 0 !important;
+  background: #eae6e3 !important; padding: 0 !important; overflow: hidden; grid-template-columns: none !important;
+}
+html body #public-site#public-site #theatre-reference .theatre-split-copy {
+  position: relative; z-index: 2; width: 44% !important; max-width: none !important; margin: 0 !important; box-sizing: border-box;
+  padding: calc(var(--tw) * .0855) 0 0 calc(var(--tw) * .0676) !important; display: block !important; background: transparent !important;
+}
+html body #public-site#public-site #theatre-reference .theatre-split-copy .eyebrow {
+  font: 400 max(11px, calc(var(--tw) * .0101))/1.3 var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif) !important;
+  letter-spacing: .02em !important; text-transform: uppercase; color: #2b2926 !important; margin: 0 0 calc(var(--tw) * .0175) !important; display: block !important;
+}
+html body #public-site#public-site #theatre-reference .theatre-split-copy .eyebrow::before,
+html body #public-site#public-site #theatre-reference .theatre-split-copy .eyebrow::after { display: none !important; content: none !important; }
+html body #public-site#public-site #theatre-reference .theatre-split-copy .h1 {
+  font: 400 max(26px, calc(var(--tw) * .0318))/1.12 var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif) !important;
+  letter-spacing: -.005em !important; color: #1c1b1a !important; margin: 0 0 calc(var(--tw) * .0215) !important; text-transform: none !important; max-width: none !important;
+}
+html body #public-site#public-site #theatre-reference .theatre-hero-line { display: block; white-space: nowrap; }
+html body #public-site#public-site #theatre-reference .theatre-split-lead {
+  font: 300 max(15px, calc(var(--tw) * .0131))/1.4 var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif) !important;
+  color: #2b2926 !important; margin: 0 0 calc(var(--tw) * .0165) !important; letter-spacing: 0 !important; max-width: none !important;
+}
+html body #public-site#public-site #theatre-reference .theatre-split-intro { max-width: calc(var(--tw) * .35) !important; margin: 0 !important; }
+html body #public-site#public-site #theatre-reference .theatre-split-intro p {
+  font: 300 max(14px, calc(var(--tw) * .0121))/1.46 var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif) !important;
+  color: #2b2926 !important; margin: 0 !important; letter-spacing: 0 !important;
+}
+html body #public-site#public-site #theatre-reference .theatre-split-rule {
+  display: block; width: calc(var(--tw) * .0484); height: max(2px, calc(var(--tw) * .0016)); background: #a3234a; margin-top: calc(var(--tw) * .0215);
+}
+html body #public-site#public-site #theatre-reference .theatre-split-art { position: absolute; top: 0; right: 0; bottom: 0; margin: 0; z-index: 1; }
+html body #public-site#public-site #theatre-reference .theatre-split-art img { height: 100% !important; width: auto !important; max-width: none !important; display: block; object-fit: contain !important; aspect-ratio: auto !important; }
+@media (max-width: 860px) {
+  html body #public-site#public-site #theatre-reference .theatre-split { height: auto !important; }
+  html body #public-site#public-site #theatre-reference .theatre-split-copy { width: 100% !important; padding: 44px 24px 32px !important; }
+  html body #public-site#public-site #theatre-reference .theatre-hero-line { white-space: normal; }
+  html body #public-site#public-site #theatre-reference .theatre-split-intro { max-width: none !important; }
+  html body #public-site#public-site #theatre-reference .theatre-split-art { position: relative; }
+  html body #public-site#public-site #theatre-reference .theatre-split-art img { width: 100% !important; height: auto !important; }
+}
+html body #public-site#public-site #theatre-reference .theatre-split-intro::after { content: none !important; display: none !important; }
+html body #public-site#public-site #theatre-reference .hb.hb-hero, html body #public-site#public-site #theatre-reference .hb.hb-hero > section { border: 0 !important; box-shadow: none !important; }
+html body #public-site#public-site #theatre-reference .hb.hb-hero::after, html body #public-site#public-site #theatre-reference .hb.hb-hero > section::after { content: none !important; }
+html body #public-site#public-site #theatre-reference .hb.hb-hero + .hb .text-cols { border-top: 0 !important; }
+
+/* Craft: breathing space below "Impact & Livelihood" */
+html body #public-site#public-site #craft-reference #impact-ambition > section { padding-bottom: clamp(64px, 6vw, 96px) !important; }
+
+/* Craft hero: photo fills the whole frame width, full 4:3 picture, no side bands */
+html body #public-site#public-site #craft-reference .craft-hero-frame { height: auto !important; background: transparent !important; }
+html body #public-site#public-site #craft-reference .craft-hero-photo.craft-hero-full { position: relative !important; inset: auto !important; display: block !important; }
+html body #public-site#public-site #craft-reference figure.craft-hero-photo.craft-hero-full img { width: 100% !important; height: auto !important; max-width: none !important; aspect-ratio: 4 / 3 !important; object-fit: cover !important; }
+@media (max-width: 760px) {
+  html body #public-site#public-site #craft-reference .craft-hero-frame { background: #2b2b2b !important; }
+}
+html body #public-site#public-site #site-footer.usp-footer { padding: 50px clamp(20px, 6.1%, 88px) 30px !important; }
+#public-site .usp-footer-meta { margin-top: 44px !important; }
+html body #public-site#public-site .usp-footer-social svg { width: 17px !important; height: 17px !important; display: block; }
+html body #public-site#public-site .usp-footer-social svg.fb { width: 10px !important; height: 18px !important; }
+html body #public-site#public-site .usp-footer-social svg:not(.fb) { width: 19px !important; height: 19px !important; }
+
+/* ===== Field Notes grid + reading pop-up ===== */
+#public-site .fn-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 96px 7%; margin-top: 56px; align-items: start; }
+#public-site .fn-card:nth-child(even) { margin-top: 56px; }
+#public-site .fn-open { all: unset; display: block; width: 100%; cursor: pointer; box-sizing: border-box; }
+#public-site .fn-open:focus-visible { outline: 2px solid #a3234a; outline-offset: 6px; }
+#public-site .fn-media { display: flex; align-items: center; gap: 10px; }
+#public-site .fn-media .fn-main { flex: 1 1 auto; margin: 0; min-width: 0; }
+#public-site .fn-media.has-second .fn-main { flex-basis: 64%; }
+#public-site .fn-media .fn-second { flex: 0 0 30%; margin: 0; }
+#public-site .fn-media img { display: block; width: 100%; transition: transform .5s ease; }
+#public-site .fn-media .photo, #public-site .fn-media figure { overflow: hidden; }
+#public-site .fn-open:hover .fn-media img { transform: scale(1.025); }
+#public-site .fn-blank { width: 100%; aspect-ratio: 4/3; background: #eeeae7; }
+#public-site .fn-title { font: 400 26px/1.25 var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif) !important; color: #1f1d1b !important; margin: 24px 0 10px !important; letter-spacing: 0 !important; text-transform: none !important; }
+#public-site .fn-summary { font: 300 16px/1.6 var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif); color: #55514c; margin: 0 0 14px; max-width: 460px; }
+#public-site .fn-read { font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: #a3234a; border-bottom: 1px solid transparent; transition: border-color .18s ease; }
+#public-site .fn-open:hover .fn-read { border-bottom-color: #a3234a; }
+.fn-overlay { position: fixed; inset: 0; z-index: 1000; background: rgba(38, 36, 34, .55); display: flex; align-items: flex-start; justify-content: center; padding: 6vh 16px; overflow-y: auto; animation: fnFade .2s ease; }
+.fn-dialog { background: #fff; width: min(825px, 100%); box-shadow: 0 24px 60px rgba(0,0,0,.25); animation: fnRise .25s ease; font-family: var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif); }
+.fn-dialog-bar { display: flex; justify-content: space-between; align-items: center; padding: 26px 32px; border-bottom: 1px solid #e6e2de; position: sticky; top: 0; background: #fff; z-index: 1; }
+.fn-crumb { font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: #76716b; }
+.fn-crumb span { margin: 0 6px; }
+.fn-close { display: inline-flex; align-items: center; gap: 10px; background: none; border: 0; font: 400 15px/1 inherit; font-family: inherit; color: #2b2926; cursor: pointer; padding: 4px; }
+.fn-close:hover { color: #a3234a; }
+.fn-dialog-body { padding: 56px clamp(24px, 10.5%, 88px) 72px; }
+.fn-cat { font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: #a3234a; margin: 0 0 16px; }
+.fn-reader-title { font: 400 clamp(28px, 3.6vw, 40px)/1.2 var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif); color: #1f1d1b; margin: 0 0 18px; }
+.fn-standfirst { font-size: 16px; line-height: 1.6; color: #6b665f; margin: 0; font-weight: 300; }
+.fn-rule { display: block; width: 34px; height: 2px; background: #a3234a; margin: 34px 0 36px; }
+.fn-body p { font-size: 18px; line-height: 1.9; color: #2b2926; font-weight: 300; margin: 0 0 22px; }
+.fn-loading { color: #76716b; }
+@keyframes fnFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fnRise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@media (max-width: 760px) {
+  #public-site .fn-grid { grid-template-columns: 1fr; gap: 56px; }
+  #public-site .fn-card:nth-child(even) { margin-top: 0; }
+  .fn-overlay { padding: 0; }
+  .fn-dialog { min-height: 100%; }
+  .fn-dialog-bar { padding: 18px 20px; }
+  .fn-dialog-body { padding: 36px 22px 56px; }
+  .fn-body p { font-size: 16px; line-height: 1.8; }
+}
+.fn-overlay { z-index: 100000 !important; }
+#public-site .fn-media :is(figure, .photo-frame) { margin: 0 !important; aspect-ratio: auto !important; height: auto !important; }
+#public-site .fn-media img { aspect-ratio: 4 / 3 !important; height: auto !important; object-fit: cover !important; }
+#public-site .fn-media.has-second .fn-main img { aspect-ratio: 3 / 4 !important; }
+#public-site .fn-media .fn-second img { aspect-ratio: 3 / 4 !important; }
+#public-site .fn-media img { object-fit: cover !important; }
+#public-site .fn-media.has-second.is-port .fn-main img { aspect-ratio: 3 / 4 !important; }
+#public-site .fn-media.has-second.is-land .fn-main img { aspect-ratio: 4 / 3 !important; }
+#public-site .fn-media.is-port:not(.has-second) .fn-main { max-width: 64%; }
+#public-site .fn-media.is-port:not(.has-second) .fn-main img { aspect-ratio: 3 / 4 !important; }
+#public-site .fn-media.has-second.is-land .fn-main { flex-basis: 72%; }
+#public-site .fn-media.has-second.is-land .fn-second { flex-basis: 24%; align-self: flex-end; }
+
+/* Red accent line under headings: fill in sections that were missing it */
+html body #public-site#public-site #workshops-reference #student-projects .h2::after,
+html body #public-site#public-site #workshops-reference #restoration-skills .prose::after,
+html body #public-site#public-site #rakhigarhi-reference #haveli-chaupal .eyebrow::after {
+  content: "" !important; display: block !important; width: var(--accent-line-w, 64px) !important; height: var(--accent-line, 3px) !important;
+  background: #D41445 !important; margin: 28px 0 0 !important; position: static !important;
+}
+/* Coloured boxes grow with their text instead of clipping it */
+html body #public-site#public-site main :is(.hb.band, .hb.hb-bg, #archaeology, #active-use-summary, #the-ambition, #restoration-skills) { height: auto !important; min-height: 0 !important; }
+html body #public-site#public-site #workshops-reference #student-projects > section { border-top: 0 !important; }
+
+/* Navigation bar colour: one colour on every page */
+@media (min-width: 961px) {
+  html body #public-site#public-site #site-header nav[aria-label="Main"],
+  html body #public-site#public-site.site #site-header nav[aria-label="Main"] { background: #ebe7eb !important; background-color: #ebe7eb !important; }
+}
+
+/* Workshops "Restoration Skills": text | tall photo | small photo, on white */
+html body #public-site#public-site #workshops-reference #restoration-skills { background: transparent !important; overflow: visible !important; }
+html body #public-site#public-site #workshops-reference #restoration-skills > section.split {
+  display: grid !important; grid-template-columns: minmax(0, 36fr) minmax(0, 30fr) minmax(0, 18fr) !important; grid-template-areas: "text big small";
+  column-gap: 2% !important; align-items: center !important; padding: clamp(48px, 5vw, 80px) clamp(20px, 5.8%, 72px) !important; max-width: none !important; background: transparent !important;
+}
+html body #public-site#public-site #workshops-reference #restoration-skills .split-text { grid-area: text; padding: 0 !important; }
+html body #public-site#public-site #workshops-reference #restoration-skills .split-text:not([style*="--ed-w"]) { width: auto !important; max-width: 400px !important; }
+html body #public-site#public-site #workshops-reference #restoration-skills .collage { display: contents !important; }
+html body #public-site#public-site #workshops-reference #restoration-skills .collage figure { margin: 0 !important; position: static !important; }
+html body #public-site#public-site #workshops-reference #restoration-skills .collage figure:not([style*="--ed-w"]) { width: 100% !important; max-width: none !important; }
+html body #public-site#public-site #workshops-reference #restoration-skills .collage-0 { grid-area: big; align-self: center; }
+html body #public-site#public-site #workshops-reference #restoration-skills .collage-1 { grid-area: small; align-self: end; }
+html body #public-site#public-site #workshops-reference #restoration-skills .collage figure :is(.photo-frame, img) { width: 100% !important; height: auto !important; aspect-ratio: auto !important; max-width: none !important; }
+html body #public-site#public-site #workshops-reference #restoration-skills .collage-0 img { aspect-ratio: 720 / 1280 !important; object-fit: cover !important; }
+html body #public-site#public-site #workshops-reference #restoration-skills .collage-1 img { aspect-ratio: 3 / 4 !important; object-fit: cover !important; }
+html body #public-site#public-site #workshops-reference #restoration-skills .eyebrow { font-size: 12px !important; letter-spacing: .18em !important; margin: 0 0 24px !important; }
+html body #public-site#public-site #workshops-reference #restoration-skills .eyebrow::before { display: none !important; }
+html body #public-site#public-site #workshops-reference #restoration-skills .h2 { font-size: clamp(28px, 2.6vw, 38px) !important; line-height: 1.22 !important; margin: 0 !important; }
+html body #public-site#public-site #workshops-reference #restoration-skills .h2::after { content: "" !important; display: block !important; width: 42px !important; height: 2px !important; background: #D41445 !important; margin: 30px 0 34px !important; }
+html body #public-site#public-site #workshops-reference #restoration-skills .prose::after { content: none !important; display: none !important; }
+html body #public-site#public-site #workshops-reference #restoration-skills .prose p { font-size: 15px !important; line-height: 1.75 !important; margin: 0 0 18px !important; }
+@media (max-width: 860px) {
+  html body #public-site#public-site #workshops-reference #restoration-skills > section.split { grid-template-columns: 62fr 38fr !important; grid-template-areas: "text text" "big small"; row-gap: 32px !important; }
+  html body #public-site#public-site #workshops-reference #restoration-skills .split-text { max-width: none !important; }
+}
+
+html body #public-site#public-site #craft-reference figure.craft-hero-photo.craft-hero-full .photo-frame { aspect-ratio: auto !important; height: auto !important; }
+html body #public-site#public-site #craft-reference figure.craft-hero-photo.craft-hero-full .photo-frame::after { display: none !important; }
+html body #public-site#public-site #theatre-reference figure.theatre-split-art { position: absolute !important; top: 0; right: 0; bottom: 0; left: auto !important; width: auto !important; height: 100% !important; max-width: none !important; }
+html body #public-site#public-site #theatre-reference figure.theatre-split-art .photo-frame { height: 100% !important; width: auto !important; aspect-ratio: auto !important; }
+html body #public-site#public-site #theatre-reference figure.theatre-split-art::before { display: none !important; }
+@media (max-width: 860px) {
+  html body #public-site#public-site #theatre-reference figure.theatre-split-art { position: relative !important; height: auto !important; width: 100% !important; }
+  html body #public-site#public-site #theatre-reference figure.theatre-split-art .photo-frame { height: auto !important; width: 100% !important; }
+}
+html body #public-site#public-site #craft-reference figure.craft-hero-photo.craft-hero-full:not([style*="--ed-h"]) { height: auto !important; min-height: 0 !important; max-height: none !important; width: 100% !important; }
+html body #public-site#public-site #craft-reference .craft-hero-frame { height: auto !important; min-height: 0 !important; }
+
+/* Vertical divider ("pipe") in Craft's Ambition box uses the site's red accent */
+html body #public-site#public-site #craft-reference .aside-statement { border-left: 2px solid #D41445 !important; }
+
+/* Phones/tablets: brand lines up with the box edge on every page */
+@media (max-width: 960px) {
+  html body #public-site#public-site.site #site-header .header-inner { padding-left: max(24px, 3.5%) !important; padding-right: max(24px, 3.5%) !important; }
+}
+
+/* Footer: taller, with a hairline between the email row and the copyright row */
+html body #public-site#public-site #site-footer.usp-footer { padding-top: 84px !important; padding-bottom: 52px !important; }
+#public-site .usp-footer-meta { position: relative; margin-top: 70px !important; }
+#public-site .usp-footer-meta::before { content: ""; position: absolute; top: -34px; left: -28px; right: -28px; height: 1px; background: linear-gradient(to right, rgba(118,113,107,.55), rgba(212,20,69,.55)); }
+@media (max-width: 760px) { #public-site .usp-footer-meta::before { left: 0; right: 0; } }
+
+/* ===== Field Notes page (editorial layout) ===== */
+html body #public-site#public-site [data-testid="page-field-notes"] .ps-plain-hero { background: transparent !important; margin-top: 0 !important; }
+html body #public-site#public-site [data-testid="page-field-notes"] .ps-plain-inner {
+  display: grid !important; grid-template-columns: 1fr minmax(0, 330px); align-items: center; gap: 2rem;
+  padding: 44px 0 34px !important; max-width: none !important; border-bottom: 1px solid #e3dfdb; background: transparent !important;
+}
+html body #public-site#public-site [data-testid="page-field-notes"] .ps-plain-inner .h1 { font: 400 clamp(34px, 3.2vw, 46px)/1.1 var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif) !important; text-transform: none !important; letter-spacing: -.01em !important; margin: 0 !important; color: #1f1d1b !important; }
+html body #public-site#public-site [data-testid="page-field-notes"] .ps-plain-tagline { font: 300 15px/1.65 var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif) !important; color: #55514c !important; margin: 0 !important; max-width: none !important; }
+#public-site .fn-section { width: var(--box-w); margin: 0 0 0 calc(50% - var(--box-w) / 2); box-sizing: border-box; padding: 0 0 120px; }
+#public-site .fn-list { --fw: var(--box-w); }
+#public-site .fn-open { all: unset; cursor: pointer; display: inline; }
+#public-site .fn-open:hover, #public-site .fn-open:focus-visible { color: #a3234a; }
+#public-site .fn-pic-btn { all: unset; display: block; cursor: pointer; overflow: hidden; }
+#public-site .fn-pic-btn:focus-visible, #public-site .fn-strip-item:focus-visible, #public-site .fn-open:focus-visible { outline: 2px solid #a3234a; outline-offset: 4px; }
+#public-site .fn-list :is(figure, .photo-frame) { margin: 0 !important; height: 100%; aspect-ratio: auto !important; }
+#public-site .fn-list img { display: block; width: 100% !important; height: 100% !important; object-fit: cover !important; transition: transform .6s ease; }
+#public-site .fn-pic-btn:hover img, #public-site .fn-strip-item:hover img { transform: scale(1.03); }
+#public-site .fn-blank { background: #eeeae7; width: 100%; height: 100%; }
+#public-site .fn-eyebrow { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: #a3234a; margin: 0 0 10px; }
+#public-site .fn-featured { padding-top: 26px; }
+#public-site .fn-featured-head { display: grid; grid-template-columns: 1fr minmax(0, 340px); gap: 2rem; align-items: center; margin-bottom: 22px; }
+#public-site .fn-featured-title { font: 400 clamp(24px, 2.3vw, 30px)/1.2 var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif) !important; color: #1f1d1b !important; margin: 0 !important; text-transform: none !important; letter-spacing: 0 !important; }
+#public-site .fn-summary { font: 300 15px/1.6 var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif); color: #55514c; margin: 0; max-width: 420px; }
+#public-site .fn-strip { display: flex; gap: 8px; height: calc(var(--fw) * .198); }
+#public-site .fn-strip-item { all: unset; cursor: pointer; overflow: hidden; flex: 1 1 0; min-width: 0; }
+#public-site .fn-strip-item:nth-child(1) { flex-grow: .97; } #public-site .fn-strip-item:nth-child(2) { flex-grow: 1.02; } #public-site .fn-strip-item:nth-child(3) { flex-grow: .9; } #public-site .fn-strip-item:nth-child(4) { flex-grow: .93; } #public-site .fn-strip-item:nth-child(5) { flex-grow: 1.04; }
+#public-site .fn-caption { font-size: 12px; color: #76716b; margin: 14px 0 0; }
+#public-site .fn-group { margin-top: calc(var(--fw) * .072); }
+#public-site .fn-pair { display: grid; grid-template-columns: 44fr 51fr; column-gap: 5%; align-items: start; }
+#public-site .fn-title { font: 400 clamp(20px, 1.9vw, 24px)/1.25 var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif) !important; color: #1f1d1b !important; margin: 20px 0 12px !important; text-transform: none !important; letter-spacing: 0 !important; }
+#public-site .fn-a-media { display: flex; align-items: center; gap: 10px; }
+#public-site .fn-a-main { flex: 0 0 68%; aspect-ratio: 3 / 4; }
+#public-site .fn-a-second { flex: 0 0 30.5%; aspect-ratio: 3 / 4; }
+#public-site .fn-a .fn-summary { max-width: 350px; }
+#public-site .fn-b { margin-top: calc(var(--fw) * .058); }
+#public-site .fn-b > .fn-pic-btn { aspect-ratio: 1.42; }
+#public-site .fn-b-foot { display: grid; grid-template-columns: 1fr 27.5%; gap: 2rem; align-items: start; margin-top: 18px; }
+#public-site .fn-b-foot .fn-title { margin-top: 0 !important; }
+#public-site .fn-b-second { aspect-ratio: 3 / 4; }
+#public-site .fn-b .fn-summary { max-width: 340px; }
+#public-site .fn-c { display: grid; grid-template-columns: 62fr 33fr; column-gap: 5%; align-items: center; margin-top: calc(var(--fw) * .095); }
+#public-site .fn-c-main { aspect-ratio: 1.54; }
+#public-site .fn-c .fn-summary { max-width: 360px; }
+@media (max-width: 760px) {
+  html body #public-site#public-site [data-testid="page-field-notes"] .ps-plain-inner, #public-site .fn-featured-head { grid-template-columns: 1fr; gap: 14px; }
+  #public-site .fn-strip { height: auto; display: grid; grid-template-columns: repeat(2, 1fr); }
+  #public-site .fn-strip-item { aspect-ratio: 1; }
+  #public-site .fn-strip-item:first-child { grid-column: span 2; aspect-ratio: 4 / 3; }
+  #public-site .fn-pair, #public-site .fn-c { grid-template-columns: 1fr; }
+  #public-site .fn-b, #public-site .fn-c { margin-top: 56px; }
+  #public-site .fn-group { margin-top: 56px; }
+}
+html body #public-site#public-site .fn-list :is(figure, .photo, .photo-frame) { width: 100% !important; max-width: none !important; height: 100% !important; display: block !important; }
+html body #public-site#public-site .fn-list img { aspect-ratio: auto !important; max-width: none !important; min-width: 100% !important; }
+html body #public-site#public-site .fn-list .fn-card { margin-top: 0; }
+html body #public-site#public-site .fn-list .fn-b { margin-top: calc(var(--fw) * .058); }
+html body #public-site#public-site .fn-list .fn-c { margin-top: calc(var(--fw) * .095); }
+#public-site .fn-featured-head { grid-template-columns: 1fr 30%; }
+html body #public-site#public-site#public-site .fn-list img { object-fit: cover !important; }
+@media (max-width: 760px) { #public-site .fn-featured-head { grid-template-columns: 1fr; } }
+html body #public-site#public-site #site-footer.usp-footer { padding-top: 96px !important; padding-bottom: 62px !important; }
+#public-site .fn-a-second { flex-basis: calc(32% - 10px); }
+
+/* Body text is black everywhere (except text set on dark photos/buttons) */
+html body #public-site#public-site#public-site#public-site main :is(p, li, blockquote, .prose, .prose *, .lede, .fn-summary, .pcc-intro, .pcc-address, .ps-plain-tagline, .theatre-split-lead, .hero-tagline):not(.eyebrow):not(.fn-eyebrow):not(.fn-caption):not(.pcc-label):not(.field-error):not(.notice):not(.notice *):not(a) { color: #000 !important; }
+html body #public-site#public-site#public-site#public-site#public-site main :is(.craft-hero-copy, .craft-hero-copy *) { color: #fff !important; }
+.fn-dialog :is(.fn-body p, .fn-standfirst) { color: #000 !important; }
+/* Footer divider: plain thin grey line */
+#public-site .usp-footer-meta::before { background: #c9c5c0 !important; }
+
+/* Connect: beige box holding one white card (no separate hero) */
+html body #public-site#public-site#public-site main .ps-connect-page.ps-connect-page { width: var(--box-w) !important; margin: 5px 0 0 calc(50% - var(--box-w) / 2) !important; box-sizing: border-box; background: #eeeae7 !important; padding: clamp(24px, 5vw, 72px) 0 !important; }
+html body #public-site#public-site main .ps-connect-page .pcc-card { background: #fff; margin: 0 clamp(16px, 0.5%, 8px); padding: clamp(32px, 6.5vw, 88px) clamp(20px, 6.5vw, 88px) clamp(40px, 6vw, 96px); }
+html body #public-site#public-site main .ps-connect-page .pcc-hero { width: auto !important; margin: 0 !important; padding: 0 !important; background: transparent !important; display: block !important; }
+html body #public-site#public-site main .ps-connect-page .pcc-intro { border: 0 !important; padding: 0 !important; margin-top: 30px !important; max-width: 640px !important; font-size: 18px !important; }
+html body #public-site#public-site main .ps-connect-page .pcc-grid { width: auto !important; margin: 0 !important; padding: 64px 0 0 !important; }
+html body #public-site#public-site main .ps-connect-page .pcc-detail { margin-bottom: 64px; }
+@media (max-width: 760px) { html body #public-site#public-site main .ps-connect-page .pcc-card { margin: 0 12px; } }
+
+html body #public-site#public-site#public-site #craft-reference [data-sec][style*="--ed-h"] .craft-hero-full img { height: 100% !important; object-fit: cover !important; aspect-ratio: auto !important; }
+html body #public-site#public-site#public-site #craft-reference [data-sec][style*="--ed-h"] figure.craft-hero-photo.craft-hero-full { height: 100% !important; }
+html body #public-site#public-site#public-site #theatre-reference .theatre-split figure.theatre-split-art { width: 57% !important; }
+html body #public-site#public-site#public-site #theatre-reference .theatre-split figure.theatre-split-art .photo-frame { width: 100% !important; }
+html body #public-site#public-site#public-site #theatre-reference .theatre-split figure.theatre-split-art img { width: 100% !important; height: 100% !important; object-fit: cover !important; object-position: left center !important; }
+html body #public-site#public-site#public-site #craft-reference [data-sec][style*="--ed-h"] .craft-hero-frame { overflow: hidden !important; }
+html body #public-site#public-site#public-site #craft-reference [data-sec][style*="--ed-h"] :is(figure.craft-hero-photo.craft-hero-full, figure.craft-hero-photo.craft-hero-full .photo-frame) { position: absolute !important; inset: 0 !important; height: 100% !important; }
+@media (max-width: 860px) {
+  html body #public-site#public-site#public-site #theatre-reference .theatre-split figure.theatre-split-art { width: 100% !important; }
+  html body #public-site#public-site#public-site #theatre-reference .theatre-split figure.theatre-split-art img { height: auto !important; }
+}
+html body #public-site#public-site#public-site #craft-reference [data-sec][style*="--ed-h"] > section,
+html body #public-site#public-site#public-site #craft-reference [data-sec][style*="--ed-h"] .craft-reference-hero { display: flex !important; flex-direction: column !important; flex: 1 1 auto !important; min-height: 0 !important; height: auto !important; }
+html body #public-site#public-site#public-site #craft-reference [data-sec][style*="--ed-h"] .craft-hero-frame { flex: 1 1 auto !important; min-height: 240px !important; height: auto !important; }
+html body #public-site#public-site#public-site #craft-reference [data-sec][style*="--ed-h"] .craft-hero-intro { flex: 0 0 auto !important; }
+
+/* ===== Live editor: the hero wrapper IS the box, so its handles sit on the box and resizing works ===== */
+html body #public-site#public-site#public-site#public-site main :is(.hb.hb-hero, .hb.hb-contact_form) {
+  width: var(--box-w) !important; max-width: none !important; margin-left: auto !important; margin-right: auto !important;
+  box-sizing: border-box !important; align-self: center !important; justify-self: center !important;
+}
+html body #public-site#public-site#public-site#public-site main :is(.hb.hb-hero, .hb.hb-contact_form)[style*="--ed-w"] {
+  width: min(var(--ed-w), 100%) !important; margin-left: auto !important; margin-right: auto !important;
+}
+html body #public-site#public-site#public-site#public-site main :is(.hb.hb-hero, .hb.hb-contact_form) :is(.ps-plain-hero, .ps-hero, .hero-type, .theatre-split, .craft-hero-frame, .craft-hero-intro, .rak-hero, .hero-plain, .ps-connect-page) {
+  width: 100% !important; max-width: none !important; margin-left: 0 !important; margin-right: 0 !important;
+}
+html body #public-site#public-site#public-site#public-site main #theatre-reference .hb.hb-hero .theatre-split { --tw: var(--box-w); }
+html body #public-site#public-site#public-site#public-site main #theatre-reference .hb.hb-hero[style*="--ed-w"] .theatre-split { --tw: min(var(--ed-w), 1440px, 100cqw); }
+html body #public-site#public-site#public-site#public-site main :is(.hb.hb-hero, .hb.hb-contact_form)[style*="--ed-h"] { height: auto !important; min-height: var(--ed-h) !important; display: flex !important; flex-direction: column !important; }
+html body #public-site#public-site#public-site#public-site main :is(.hb.hb-hero, .hb.hb-contact_form)[style*="--ed-h"] > * { flex: 1 1 auto !important; }
+html body #public-site#public-site#public-site#public-site main :is(.hb.hb-hero, .hb.hb-contact_form)[style*="--ed-h"] :is(.ps-plain-hero, .ps-hero, .hero-type, .theatre-split, .rak-hero, .hero-plain, .ps-connect-page) { height: auto !important; min-height: 100% !important; flex: 1 1 auto !important; box-sizing: border-box !important; }
+html body #public-site#public-site#public-site#public-site main #theatre-reference .hb.hb-hero[style*="--ed-h"] .theatre-split { min-height: max(100%, calc(var(--tw) / 2.5)) !important; }
+html body #public-site#public-site#public-site#public-site main :is(.hb.hb-hero, .hb.hb-contact_form)[style*="--ed-h"] :is(.ps-plain-inner, .home-hero-inner) { min-height: 100%; }
+
+html body #public-site#public-site#public-site#public-site main :is(.hb.hb-hero, .hb.hb-contact_form)[style*="--ed-h"] :has(> :is(.ps-plain-hero, .ps-hero, .hero-type, .theatre-split, .rak-hero, .hero-plain, .ps-connect-page, .craft-reference-hero)),
+html body #public-site#public-site#public-site#public-site main :is(.hb.hb-hero, .hb.hb-contact_form)[style*="--ed-h"] :has(> * > :is(.ps-plain-hero, .ps-hero, .hero-type, .theatre-split, .rak-hero, .hero-plain, .ps-connect-page)) {
+  display: flex !important; flex-direction: column !important; flex: 1 1 auto !important; min-height: 0;
+}
+
+/* ===== Rakhigarhi hero: white, heading + two excavation photos (user mockup) ===== */
+html body #public-site#public-site#public-site #rakhigarhi-reference .rak-hero { background: transparent !important; padding: clamp(40px, 4vw, 64px) 0 0 !important; display: block !important; min-height: 0 !important; }
+html body #public-site#public-site#public-site #rakhigarhi-reference .rak-hero-copy { max-width: none !important; padding: 0 !important; margin: 0 !important; text-align: left !important; }
+html body #public-site#public-site#public-site #rakhigarhi-reference .rak-hero-copy .eyebrow { display: block !important; font-size: 11px !important; letter-spacing: .32em !important; text-transform: uppercase; color: #55514c !important; margin: 0 0 18px !important; }
+html body #public-site#public-site#public-site #rakhigarhi-reference .rak-hero-copy .eyebrow::after { content: none !important; display: none !important; }
+html body #public-site#public-site#public-site #rakhigarhi-reference .rak-hero-copy .h1 { font-size: clamp(30px, 3vw, 44px) !important; line-height: 1.22 !important; font-weight: 400 !important; letter-spacing: -.01em !important; text-transform: none !important; white-space: pre-line; margin: 0 !important; color: #1f1d1b !important; max-width: none !important; }
+#public-site .rak-hero-photos { display: grid; grid-template-columns: 51fr 32fr; column-gap: 7.5%; align-items: center; margin-top: clamp(28px, 3vw, 44px); }
+#public-site .rak-hero-ph-main .photo-frame img, #public-site .rak-hero-ph-main img { aspect-ratio: 3 / 4 !important; width: 100% !important; height: auto !important; object-fit: cover !important; }
+#public-site .rak-hero-ph-side img { aspect-ratio: 914 / 1280 !important; width: 100% !important; height: auto !important; object-fit: cover !important; }
+#public-site .rak-hero-ph :is(figure, .photo-frame) { margin: 0 !important; width: 100% !important; max-width: none !important; aspect-ratio: auto !important; height: auto !important; }
+#public-site .rak-hero-cap { font-size: 12px !important; color: #76716b !important; margin: 10px 0 0 !important; line-height: 1.4; }
+#public-site .rak-hero-ph-side { margin-top: -6%; }
+@media (max-width: 760px) {
+  #public-site .rak-hero-photos { grid-template-columns: 1fr; row-gap: 28px; }
+  #public-site .rak-hero-ph-side { margin: 0 0 0 30%; }
+}
+/* Text below the photos: white, thin rule above, red divider between the two columns */
+html body #public-site#public-site#public-site main #rakhigarhi-reference #archaeology { background: transparent !important; margin-top: clamp(28px, 3vw, 48px) !important; }
+html body #public-site#public-site#public-site main #rakhigarhi-reference #archaeology > section { border-top: 1px solid #e3dfdb !important; padding: clamp(28px, 2.5vw, 40px) 0 clamp(48px, 5vw, 80px) !important; background: transparent !important; }
+html body #public-site#public-site#public-site main #rakhigarhi-reference #archaeology .aside-statement { font-size: 15px !important; line-height: 1.75 !important; font-weight: 300 !important; }
+html body #public-site#public-site#public-site main #rakhigarhi-reference #archaeology .prose p { font-size: 15px !important; line-height: 1.75 !important; }
+#public-site .rak-hero-ph figcaption { font-size: 12px !important; color: #76716b !important; border: 0 !important; padding-left: 0 !important; margin-top: 10px !important; }
+#public-site .rak-hero-ph figcaption::before { display: none !important; }
