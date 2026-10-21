@@ -78,3 +78,6 @@ body.live-editing [role="dialog"] { z-index: 100100; }
 body.live-panning, body.live-panning .live-pan { cursor: grabbing !important; }
 body.live-panning .live-pan span { opacity: 0; }
 @media (max-width: 760px) { .live-panel { width: auto; } }
+.photo-caption-empty { display: none; }
+body.live-editing .photo-caption-empty { display: block; }
+body.live-editing .photo-caption-empty span:empty::before { content: "Add a caption"; opacity: .5; }

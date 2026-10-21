@@ -11,7 +11,7 @@ function Pending({ ref_, testid }) {
   );
 }
 
-export function Photo({ ref_, eager = false, sizes = "(min-width: 1024px) 58vw, 100vw", crop, cropMobile, framed, testid, small, className = "", ed }) {
+export function Photo({ ref_, eager = false, sizes = "(min-width: 1024px) 58vw, 100vw", crop, cropMobile, framed, testid, small, className = "", ed, captionSlot = false }) {
   const preview = usePreview();
   const [showOriginal, setShowOriginal] = useState(false);
   const m = ref_?.media;
@@ -80,7 +80,7 @@ export function Photo({ ref_, eager = false, sizes = "(min-width: 1024px) 58vw, 
           }}
         />
       </div>
-      {(caption || credit) && <figcaption data-testid={testid ? `${testid}-caption` : undefined}><span {...ed?.captionEd}>{caption}</span>{credit && <> — <span {...ed?.creditEd}>{credit}</span></>}</figcaption>}
+      {(caption || credit || (captionSlot && ed?.captionEd)) && <figcaption className={caption || credit ? undefined : "photo-caption-empty"} data-testid={testid ? `${testid}-caption` : undefined}><span {...ed?.captionEd}>{caption}</span>{credit && <> — <span {...ed?.creditEd}>{credit}</span></>}</figcaption>}
       {m.original && (
         <div className="photo-original">
           <button type="button" aria-pressed={showOriginal} onClick={() => setShowOriginal(!showOriginal)} data-testid={testid ? `${testid}-original-toggle` : "photo-original-toggle"}>

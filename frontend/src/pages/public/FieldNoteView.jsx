@@ -35,7 +35,7 @@ export function NoteArticle({ note, id, slug, published_at, updated_at, related 
             {updated_at && updated_at.slice(0, 10) !== (published_at || "").slice(0, 10) && <> · <SiteText name="note_updated" /> <time dateTime={updated_at}>{fmtDate(updated_at)}</time></>}
           </p>
         </header>
-        <div className="wrap"><Photo ref_={data.cover} eager sizes="(min-width: 1240px) 1100px, 100vw" ed={sx(s, "cover")} testid="note-cover" /></div>
+        <div className="wrap"><Photo ref_={data.cover} eager sizes="(min-width: 1240px) 1100px, 100vw" ed={sx(s, "cover")} testid="note-cover" captionSlot /></div>
         <div className="wrap section">
           <HtmlDiv className="prose" data-testid="note-body" {...sx(s, "body_html")} style={{ margin: "0 auto", ...sx(s, "body_html").style }} html={data.body_html} />
           <div className="prose" style={{ margin: "0 auto" }}>
