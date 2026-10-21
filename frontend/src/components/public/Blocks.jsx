@@ -178,10 +178,10 @@ function RelatedWork({ d, s, i, home }) {
           <article className={`work-card reveal d${k + 1}`} key={k} data-testid={`work-item-${k}`}>
             {!home && <Photo ref_={it.image} crop="4/5" sizes="(min-width: 860px) 24vw, 90vw" testid={`work-item-${k}-image`} ed={sx(s, `items.${k}.image`)} />}
             <div className="work-card-body">
-              <span className="work-num"><span className="wn-n" aria-hidden="true" data-site-style="display.work-number" data-testid={`work-item-${k}-number`}>{String(k + 1).padStart(2, "0")}</span><span className="wn-sep"> — </span><span className="wn-t" data-testid={`work-item-${k}-category`} {...sx(s, `items.${k}.title`)}>{it.title}</span></span>
+              <span className="work-num" data-testid={`work-item-${k}-number-row`} {...sx(s, `items.${k}.number`)}><span className="wn-n" data-testid={`work-item-${k}-number`}>{it.number || String(k + 1).padStart(2, "0")}</span></span><span className="wn-t" data-testid={`work-item-${k}-category`} {...sx(s, `items.${k}.title`)}>{it.title}</span>
               <h3 className="h3"><Link to={it.href || "#"} data-testid={`work-item-${k}-link`}><span data-testid={`work-item-${k}-title`} {...sx(s, `items.${k}.subtitle`)}>{home ? (it.subtitle || it.title).split(/(?<=\.)\s+/).map((line, n) => <span className="work-title-line" key={n}>{line}</span>) : it.subtitle || it.title}</span></Link></h3>
               <p data-testid={`work-item-${k}-description`} {...sx(s, `items.${k}.text`)}>{it.text}</p>
-              <Link to={it.href || "/our-work"} className="more-link more-link-icon" aria-label={`Explore ${it.title || ""}`.trim()} data-testid={`work-item-${k}-explore`}>{home && <span className="work-explore-label" data-testid={`work-item-${k}-explore-label`}>{`Explore ${it.title || ""}`.trim()}</span>}<ArrowRight size={18} aria-hidden="true" /></Link>
+              <Link to={it.href || "/our-work"} className="more-link more-link-icon" aria-label={`Explore ${it.title || ""}`.trim()} data-testid={`work-item-${k}-explore`}>{home && <span className="work-explore-label" data-testid={`work-item-${k}-explore-label`} {...sx(s, `items.${k}.link_label`)}>{it.link_label || `Explore ${it.title || ""}`.trim()}</span>}<ArrowRight size={18} aria-hidden="true" {...(home ? arrowEd(s, `items.${k}.link_label`) : {})} /></Link>
             </div>
           </article>
         ))}
