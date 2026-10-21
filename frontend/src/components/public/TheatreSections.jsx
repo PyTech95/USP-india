@@ -5,10 +5,10 @@ import { Photo } from "./Photo";
 
 const TheatreLink = ({ data, id, editable }) => {
   if (!data.link_href || !data.link_label) return null;
-  const content = <><span {...editable("link_label")}>{data.link_label}</span><ArrowRight size={20} aria-hidden="true" /></>;
+  const content = <><span data-edit-text>{data.link_label}</span><ArrowRight size={20} aria-hidden="true" /></>;
   return data.link_href.startsWith("/") || data.link_href.startsWith("#")
-    ? <Link to={data.link_href} className="theatre-link" data-testid={`${id}-link`}>{content}</Link>
-    : <a href={data.link_href} className="theatre-link" data-testid={`${id}-link`}>{content}</a>;
+    ? <Link to={data.link_href} className="theatre-link" data-testid={`${id}-link`} data-edit-group="action" {...editable("link_label")}>{content}</Link>
+    : <a href={data.link_href} className="theatre-link" data-testid={`${id}-link`} data-edit-group="action" {...editable("link_label")}>{content}</a>;
 };
 
 const TheatreHeading = ({ data, id, editable }) => <>

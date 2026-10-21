@@ -31,7 +31,7 @@ export const WorkRows = ({ data, id, editable }) => <section className="wrap sec
       <p className="ps-row-num"><span>{String(k + 1).padStart(2, "0")}</span><span data-testid={`work-row-${k}-category`} {...editable(`items.${k}.title`)}>{it.title}</span></p>
       <h3 className="ps-row-title" data-testid={`work-row-${k}-title`} {...editable(`items.${k}.subtitle`)}><Lines text={it.subtitle} /></h3>
       <p className="ps-row-text" data-testid={`work-row-${k}-text`} {...editable(`items.${k}.text`)}>{it.text}</p>
-      {it.link_label !== "" && <Link to={it.href || "/our-work"} className="ps-link" data-testid={`work-row-${k}-link`}><span {...editable(`items.${k}.link_label`)}>{it.link_label ?? "Explore"}</span><ArrowRight size={18} aria-hidden="true" /></Link>}
+      {it.link_label !== "" && <Link to={it.href || "/our-work"} className="ps-link" data-testid={`work-row-${k}-link`} data-edit-group="action" {...editable(`items.${k}.link_label`)}><span data-edit-text>{it.link_label ?? "Explore"}</span><ArrowRight size={18} aria-hidden="true" /></Link>}
     </div>
   </article>)}
 </section>;

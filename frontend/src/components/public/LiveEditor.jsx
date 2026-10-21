@@ -102,8 +102,6 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
   const [rect, setRect] = useState(null);
   const [device, setDevice] = useState("desktop");
   const [hist, setHist] = useState({ past: [], future: [] });
-  const [pos, setPos] = useState(null);
-  const [panelTop, setPanelTop] = useState(132);
   const [guides, setGuides] = useState([]);
   const fileRef = useRef(null);
   const inlineDraft = useRef(null);
@@ -132,7 +130,8 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
   const isText = !!field && !isLayout && !isImage;
   const selEl = on && sel ? findEl(sel) : null;
   const cstyle = selEl ? window.getComputedStyle(selEl) : null;
-  const padPH = (p) => (cstyle ? String(Math.round(parseFloat(cstyle[p]) || 0)) : "0");
+  const spacingEl = field === "_section" && sec?.data?.layout === "rakhigarhi-ambition-aligned" ? selEl?.querySelector(":scope > section") : selEl;
+  const padPH = (p) => spacingEl ? String(Math.round(parseFloat(window.getComputedStyle(spacingEl)[p]) || 0)) : "0";
 
   const commit = useCallback((nextSections, mark = true) => {
     // One drag (resize/move) = one undo step
@@ -223,18 +222,6 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
 
   const previewSrc = typeof window !== "undefined" ? `${window.location.pathname}?editor-preview=1` : "/";
 
-  // Keep the default panel clear of navigation on every page and viewport.
-  useEffect(() => {
-    if (!on) return undefined;
-    const header = document.querySelector(".site .header");
-    if (!header) return undefined;
-    const measure = () => setPanelTop(Math.ceil(header.getBoundingClientRect().height) + 12);
-    measure();
-    const observer = new ResizeObserver(measure);
-    observer.observe(header);
-    return () => observer.disconnect();
-  }, [on, pageKey]);
-
   // click to select
   useEffect(() => {
     if (!on || !ready || scope !== "page") return undefined;
@@ -274,7 +261,8 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
 
   // inline contentEditable for text fields
   useEffect(() => {
-    const el = findEl(sel);
+    const selected = findEl(sel);
+    const el = selected?.querySelector("[data-edit-text]") || selected;
     if (!on || scope !== "page" || !el || !isText) return undefined;
     el.contentEditable = "true";
     if (document.activeElement !== el) {
@@ -426,20 +414,6 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
     const up = () => { endDrag(); setGuides([]); window.removeEventListener("pointermove", mv); window.removeEventListener("pointerup", up); };
     window.addEventListener("pointermove", mv); window.addEventListener("pointerup", up);
   };
-  const dragPanel = (e) => {
-    if (e.target.closest("button")) return;
-    e.preventDefault();
-    const panel = e.currentTarget.closest(".live-panel");
-    const r = panel.getBoundingClientRect();
-    const off = { x: e.clientX - r.left, y: e.clientY - r.top };
-    const mv = (ev) => setPos({
-      left: Math.max(4, Math.min(window.innerWidth - 80, ev.clientX - off.x)),
-      top: Math.max(4, Math.min(window.innerHeight - 44, ev.clientY - off.y)),
-    });
-    const up = () => { window.removeEventListener("pointermove", mv); window.removeEventListener("pointerup", up); };
-    window.addEventListener("pointermove", mv); window.addEventListener("pointerup", up);
-  };
-
   // Drag the photo inside its frame (crop position). One drag = one undo step.
   const panDrag = (e) => {
     e.preventDefault(); e.stopPropagation();
@@ -525,9 +499,9 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
         </div>
       )}
 
-      <aside className="live-ui live-panel" style={{ "--live-panel-top": `${panelTop}px`, ...(pos ? { top: pos.top, left: pos.left, right: "auto" } : {}) }} data-testid="live-editor-panel" data-live-panel-ready="true">
+      <aside className="live-ui live-panel" data-testid="live-editor-panel" data-live-panel-ready="true">
         <div className="live-row live-top">
-          <strong className="live-drag" onPointerDown={dragPanel} title="Drag to move" data-testid="live-panel-drag"><GripVertical size={14} /> Live editor</strong>
+          <strong data-testid="live-panel-title">Live editor</strong>
           <button type="button" className="live-btn" disabled={!hist.past.length} onClick={undo} title="Undo (Ctrl/⌘+Z)" data-testid="live-undo"><Undo2 size={14} /></button>
           <button type="button" className="live-btn" disabled={!hist.future.length} onClick={redo} title="Redo (Ctrl/⌘+Shift+Z)" data-testid="live-redo"><Redo2 size={14} /></button>
           <button type="button" className="live-btn live-primary" disabled={busy || !dirty} onClick={save} title="Save and publish (Ctrl/⌘+S)" data-testid="live-save-btn"><Save size={14} /> {busy ? "Saving…" : "Save"}</button>
@@ -624,7 +598,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
                 <p className="live-hint live-hint-small">{isText ? "Tip: drag the grip or red handles on the page." : "Tip: drag the grip or red handles on the page, or use the arrow keys (Shift = 10px)."}</p>
                 <div className="live-row">
                   <label className="live-field">Width (px)<input type="number" value={px(st.width)} placeholder="auto" onChange={(e) => setStyles({ width: e.target.value ? `${e.target.value}px` : "" })} data-testid="live-width" /></label>
-                  <label className="live-field">Height (px)<input type="number" value={px(st.height)} placeholder="auto" onChange={(e) => setStyles({ height: e.target.value ? `${e.target.value}px` : "" })} data-testid="live-height" /></label>
+                  <label className="live-field">{field === "_section" ? "Minimum height" : "Height"} (px)<input type="number" value={px(st.height)} placeholder="auto" onChange={(e) => setStyles({ height: e.target.value ? `${e.target.value}px` : "" })} data-testid="live-height" /></label>
                 </div>
                 <div className="live-row">
                   <label className="live-field">Move X (px)<input type="number" value={px(st.translateX)} placeholder="0" onChange={(e) => setStyles({ translateX: e.target.value ? `${e.target.value}px` : "" })} data-testid="live-move-x" /></label>

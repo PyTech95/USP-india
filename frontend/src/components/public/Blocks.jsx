@@ -49,8 +49,7 @@ export function layoutStyle(raw, field) {
   ["paddingTop", "paddingBottom", "paddingLeft", "paddingRight", "marginTop", "marginBottom", "marginLeft", "marginRight"].forEach((k) => { if (raw[k]) o[k] = raw[k]; });
   return o;
 }
-// Arrow next to a moved link label follows the label's saved offset.
-const arrowEd = (s, field) => { const t = layoutStyle(s?.styles?.[field] || {}, field)["--ed-t"]; return t ? { style: { "--ed-t": t } } : {}; };
+// Button geometry belongs to the shared text-and-icon wrapper.
 export function sx(s, field) {
   const raw = { ...(s?.styles?.[field] || {}) };
   delete raw.fontFamily;
@@ -82,8 +81,8 @@ const Eyebrow = ({ text, ed }) => (text ? <p className="eyebrow" data-testid={`e
 const Paras = ({ text, className = "lede", testid, ed }) => (text ? <div className={className} data-testid={testid} {...ed}>{text.split(/\n\s*\n/).map((t, k) => <p key={k}>{t}</p>)}</div> : null);
 const H = ({ first, children, testid, ed }) => (first ? <h1 className="h1" data-testid={testid} {...ed}>{children}</h1> : <h2 className="h2" data-testid={testid} {...ed}>{children}</h2>);
 const Btn = ({ href, label, ghost, testid, ed }) =>
-  !label ? null : href?.startsWith("/") ? <Link to={href} className={`btn ${ghost ? "btn-ghost" : ""}`} data-testid={testid}><span {...ed}>{label}</span> <ArrowRight size={16} aria-hidden="true" /></Link>
-    : <a href={href} className={`btn ${ghost ? "btn-ghost" : ""}`} data-testid={testid}><span {...ed}>{label}</span></a>;
+  !label ? null : href?.startsWith("/") ? <Link to={href} className={`btn ${ghost ? "btn-ghost" : ""}`} data-testid={testid} data-edit-group="action" {...ed}><span data-edit-text>{label}</span> <ArrowRight size={16} aria-hidden="true" /></Link>
+    : <a href={href} className={`btn ${ghost ? "btn-ghost" : ""}`} data-testid={testid} data-edit-group="action" {...ed}><span data-edit-text>{label}</span></a>;
 
 const SectionHead = ({ first, heading, intro, testid, aside, s, columns = false }) => (
   <div className="sec-head">
@@ -181,7 +180,7 @@ function RelatedWork({ d, s, i, home }) {
               <span className="work-num" data-testid={`work-item-${k}-number-row`} {...sx(s, `items.${k}.number`)}><span className="wn-n" data-testid={`work-item-${k}-number`}>{it.number || String(k + 1).padStart(2, "0")}</span></span><span className="wn-t" data-testid={`work-item-${k}-category`} {...sx(s, `items.${k}.title`)}>{it.title}</span>
               <h3 className="h3"><Link to={it.href || "#"} data-testid={`work-item-${k}-link`}><span data-testid={`work-item-${k}-title`} {...sx(s, `items.${k}.subtitle`)}>{home ? (it.subtitle ?? it.title).split(/(?<=\.)\s+/).map((line, n) => <span className="work-title-line" key={n}>{line}</span>) : it.subtitle ?? it.title}</span></Link></h3>
               <p data-testid={`work-item-${k}-description`} {...sx(s, `items.${k}.text`)}>{it.text}</p>
-              {(!home || it.link_label !== "") && <Link to={it.href || "/our-work"} className="more-link more-link-icon" aria-label={`Explore ${it.title || ""}`.trim()} data-testid={`work-item-${k}-explore`}>{home && <span className="work-explore-label" data-testid={`work-item-${k}-explore-label`} {...sx(s, `items.${k}.link_label`)}>{it.link_label ?? `Explore ${it.title || ""}`.trim()}</span>}<ArrowRight size={18} aria-hidden="true" {...(home ? arrowEd(s, `items.${k}.link_label`) : {})} /></Link>}
+              {(!home || it.link_label !== "") && <Link to={it.href || "/our-work"} className="more-link more-link-icon" aria-label={`Explore ${it.title || ""}`.trim()} data-testid={`work-item-${k}-explore`} {...(home ? { ...sx(s, `items.${k}.link_label`), "data-edit-group": "action" } : {})}>{home && <span className="work-explore-label" data-edit-text data-testid={`work-item-${k}-explore-label`}>{it.link_label ?? `Explore ${it.title || ""}`.trim()}</span>}<ArrowRight size={18} aria-hidden="true" /></Link>}
             </div>
           </article>
         ))}
@@ -205,7 +204,7 @@ function NoteCards({ cards, id, s, notes = [] }) {
           {c.eyebrow && <p className="eyebrow" data-testid={`${id}-card-${k}-category`} {...sx(s, `cards.${k}.eyebrow`)}>{c.eyebrow}</p>}
           <h3 className="h3" data-testid={`${id}-card-${k}-title`} {...sx(s, `cards.${k}.title`)}><Link to={hrefFor(c)} data-testid={`${id}-card-${k}-title-link`}>{c.title}</Link></h3>
           {c.text && <p data-testid={`${id}-card-${k}-description`} {...sx(s, `cards.${k}.text`)}>{c.text}</p>}
-          {c.link_label !== "" && <Link to={hrefFor(c)} className="more-link" data-testid={`${id}-card-${k}-link`}><span {...sx(s, `cards.${k}.link_label`)}>{c.link_label ?? "Read the Story"}</span> <ArrowRight size={14} aria-hidden="true" {...arrowEd(s, `cards.${k}.link_label`)} /></Link>}
+          {c.link_label !== "" && <Link to={hrefFor(c)} className="more-link" data-testid={`${id}-card-${k}-link`} data-edit-group="action" {...sx(s, `cards.${k}.link_label`)}><span data-edit-text>{c.link_label ?? "Read the Story"}</span> <ArrowRight size={14} aria-hidden="true" /></Link>}
         </article>
       ))}
     </div>
@@ -217,10 +216,15 @@ export function Block(props) {
   const t = props.s.type;
   const el = <BlockInner {...props} />;
   const secStyle = props.s?.styles?._section;
-  const style = secStyleOf(secStyle);
+  const style = secStyleOf(secStyle) || {};
+  if (d.layout === "rakhigarhi-ambition-aligned") {
+    for (const [property, variable] of [["paddingTop", "--section-pt"], ["paddingBottom", "--section-pb"]]) {
+      if (style[property] != null) { style[variable] = style[property]; delete style[property]; }
+    }
+  }
   const hasBg = !!secStyle?.backgroundColor;
   return <div id={d.anchor || undefined} className={`hb hb-${t} ${d.band ? "band" : ""} ${hasBg ? "hb-bg" : ""}`} data-block-type={t} data-sec={props.s.id} style={style} ref={(node) => {
-    applyProps(node, style || {}, [...LAYOUT_PROPS, "backgroundColor", "borderRadius"]);
+    applyProps(node, style || {}, [...LAYOUT_PROPS, "backgroundColor", "borderRadius", "--section-pt", "--section-pb"]);
     if (node) node.querySelectorAll(":scope > section, .hero-plain, .rak-hero, .workshops-hero, .craft-hero-intro, .about-hero").forEach((child) => {
       if (hasBg) child.style.setProperty("background-color", "transparent", "important");
       else child.style.removeProperty("background-color");
@@ -244,7 +248,7 @@ function TextBlock({ d, s, first, id }) {
     ? <AmbitionBody d={d} s={s} id={id} />
     : <Html html={d.body_html} testid={`${id}-body`} ed={sx(s, "body_html")} />;
   const body = d.link_label ? <div className="text-block-copy">{html}<div className="text-block-link">
-    {d.link_href ? <Btn href={d.link_href} label={d.link_label} testid={`${id}-link`} ed={sx(s, "link_label")} /> : <><button type="button" className="more-link" disabled aria-describedby={`${id}-link-status`} data-testid={`${id}-link-pending`}><span {...sx(s, "link_label")}>{d.link_label}</span> <ArrowRight size={16} aria-hidden="true" {...arrowEd(s, "link_label")} /></button><SiteText name="film_pending" id={`${id}-link-status`} className="link-pending-note" data-testid={`${id}-link-status`} /></>}
+    {d.link_href ? <Btn href={d.link_href} label={d.link_label} testid={`${id}-link`} ed={sx(s, "link_label")} /> : <><button type="button" className="more-link" disabled aria-describedby={`${id}-link-status`} data-testid={`${id}-link-pending`} data-edit-group="action" {...sx(s, "link_label")}><span data-edit-text>{d.link_label}</span> <ArrowRight size={16} aria-hidden="true" /></button><SiteText name="film_pending" id={`${id}-link-status`} className="link-pending-note" data-testid={`${id}-link-status`} /></>}
   </div></div> : html;
   if (d.style === "stacked")
     return (
@@ -354,9 +358,9 @@ function BlockInner({ s, first, i, home, pageKey }) {
     return (
       <section className="wrap section" data-testid={id}>
         <Eyebrow text={d.eyebrow} ed={sx(s, "eyebrow")} />
-        <SectionHead s={s} columns={home} testid={`${id}-heading`} first={first} heading={d.heading} intro={home ? d.intro?.replace(/(along the way\.)\s+/, "$1\n\n") : d.intro} aside={!home && <Link to={d.category ? `/field-notes?category=${encodeURIComponent(d.category)}` : "/field-notes"} className="more-link" data-testid={`${id}-all-notes`}><span {...sx(s, "all_notes_label")}>{d.all_notes_label ?? "All Field Notes"}</span> <ArrowUpRight size={16} aria-hidden="true" /></Link>} />
+        <SectionHead s={s} columns={home} testid={`${id}-heading`} first={first} heading={d.heading} intro={home ? d.intro?.replace(/(along the way\.)\s+/, "$1\n\n") : d.intro} aside={!home && <Link to={d.category ? `/field-notes?category=${encodeURIComponent(d.category)}` : "/field-notes"} className="more-link" data-testid={`${id}-all-notes`} data-edit-group="action" {...sx(s, "all_notes_label")}><span data-edit-text>{d.all_notes_label ?? "All Field Notes"}</span> <ArrowUpRight size={16} aria-hidden="true" /></Link>} />
         {d.cards?.length ? <NoteCards cards={d.cards} id={id} s={s} notes={s.notes || []} /> : <NoteList items={s.notes || []} />}
-        {d.more_label && <Link to={d.more_href || "/field-notes"} className="more-link notes-more" data-testid={`${id}-more`}><span {...sx(s, "more_label")}>{d.more_label}</span> <ArrowRight size={14} aria-hidden="true" {...arrowEd(s, "more_label")} /></Link>}
+        {d.more_label && <Link to={d.more_href || "/field-notes"} className="more-link notes-more" data-testid={`${id}-more`} data-edit-group="action" {...sx(s, "more_label")}><span data-edit-text>{d.more_label}</span> <ArrowRight size={14} aria-hidden="true" /></Link>}
       </section>
     );
   if (t === "download") {

@@ -66,7 +66,7 @@
 
 /* Ambition reference: oversized two-line title followed by three divided columns. */
 .site #rakhigarhi-reference #the-ambition { background: #f5efe8 !important; border: 0 !important; }
-.site #rakhigarhi-reference #the-ambition .stacked { display: block; padding-block: 150px 180px !important; }
+.site #rakhigarhi-reference #the-ambition .stacked { display: block; padding-block: var(--section-pt, 72px) var(--section-pb, 64px) !important; }
 .site #rakhigarhi-reference #the-ambition .eyebrow { font-size: 18px !important; font-weight: 500 !important; padding: 0; margin: 0 0 28px !important; }
 .site #rakhigarhi-reference #the-ambition .eyebrow::after { content: ""; display: block; position: static; width: 80px; height: 4px; background: var(--rak-ruby); margin-top: 28px; }
 .site #rakhigarhi-reference #the-ambition .h2 { font-size: 80px !important; line-height: 1.1 !important; margin: 0 0 72px !important; }
@@ -85,7 +85,7 @@
   .site #rakhigarhi-reference #archaeology .stacked > div { padding-right: 36px; }
   .site #rakhigarhi-reference #archaeology .aside-statement { padding-left: 36px; }
   .site #rakhigarhi-reference #haveli-chaupal .h2 { font-size: 28px !important; }
-  .site #rakhigarhi-reference #the-ambition .stacked { padding-block: 100px !important; }
+  .site #rakhigarhi-reference #the-ambition .stacked { padding-block: var(--section-pt, 56px) var(--section-pb, 48px) !important; }
   .site #rakhigarhi-reference #the-ambition .h2 { font-size: 60px !important; }
   .site #rakhigarhi-reference #the-ambition .prose > p { font-size: 20px !important; padding-right: 28px; }
   .site #rakhigarhi-reference #the-ambition .prose > p + p { padding-left: 28px; }
@@ -124,7 +124,7 @@
   .site #rakhigarhi-reference .rak-use-grid { padding: 16px 24px 44px; }
   .site #rakhigarhi-reference #active-use-summary .stacked { padding-block: 40px !important; }
   .site #rakhigarhi-reference #active-use-summary .prose p { font-size: 22px !important; }
-  .site #rakhigarhi-reference #the-ambition .stacked { padding-block: 64px !important; }
+  .site #rakhigarhi-reference #the-ambition .stacked { padding-block: var(--section-pt, 40px) var(--section-pb, 40px) !important; }
   .site #rakhigarhi-reference #the-ambition .h2 { font-size: 40px !important; margin-bottom: 40px !important; }
   .site #rakhigarhi-reference #the-ambition .eyebrow { font-size: 14px !important; }
   .site #rakhigarhi-reference #the-ambition .prose > p { font-size: 18px !important; }
@@ -176,3 +176,6 @@ html body #public-site #rakhigarhi-reference #the-ambition .ambition-text > p:la
   html body #public-site #rakhigarhi-reference #the-ambition .ambition-right { padding: 28px 0 0; border-top: 1px solid #ddd6cf; }
   html body #public-site #rakhigarhi-reference #the-ambition .ambition-divider { display: none; }
 }
+
+/* Saved section widths stay centred; default width matches the footer box. */
+html body #public-site#public-site main #rakhigarhi-reference #the-ambition[style*="--ed-w"] { width: min(var(--ed-w), var(--box-w)) !important; max-width: var(--box-w) !important; margin-inline: auto !important; }

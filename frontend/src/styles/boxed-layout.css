@@ -236,7 +236,8 @@ html body #public-site#public-site #rakhigarhi-reference #haveli-chaupal .eyebro
   background: #D41445 !important; margin: 28px 0 0 !important; position: static !important;
 }
 /* Coloured boxes grow with their text instead of clipping it */
-html body #public-site#public-site main :is(.hb.band, .hb.hb-bg, #archaeology, #active-use-summary, #the-ambition, #restoration-skills) { height: auto !important; min-height: 0 !important; }
+html body #public-site#public-site main :is(.hb.band, .hb.hb-bg, #archaeology, #active-use-summary, #the-ambition, #restoration-skills):not([style*="--ed-h"]) { height: auto !important; min-height: 0 !important; }
+html body #public-site#public-site main :is(.hb.band, .hb.hb-bg, #archaeology, #active-use-summary, #the-ambition, #restoration-skills)[style*="--ed-h"] { height: auto !important; min-height: var(--ed-h) !important; }
 html body #public-site#public-site #workshops-reference #student-projects > section { border-top: 0 !important; }
 
 /* Navigation bar colour: one colour on every page */

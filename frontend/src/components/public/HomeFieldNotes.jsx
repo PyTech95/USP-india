@@ -56,8 +56,8 @@ export function HomeFieldNotes({ s, id, ed }) {
 
       {d.more_label && (
         <div className="hfn-more">
-          <Link to={d.more_href || "/field-notes"} className="hfn-more-link" data-testid={`${id}-more`}>
-            <span {...ed("more_label")}>{d.more_label}</span>
+          <Link to={d.more_href || "/field-notes"} className="hfn-more-link" data-testid={`${id}-more`} data-edit-group="action" {...ed("more_label")}>
+            <span data-edit-text data-testid={`${id}-more-label`}>{d.more_label}</span>
             <ArrowRight size={20} strokeWidth={1.5} aria-hidden="true" />
           </Link>
         </div>

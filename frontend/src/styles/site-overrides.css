@@ -79,3 +79,22 @@ html body #public-site#public-site .page-home :is(.hb.hb-hero, .hb.hb-text.band)
   html body #public-site#public-site.site #site-header { box-shadow: none !important; border-bottom: 0 !important; }
   html body #public-site#public-site.site #site-header .header-inner { box-shadow: 0 1px 0 rgba(0,0,0,.06) !important; }
 }
+
+
+/* One editable action owns both its label and its icon, including saved offsets. */
+html body #public-site#public-site [data-edit-group="action"] { display: inline-flex !important; align-items: center !important; flex-direction: row !important; flex-wrap: nowrap !important; min-width: max-content; }
+html body #public-site#public-site [data-edit-group="action"] > [data-edit-text] { flex: 0 0 auto; }
+html body #public-site#public-site [data-edit-group="action"] > svg { flex: 0 0 auto; }
+html body #public-site#public-site [data-edit-group="action"][style*="--ed-t"] { transform: var(--ed-t) !important; }
+
+/* Inspector stays above selection/crop overlays and never drifts below the viewport. */
+body .live-panel { top: 12px !important; bottom: auto !important; max-height: calc(100dvh - 24px) !important; z-index: 100058 !important; }
+body .live-panel .live-top { position: sticky; top: -14px; z-index: 4; background: #fff; padding-top: 10px; }
+@media (max-width: 760px) {
+  body .live-panel { height: auto; max-height: 48dvh !important; }
+}
+
+
+body.live-editing .live-add-menu { z-index: 100070; }
+body.live-editing [data-slot="dialog-overlay"] { z-index: 100079; }
+body.live-editing [role="dialog"] { z-index: 100080; }
