@@ -18,7 +18,7 @@ async def public_caption(b, w, path=NOTE):
     txt = (await pg.locator(CAP).first.inner_text()) if n else None
     vis = (await pg.locator(CAP).first.is_visible()) if n else False
     shot = f"/tmp/cap_{w}_{path.split('/')[-1]}.jpeg"
-    if n: await pg.locator(CAP).first.scroll_into_view_if_needed()
+    if n and vis: await pg.locator(CAP).first.scroll_into_view_if_needed()
     await pg.screenshot(path=shot, quality=40)
     await ctx.close()
     return n, txt, vis

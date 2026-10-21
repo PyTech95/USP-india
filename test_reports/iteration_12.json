@@ -1,0 +1,27 @@
+{
+  "summary": "Iteration 12: tested 3 features. (1) Note cover caption on /field-notes/what-the-haveli-reveals: when I started, the caption was EMPTY in the DB. The main agent's own note_caption_check.py had crashed partway through at 13:16 and left it empty. I re-added 'Views from the restoration in progress' in the live editor. Then the full caption check passed: caption shows publicly at 1440 and 390, it can be clicked and edited in the editor, saving works, emptying it hides it from visitors, the 'Add a caption' placeholder appears only while editing, and re-adding works. (2) Red lines: an audit script found every red ::before/::after line and red border on /, /about, /our-work/rakhigarhi, /our-work/theatre, /our-work/craft-livelihood, /our-work/workshops-learning, /connect, /field-notes and a note page, at 1920, 1280 and 390. All 0 bad: horizontal lines are 42x2px with a 30px gap (margin-top for lines below text, margin-bottom for lines above), and vertical lines (absolute ::after and craft's border-left) are 2px. (3) Live editor Edit Header > Style & spacing has the 'Red lines (whole site)' group with the 3 inputs. Setting 80/4/50 updated lines live (eyebrow, the hero line above text, vertical line 4px). Saving through PUT /api/admin/header-live returned 200, and the values showed in a fresh anonymous browser on rakhigarhi and workshops. Clearing the values and saving brought back 42/2/30 (header_styles is {} again). (4) Rakhigarhi #the-ambition: 2 columns at 1920, 1280 and 768. p1 and p2 are stacked on the left, p3 is on the right at the same top with a 1px rgb(221,214,207) border-left running the full height. At 390 it is a single column with a light border-top on p3 and no horizontal scroll. Backend pytest: 37/37 passed, including a new test file for site-styles validation (range limits, units, injection, clearing, auth).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": ["/app/backend/tests/test_accent_lines.py", "/app/backend/tests/test_smoke_cms.py", "/app/tests/note_caption_check.py", "/app/tests/red_lines_audit.py", "/app/tests/accent_lines_editor_check.py", "/app/tests/rak_ambition_layout_check.py", "/app/tests/caption_editor_probe.py", "/app/tests/caption_loggedin_probe.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "No product bugs found.",
+    "Main agent's note_caption_check.py had a test bug: it scrolled to the empty figcaption while it was display:none, which timed out and left the client caption EMPTY in the DB. Fixed (it now scrolls only when the caption is visible), and the caption is restored.",
+    "note_caption_check.py's last check, 'no empty placeholder outside editor', fails because the test is wrong, not the app: the live editor stays open across navigation (sessionStorage usp-live-edit), so body.live-editing is still set. A logged-in admin who has not opened the editor correctly sees display:none."
+  ],
+  "critical_code_review_comments": [
+    "accent-lines.css lists `.page-home [data-testid=\"block-0\"] .lede` and `.page-home #our-work .sec-head .h2`, but these match nothing (the home page has no red lines). Same for `.theatre-split-intro` and `.theatre-intro-heading`, which are not in the current content. These rules are dead but harmless; remove them or confirm the home page should have red lines.",
+    "Vertical lines in absolute ::after (about, rakhigarhi aside, workshops prose) pick up --accent-line through width, so the thickness setting works for them. Craft uses border-left-width. Both are covered."
+  ],
+  "updated_files": ["/app/tests/note_caption_check.py (scroll only when visible)", "/app/backend/tests/test_accent_lines.py (new)", "/app/tests/red_lines_audit.py (new)", "/app/tests/accent_lines_editor_check.py (new)", "/app/tests/rak_ambition_layout_check.py (new)", "/app/tests/caption_editor_probe.py (new)", "/app/tests/caption_loggedin_probe.py (new)"],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "test_credentials": "admin@uspindia.org / M-8iH7yaR-980GZW (from /app/memory/test_credentials.md)",
+  "seed_data_creation": "None. Note caption restored to 'Views from the restoration in progress'; header_styles back to {}.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Real page paths are /our-work/theatre, /our-work/craft-livelihood and /our-work/workshops-learning (/theatre etc. give 404). Run playwright tests with /usr/local/bin/python3. Run backup_restore_content.py and pytest with python3 (venv). My /tmp/content_backup.json was taken while the caption was empty, so do NOT restore from it blindly: a diff on the notes doc 6ad71ee... is expected and is only the caption. Accent lines: red_lines_audit.py <width> [w h gap] checks every red line. accent_lines_editor_check.py sets 80/4/50, saves, checks public pages, then resets.",
+  "rca of the issue": "The empty caption at the start was caused by the test, not the app. note_caption_check.py set the caption to '' and saved. In public_caption() it then called scroll_into_view_if_needed() on the figcaption with class photo-caption-empty, which is display:none for visitors. That timed out after 30s and the script stopped before the re-add step, so the client caption stayed empty. Fix: scroll only when the caption is visible (applied)."
+}
