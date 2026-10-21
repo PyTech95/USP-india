@@ -9,6 +9,7 @@ export const setPath = (obj, path, value) => {
   current[keys[keys.length - 1]] = value;
   return root;
 };
+export const isLayoutField = (field) => field === "_section" || field === "_contact_card";
 export const isImageField = (field) => /(^|\.)(image|cover|poster)$|^collage\.\d+$/.test(field || "");
 const SKIP = new Set(["media", "original", "edit_note", "notes", "media_id", "anchor", "layout", "style", "styles", "image_side", "slot", "crop", "cropMobile", "size", "placeholder_label", "id", "slug", "seo", "related", "tags"]);
 export function editableFields(data, prefix = "") {

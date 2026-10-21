@@ -82,7 +82,7 @@ const Eyebrow = ({ text, ed }) => (text ? <p className="eyebrow" data-testid={`e
 const Paras = ({ text, className = "lede", testid, ed }) => (text ? <div className={className} data-testid={testid} {...ed}>{text.split(/\n\s*\n/).map((t, k) => <p key={k}>{t}</p>)}</div> : null);
 const H = ({ first, children, testid, ed }) => (first ? <h1 className="h1" data-testid={testid} {...ed}>{children}</h1> : <h2 className="h2" data-testid={testid} {...ed}>{children}</h2>);
 const Btn = ({ href, label, ghost, testid, ed }) =>
-  href?.startsWith("/") ? <Link to={href} className={`btn ${ghost ? "btn-ghost" : ""}`} data-testid={testid}><span {...ed}>{label}</span> <ArrowRight size={16} aria-hidden="true" /></Link>
+  !label ? null : href?.startsWith("/") ? <Link to={href} className={`btn ${ghost ? "btn-ghost" : ""}`} data-testid={testid}><span {...ed}>{label}</span> <ArrowRight size={16} aria-hidden="true" /></Link>
     : <a href={href} className={`btn ${ghost ? "btn-ghost" : ""}`} data-testid={testid}><span {...ed}>{label}</span></a>;
 
 const SectionHead = ({ first, heading, intro, testid, aside, s, columns = false }) => (
@@ -179,9 +179,9 @@ function RelatedWork({ d, s, i, home }) {
             {!home && <Photo ref_={it.image} crop="4/5" sizes="(min-width: 860px) 24vw, 90vw" testid={`work-item-${k}-image`} ed={sx(s, `items.${k}.image`)} />}
             <div className="work-card-body">
               <span className="work-num" data-testid={`work-item-${k}-number-row`} {...sx(s, `items.${k}.number`)}><span className="wn-n" data-testid={`work-item-${k}-number`}>{it.number || String(k + 1).padStart(2, "0")}</span></span><span className="wn-t" data-testid={`work-item-${k}-category`} {...sx(s, `items.${k}.title`)}>{it.title}</span>
-              <h3 className="h3"><Link to={it.href || "#"} data-testid={`work-item-${k}-link`}><span data-testid={`work-item-${k}-title`} {...sx(s, `items.${k}.subtitle`)}>{home ? (it.subtitle || it.title).split(/(?<=\.)\s+/).map((line, n) => <span className="work-title-line" key={n}>{line}</span>) : it.subtitle || it.title}</span></Link></h3>
+              <h3 className="h3"><Link to={it.href || "#"} data-testid={`work-item-${k}-link`}><span data-testid={`work-item-${k}-title`} {...sx(s, `items.${k}.subtitle`)}>{home ? (it.subtitle ?? it.title).split(/(?<=\.)\s+/).map((line, n) => <span className="work-title-line" key={n}>{line}</span>) : it.subtitle ?? it.title}</span></Link></h3>
               <p data-testid={`work-item-${k}-description`} {...sx(s, `items.${k}.text`)}>{it.text}</p>
-              <Link to={it.href || "/our-work"} className="more-link more-link-icon" aria-label={`Explore ${it.title || ""}`.trim()} data-testid={`work-item-${k}-explore`}>{home && <span className="work-explore-label" data-testid={`work-item-${k}-explore-label`} {...sx(s, `items.${k}.link_label`)}>{it.link_label || `Explore ${it.title || ""}`.trim()}</span>}<ArrowRight size={18} aria-hidden="true" {...(home ? arrowEd(s, `items.${k}.link_label`) : {})} /></Link>
+              {(!home || it.link_label !== "") && <Link to={it.href || "/our-work"} className="more-link more-link-icon" aria-label={`Explore ${it.title || ""}`.trim()} data-testid={`work-item-${k}-explore`}>{home && <span className="work-explore-label" data-testid={`work-item-${k}-explore-label`} {...sx(s, `items.${k}.link_label`)}>{it.link_label ?? `Explore ${it.title || ""}`.trim()}</span>}<ArrowRight size={18} aria-hidden="true" {...(home ? arrowEd(s, `items.${k}.link_label`) : {})} /></Link>}
             </div>
           </article>
         ))}
@@ -205,7 +205,7 @@ function NoteCards({ cards, id, s, notes = [] }) {
           {c.eyebrow && <p className="eyebrow" data-testid={`${id}-card-${k}-category`} {...sx(s, `cards.${k}.eyebrow`)}>{c.eyebrow}</p>}
           <h3 className="h3" data-testid={`${id}-card-${k}-title`} {...sx(s, `cards.${k}.title`)}><Link to={hrefFor(c)} data-testid={`${id}-card-${k}-title-link`}>{c.title}</Link></h3>
           {c.text && <p data-testid={`${id}-card-${k}-description`} {...sx(s, `cards.${k}.text`)}>{c.text}</p>}
-          <Link to={hrefFor(c)} className="more-link" data-testid={`${id}-card-${k}-link`}><span {...sx(s, `cards.${k}.link_label`)}>{c.link_label ?? "Read the Story"}</span> <ArrowRight size={14} aria-hidden="true" {...arrowEd(s, `cards.${k}.link_label`)} /></Link>
+          {c.link_label !== "" && <Link to={hrefFor(c)} className="more-link" data-testid={`${id}-card-${k}-link`}><span {...sx(s, `cards.${k}.link_label`)}>{c.link_label ?? "Read the Story"}</span> <ArrowRight size={14} aria-hidden="true" {...arrowEd(s, `cards.${k}.link_label`)} /></Link>}
         </article>
       ))}
     </div>
@@ -299,7 +299,7 @@ function BlockInner({ s, first, i, home, pageKey }) {
         ) : (
           <Photo ref_={d.image} crop={d.crop} sizes="(min-width: 860px) 40vw, 100vw" testid={`${id}-image`} small={d.image?.size === "small"} className="reveal" ed={sx(s, "image")} />
         )}
-        <div className="split-text"><Eyebrow text={d.eyebrow} ed={sx(s, "eyebrow")} />{d.heading && <H first={first} testid={`${id}-heading`} ed={sx(s, "heading")}>{d.heading}</H>}<Html html={d.body_html} testid={`${id}-body`} ed={sx(s, "body_html")} /></div>
+        <div className="split-text" data-edit-region="text" data-testid={`${id}-text-region`}><Eyebrow text={d.eyebrow} ed={sx(s, "eyebrow")} />{d.heading && <H first={first} testid={`${id}-heading`} ed={sx(s, "heading")}>{d.heading}</H>}<Html html={d.body_html} testid={`${id}-body`} ed={sx(s, "body_html")} /></div>
       </section>
     );
   if (t === "image")
@@ -376,7 +376,7 @@ function BlockInner({ s, first, i, home, pageKey }) {
           <div className="invite-actions">
             {d.buttons?.filter((b) => b.label).length
               ? d.buttons.map((b, k) => b.label && <Btn key={k} href={b.href} label={b.label} ghost={k > 0} testid={`${id}-button-${k}`} ed={sx(s, `buttons.${k}.label`)} />)
-              : <Btn href={d.href || "/connect"} label={d.button_label || "Connect with Us"} testid={`${id}-button`} ed={sx(s, "button_label")} />}
+              : <Btn href={d.href || "/connect"} label={d.button_label ?? "Connect with Us"} testid={`${id}-button`} ed={sx(s, "button_label")} />}
           </div>
         </div>
       </section>

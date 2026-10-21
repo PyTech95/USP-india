@@ -79,7 +79,7 @@ export function ContactForm({ compact = false }) {
     const Tag = opts.textarea ? "textarea" : "input";
     return (
       <div className="form-field">
-        <label htmlFor={`f-${k}`}>{label}{opts.optional ? <span className="cf-optional">(optional)</span> : " *"}</label>
+        <label htmlFor={`f-${k}`}><SiteText name={`contact_${k}`} fallback={label} />{opts.optional ? <span className="cf-optional">(<SiteText name="optional" />)</span> : " *"}</label>
         <Tag id={`f-${k}`} type={opts.textarea ? undefined : opts.type || "text"} rows={opts.textarea ? 5 : undefined} placeholder={opts.placeholder} value={f[k]} onChange={set(k)} autoComplete={opts.auto} aria-invalid={!!errors[k]} aria-describedby={errors[k] ? `e-${k}` : undefined} data-testid={`contact-${k}`} />
         {errors[k] && <span id={`e-${k}`} className="field-error" data-testid={`contact-${k}-error`}>{errors[k]}</span>}
       </div>
@@ -96,7 +96,7 @@ export function ContactForm({ compact = false }) {
       {input("message", "Message", { textarea: true, placeholder: "Your message" })}
       {honeypot}
       <button type="submit" className="cf-submit" disabled={state.status === "sending"} data-testid="contact-submit">
-        <span>{state.status === "sending" ? "Sending…" : "Send message"}</span><ArrowUpRight size={14} aria-hidden="true" />
+        <span><SiteText name={state.status === "sending" ? "sending" : "send_message"} /></span><ArrowUpRight size={14} aria-hidden="true" />
       </button>
     </form>
   );

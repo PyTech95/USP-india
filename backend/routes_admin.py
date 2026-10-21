@@ -438,7 +438,7 @@ class SiteLivePatch(BaseModel):
 async def site_live_patch(body: SiteLivePatch, user=Depends(require("config"))):
     """Patch public copy only; never accept arbitrary settings or Mongo paths."""
     path = body.path
-    plain = {"brand_label", "site_name", "full_name", "tagline", "privacy_html", "logo_media_id", "contact.email", "contact.phone"}
+    plain = {"brand_label", "site_name", "full_name", "tagline", "privacy_html", "logo_media_id", "contact.email", "contact.phone", "contact.address"}
     menu = re.fullmatch(r"menus\.(main|footer)\.\d+(?:\.children\.\d+){0,2}\.label", path)
     ui = re.fullmatch(r"ui_text\.[a-z][a-z0-9_]{0,79}", path)
     social = re.fullmatch(r"social\.\d+\.label", path)

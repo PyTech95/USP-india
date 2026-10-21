@@ -39,7 +39,8 @@ html body #public-site#public-site main .pcc-hero {
 #public-site .pcc-kicker { margin: 34px 0 44px; }
 #public-site .pcc-detail { margin-bottom: 56px; }
 #public-site .pcc-email { font-size: clamp(22px, 2.2vw, 30px); font-weight: 300; color: #1f1d1b; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 6px; text-decoration-color: #b9b4ae; }
-#public-site .pcc-address { margin: 0; font-size: 20px; line-height: 1.65; font-weight: 300; color: #2b2926; }
+#public-site .pcc-address { margin: 0; font-size: 20px; line-height: 1.65; font-weight: 300; color: #2b2926; white-space: pre-line; }
+#public-site .pcc-phone { display: inline-block; font-size: 20px; line-height: 1.65; color: #2b2926; }
 #public-site .pcc-address .ps-line { display: block; }
 #public-site .cf-compact { max-width: 575px; }
 #public-site .cf-compact .cf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
@@ -369,7 +370,12 @@ html body #public-site#public-site#public-site#public-site#public-site main :is(
 
 /* Connect: beige box holding one white card (no separate hero) */
 html body #public-site#public-site#public-site main .ps-connect-page.ps-connect-page { width: var(--box-w) !important; margin: 5px 0 0 calc(50% - var(--box-w) / 2) !important; box-sizing: border-box; background: #eeeae7 !important; padding: clamp(24px, 5vw, 72px) 0 !important; }
-html body #public-site#public-site main .ps-connect-page .pcc-card { background: #fff; margin: 0 clamp(16px, 0.5%, 8px); padding: clamp(32px, 6.5vw, 88px) clamp(20px, 6.5vw, 88px) clamp(40px, 6vw, 96px); }
+html body #public-site#public-site main .ps-connect-page .pcc-card { background: #fff; margin: 0 clamp(16px, 0.5%, 8px); padding: clamp(32px, 6.5vw, 88px) clamp(20px, 6.5vw, 88px) clamp(40px, 6vw, 96px); box-sizing: border-box; }
+html body #public-site#public-site main .ps-connect-page .pcc-card[style*="--ed-w"] { width: min(var(--ed-w), calc(100% - 32px)) !important; max-width: calc(100% - 32px) !important; margin-inline: auto; }
+html body #public-site#public-site main .ps-connect-page .pcc-card[style*="--ed-h"] { overflow: auto !important; }
+@media (max-width: 960px) {
+  html body:not(.live-editing) #public-site#public-site main .ps-connect-page .pcc-card[style*="--ed-h"] { height: auto !important; overflow: visible !important; }
+}
 html body #public-site#public-site main .ps-connect-page .pcc-hero { width: auto !important; margin: 0 !important; padding: 0 !important; background: transparent !important; display: block !important; }
 html body #public-site#public-site main .ps-connect-page .pcc-intro { border: 0 !important; padding: 0 !important; margin-top: 30px !important; max-width: 640px !important; font-size: 18px !important; }
 html body #public-site#public-site main .ps-connect-page .pcc-grid { width: auto !important; margin: 0 !important; padding: 64px 0 0 !important; }

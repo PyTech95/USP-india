@@ -3,21 +3,22 @@ import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import {
   X, Save, Upload, Images, RotateCcw, AlignLeft, AlignCenter, AlignRight,
-  ArrowUp, ArrowDown, Copy, Trash2, Eye, EyeOff, Plus, Undo2, Redo2, Bold, Italic,
+  Plus, Undo2, Redo2, Bold, Italic,
   Monitor, Tablet, Smartphone, Type, Paintbrush, Square, LayoutGrid, GripVertical,
 } from "lucide-react";
 import { api, errMsg } from "../../lib/api";
 import { MediaPicker } from "../admin/Kit";
 import { useLiveEditor } from "./editor/LiveEditorProvider";
 import { FieldInspector } from "./editor/FieldInspector";
-import { isImageField } from "./editor/editorFields";
+import { isImageField, isLayoutField } from "./editor/editorFields";
+import { SelectionToolbar } from "./editor/SelectionToolbar";
 import { ColorField, px } from "./editor/ColorField";
 import { normalizeReferenceContent } from "./editor/referenceGeometry";
 import { CropControls, parsePos } from "./editor/CropControls";
 
 const LABELS = { eyebrow: "Small label", heading: "Heading", subheading: "Sub-heading", intro: "Intro text",
   body_html: "Body text", body_1_html: "Text box 1", body_2_html: "Text box 2", body_3_html: "Text box 3",
-  aside: "Side statement", text: "Text", image: "Image", _section: "Whole section" };
+  aside: "Side statement", text: "Text", image: "Image", _section: "Whole section", _contact_card: "White contact card" };
 function labelFor(field) {
   if (!field) return "";
   if (LABELS[field]) return LABELS[field];
@@ -127,7 +128,8 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
   const field = sel?.field;
   const st = (sec?.styles || {})[field] || {};
   const isImage = isImageField(field);
-  const isText = !!field && field !== "_section" && !isImage;
+  const isLayout = isLayoutField(field);
+  const isText = !!field && !isLayout && !isImage;
   const selEl = on && sel ? findEl(sel) : null;
   const cstyle = selEl ? window.getComputedStyle(selEl) : null;
   const padPH = (p) => (cstyle ? String(Math.round(parseFloat(cstyle[p]) || 0)) : "0");
@@ -182,7 +184,19 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
   const idx = (id) => sections.findIndex((s) => s.id === id);
   const move = (id, dir) => { const i = idx(id); const j = i + dir; if (j < 0 || j >= sections.length) return; const a = [...sections]; [a[i], a[j]] = [a[j], a[i]]; commit(a); };
   const dup = (id) => { const i = idx(id); const a = [...sections]; a.splice(i + 1, 0, { ...clone(a[i]), id: newId() }); commit(a); };
-  const remove = (id) => { commit(sections.filter((s) => s.id !== id)); if (sel?.sec === id) setSel(null); };
+  const remove = () => {
+    if (!sel) return;
+    if (field === "_section") {
+      if (!window.confirm("Delete this whole section, including its text and images?")) return;
+      inlineDraft.current = null;
+      commit(sections.filter((s) => s.id !== sel.sec));
+    } else {
+      inlineDraft.current = null;
+      patchSec(sel.sec, (s) => ({ ...s, data: setPath(s.data, field, isImage ? { media_id: "", caption: "", credit: "" } : "") }));
+    }
+    setSel(null);
+    remount();
+  };
   const toggleHide = (id) => patchSec(id, (s) => ({ ...s, hidden: !s.hidden }));
   const addSection = (type) => {
     const s = makeSection(type);
@@ -226,7 +240,18 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
     if (!on || !ready || scope !== "page") return undefined;
     const pick = (e) => {
       if (e.target.closest(".live-ui, [role=dialog], [data-site-edit], [data-live-navigate]") || !e.target.closest("main")) return null;
-      return { el: e.target.closest("[data-edit]"), secEl: e.target.closest("[data-sec]") };
+      let el = e.target.closest("[data-edit]");
+      if (!el) el = e.target.closest("a,button")?.querySelector("[data-edit]");
+      const region = !el && e.target.closest('[data-edit-region="text"]');
+      if (region) {
+        const distance = (node) => {
+          const r = node.getBoundingClientRect();
+          return Math.hypot(Math.max(r.left - e.clientX, 0, e.clientX - r.right), Math.max(r.top - e.clientY, 0, e.clientY - r.bottom));
+        };
+        el = [...region.querySelectorAll("[data-edit]")].filter((node) => node.getClientRects().length).sort((a, b) => distance(a) - distance(b))[0];
+        if (!el) return null;
+      }
+      return { el, secEl: e.target.closest("[data-sec]") };
     };
     // Select on pointerdown (before the old field blurs) so one click is always enough to switch fields.
     const down = (e) => {
@@ -492,14 +517,10 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
           <span className="live-handle live-h-se" onPointerDown={resize("se")} data-testid="live-resize-se" />
           <span className="live-handle live-h-sw" onPointerDown={resize("sw")} data-testid="live-resize-sw" />
           {sec && !noteId && (
-            <div className="live-sectools" data-testid="live-section-tools">
-              <button type="button" title="Move up" onClick={() => move(sec.id, -1)} data-testid="live-sec-up"><ArrowUp size={14} /></button>
-              <button type="button" title="Move down" onClick={() => move(sec.id, 1)} data-testid="live-sec-down"><ArrowDown size={14} /></button>
-              <button type="button" title="Duplicate" onClick={() => dup(sec.id)} data-testid="live-sec-duplicate"><Copy size={14} /></button>
-              <button type="button" title={sec.hidden ? "Show" : "Hide"} onClick={() => toggleHide(sec.id)} data-testid="live-sec-hide">{sec.hidden ? <EyeOff size={14} /> : <Eye size={14} />}</button>
-              <button type="button" title="Delete" onClick={() => remove(sec.id)} data-testid="live-sec-delete"><Trash2 size={14} /></button>
-              <button type="button" title="Add section below" onClick={() => setAddAt(idx(sec.id) + 1)} data-testid="live-sec-add-below"><Plus size={14} /></button>
-            </div>
+            <SelectionToolbar section={sec} wholeSection={field === "_section"} container={isLayout && field !== "_section"}
+              onMove={(direction) => field === "_section" ? move(sec.id, direction) : setStyles({ translateY: `${num(st.translateY) + direction * 10}px` })}
+              onDuplicate={() => dup(sec.id)} onHide={() => toggleHide(sec.id)} onDelete={remove}
+              onAdd={() => setAddAt(idx(sec.id) + 1)} onSelectSection={() => selectField({ sec: sec.id, field: "_section" })} />
           )}
         </div>
       )}
@@ -561,7 +582,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
                   return { ...s, styles: { ...(s.styles || {}), _section: f } };
                 })} />
               </Group>
-            ) : (<>
+            ) : isText ? (<>
               <p className="live-hint">Type directly on the page to change the words.</p>
               <Group title="Text style" open testid="live-group-text">
                 <div className="live-row">
@@ -596,9 +617,9 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
                 </div>
                 <label className="live-field">Corner radius (px)<input type="number" min="0" max="80" value={px(st.borderRadius)} placeholder="0" onChange={(e) => setStyles({ borderRadius: e.target.value ? `${e.target.value}px` : "" })} data-testid="live-font-radius" /></label>
               </Group>
-            </>)}
+            </>) : <p className="live-hint" data-testid="live-container-hint">Resize the white contact card using its handles or Size &amp; position below.</p>}
 
-            {(isImage || isText || field === "_section") && (
+            {(isImage || isText || isLayout) && (
               <Group title="Size & position" testid="live-group-layout">
                 <p className="live-hint live-hint-small">{isText ? "Tip: drag the grip or red handles on the page." : "Tip: drag the grip or red handles on the page, or use the arrow keys (Shift = 10px)."}</p>
                 <div className="live-row">

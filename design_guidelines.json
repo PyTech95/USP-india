@@ -1,41 +1,118 @@
 {
-  "project_type": "portfolio CMS - Rakhigarhi Ambition Layout Update",
-  "tech_stack": {
-    "framework": "React.js",
-    "styling": "Tailwind CSS + Plain CSS (/app/frontend/src/styles/rakhigarhi-reference.css)",
-    "file_type": ".js"
-  },
-  "summary_of_changes": "Implementation guidance for Rakhigarhi 'The Ambition' section: split body into 3 independently editable text boxes (2 on the left column, 1 on the right column), vertically center the right-hand text box, and set the vertical divider (pipe line) height to 70% vertically centered.",
-  "component_path": "/app/frontend/src/components/public/Blocks.jsx",
-  "stylesheet_path": "/app/frontend/src/styles/rakhigarhi-reference.css",
+  "project_name": "The Craft Centre - Portfolio CMS & Live Editor",
+  "archetype": "ARCHETYPE 1: ORGANIC & EARTHY (Trust, Growth, Craft, Editorial Calm)",
+  "context_type": "Portfolio CMS / Creative Editorial CMS",
+  "theme": "Light, warm paper & bone tones with high contrast dark charcoal text",
   "typography": {
-    "font_family": "Helvetica Neue, Helvetica, Arial, sans-serif",
-    "heading_h2": "font-weight: 300, font-size: 80px (60px on tablet, 40px on mobile), line-height: 1.1",
-    "eyebrow": "font-size: 18px, font-weight: 500, color: #6d7b72",
-    "body_text": "font-size: 25px (20px desktop small, 18px mobile), font-weight: 300, line-height: 1.5, color: #272e33"
+    "font_families": {
+      "headings": "Display Serif / Editorial Serif (e.g., Playfair Display or Garamond family)",
+      "body": "Clean Humanist Sans (e.g., Work Sans / Inter for body legibility)",
+      "mono": "JetBrains Mono / Source Code Pro for editor labels & metric controls"
+    },
+    "scale_hierarchy": {
+      "h1": "text-4xl sm:text-5xl lg:text-6xl tracking-tight leading-tight",
+      "h2": "text-2xl sm:text-3xl lg:text-4xl tracking-tight leading-snug",
+      "h3": "text-xl sm:text-2xl font-medium",
+      "h4": "text-lg sm:text-xl font-medium",
+      "body": "text-base leading-relaxed text-slate-800",
+      "eyebrow_labels": "text-xs uppercase tracking-[0.2em] font-semibold text-amber-900/80",
+      "editor_labels": "text-xs font-mono font-medium text-slate-600"
+    }
   },
   "colors": {
-    "background": "#f5efe8",
-    "ink": "#272e33",
-    "ruby_accent": "#b31944",
-    "divider_pipe": "#ddd6cf"
+    "base": {
+      "background": "#FDFBF7 (Warm Bone / Parchment White)",
+      "card_bg": "#FFFFFF (Pure White for interactive contact card and focal containers)",
+      "text_primary": "#1C1917 (Deep Obsidian / Dark Charcoal - never pure black)",
+      "text_muted": "#57534E (Warm Warm Stone Gray)"
+    },
+    "accents": {
+      "craft_terracotta": "#8C3A27",
+      "craft_ochre": "#C2822B",
+      "craft_sage": "#4A6B5D",
+      "editor_active_red": "#E11D48",
+      "editor_selection_border": "#2563EB"
+    },
+    "borders": {
+      "subtle_rule": "#E7E5E4 (1px warm border / section rule)",
+      "active_focus": "#000000"
+    }
   },
-  "layout_and_css_specifications": {
-    "grid_structure": "2-column grid layout on desktop (`grid-template-columns: minmax(0, 1fr) minmax(0, 1fr)`). Left column contains 2 stacked text boxes (`paragraph_1`, `paragraph_2`), right column contains 1 text box (`paragraph_3`).",
-    "vertical_centering": "The right column text box (`paragraph_3`) is vertically centered relative to the left column using `align-self: center` or `display: flex; align-items: center;`.",
-    "divider_70_percent_pipe": "Vertical divider pipe line height is set to 70% of the container height and vertically centered (`height: 70%`, `top: 15%`). CSS implementation detail:\nhtml body #public-site #rakhigarhi-reference #the-ambition .prose-col-right::before {\n  content: '';\n  position: absolute;\n  left: 0;\n  top: 15%;\n  height: 70%;\n  width: 1px;\n  background-color: #ddd6cf;\n}",
-    "mobile_responsive": "On screens <= 700px, collapse grid to 1 column. Vertical line changes to horizontal top border (`border-top: 1px solid #ddd6cf; padding-top: 28px; width: 100%;`)."
+  "visual_enhancers": {
+    "textures": "Subtle paper noise / organic grain overlay for tactile editorial depth",
+    "cards": "1px clean warm border, crisp rectangular edges, subtle ambient drop shadow (shadow-sm)",
+    "dividers": "Clean subtle horizontal rules with controlled margin and opacity; remove jarring or stray section lines on Theatre page",
+    "selection_overlay": "Interactive selection bounding box with 8-point resize handles and move grip without dark blanket background overlays"
+  },
+  "grids_and_layouts": {
+    "marketing_editorial": "Swiss Grid with asymmetric columns, split hero sections (50/50 or 60/40), high internal padding (p-8 to p-12)",
+    "contact_layout": "2-column split with site info / address on left and customizable white contact card on right",
+    "theatre_layout": "Stacked editorial sections, media narrative blocks, split text/photo hero"
+  },
+  "theatre_page_guidelines": {
+    "explore_past_productions": {
+      "action": "Remove the 'Explore past production' link_label and button from TheatreArchive and TheatreProduction components where required, while preserving the parent photo asset.",
+      "implementation": "Do not render TheatreLink when link_label is deleted or empty, and cleanly detach field selection from image selection so deleting text does not clear image state."
+    },
+    "section_dividers": {
+      "rule": "Audit all .theatre-split-rule and section bottom border rules. Standardize clean border-b lines with opacity-20 warm stone color, eliminating redundant or misplaced border rules."
+    },
+    "independent_movement": {
+      "rule": "Text nodes and Image nodes MUST have separate [data-edit] target attributes and independent CSS positioning (translateX, translateY) so dragging or moving text does NOT move the adjacent image or whole section container."
+    }
+  },
+  "contact_page_guidelines": {
+    "editable_fields": {
+      "address_and_phone": "Wrap contact address, phone numbers, and operational hours in editable SiteText or data-edit tags so admins can directly inline edit them via LiveEditor or FieldInspector."
+    },
+    "white_card_container": {
+      "editable_properties": "The white contact card form container must expose data-edit='_section' or data-edit='card_container' allowing live width, height, padding, margin, background color, and corner radius adjustments in the LiveEditor control panel.",
+      "data_testids": ["contact-form-card", "contact-address", "contact-phone", "contact-email"]
+    }
+  },
+  "live_editor_guidelines": {
+    "context_aware_selection": {
+      "element_vs_section": "When an individual field (image, heading, eyebrow, address) is clicked, target field ONLY (el.dataset.edit). Do not fall through to '_section' unless the user clicks directly on empty section canvas.",
+      "deletion": "Deleting or clearing field text must modify data[field] value without calling remove(sec.id) or deleting the section/image sibling."
+    },
+    "controls_and_toolbars": {
+      "device_previews": ["desktop", "tablet", "mobile"],
+      "shortcuts": "Ctrl/Cmd+S for save, Ctrl/Cmd+Z for undo, Esc for deselect, Arrow keys for 1px/10px nudge"
+    }
+  },
+  "component_path": {
+    "theatre_sections": "/app/frontend/src/components/public/TheatreSections.jsx",
+    "contact_form": "/app/frontend/src/components/public/ContactForm.jsx",
+    "live_editor": "/app/frontend/src/components/public/LiveEditor.jsx",
+    "editor_provider": "/app/frontend/src/components/public/editor/LiveEditorProvider.jsx",
+    "page_sections": "/app/frontend/src/components/public/PageSections.jsx",
+    "site_text": "/app/frontend/src/components/public/editor/SiteText.jsx"
   },
   "instructions_to_main_agent": [
-    "Ensure all 3 text boxes (`body_1`, `body_2`, `body_3` or `paragraph_1`, `paragraph_2`, `paragraph_3`) are standard independently editable LiveEditor fields with unique data-testid attributes (e.g. data-testid='editable-ambition-body-1', data-testid='editable-ambition-body-2', data-testid='editable-ambition-body-3').",
-    "Do not modify files or break existing site styling in /app/frontend/src/styles/rakhigarhi-reference.css.",
-    "Preserve responsive breakpoint behavior for tablets (<1200px) and mobile (<700px).",
-    "All interactive and key text components MUST include kebab-case role-based data-testid attributes."
+    "1. In TheatreSections.jsx: Conditionally hide TheatreLink or remove 'Explore past production' text and button while ensuring the Photo component remains rendered and intact.",
+    "2. Separate data-edit bindings for image vs text fields so element movement (translateX, translateY) is isolated to the selected element.",
+    "3. Fix bottom section border lines across Theatre page sections to eliminate unwanted duplicate or misaligned lines.",
+    "4. In ContactForm.jsx / PageSections.jsx: Enable SiteText/data-edit for contact info (address, phone) and attach data-edit styling controls to the white card container for adjustable width/height/padding.",
+    "5. Ensure LiveEditor click handler precisely targets selected field rather than bubbling to whole section when text is empty or clicked.",
+    "6. Ensure all interactive and key informational elements have clear data-testid attributes."
   ],
-  "UNIVERSAL GUIDELINES FOR MAIN AGENT": {
-    "testing_attributes": "All interactive and key informational elements MUST include a data-testid attribute.",
-    "file_extension": "Use .js extensions (not .tsx).",
-    "contrast_and_backgrounds": "DO NOT use complete transparent background in header, overlays, or any surface that has content under it.",
-    "no_ai_emojis": "NEVER use AI assistant Emoji characters (e.g. 🤖, 🧠, 💭, 💡) for icons or text."
+  "UNIVERSAL GUIDELINES FOR MAIN AGENT": [
+    "You tend to converge toward generic outputs. Avoid this: make creative, distinctive frontends.",
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients.",
+    "Don't make generic centered layouts or uniform styling.",
+    "Create depth through layered design elements with z-index hierarchy.",
+    "Use glass-morphism effects with backdrop filters (12-24px blur) for floating bars.",
+    "You MUST NOT apply universal transition (e.g. transition: all). Exclude transforms from universal transitions.",
+    "You MUST NOT center align the app container (.App { text-align: center }).",
+    "Always use modern button styles like pill-shaped, or sharp button with interaction animations & color relevant to app style.",
+    "NEVER use AI assistant Emoji characters (🤖, 🧠, 💡) for icons.",
+    "Every interaction needs micro-animations - hover states, transitions.",
+    "Use 2-3x more spacing than feels comfortable.",
+    "All interactive elements MUST include a data-testid attribute in kebab-case."
+  ],
+  "accessibility": {
+    "contrast_ratio": "Minimum 4.5:1 for normal body text, 3:1 for large headers against bone background.",
+    "focus_states": "High contrast ring focus:ring-2 focus:ring-amber-800",
+    "motion": "Respect prefers-reduced-motion"
   }
 }

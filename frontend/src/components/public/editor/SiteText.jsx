@@ -10,7 +10,7 @@ export const UI_TEXT = {
   note_by: "By", note_published: "Published", note_updated: "Updated", credits: "Credits",
   references: "References", source: "source", downloads: "Downloads", download: "Download",
   kind_article: "Article", kind_photo_essay: "Photo essay", kind_interview: "Interview", kind_workshop_reflection: "Workshop reflection", kind_resource: "Resource",
-  contact_name: "Name", contact_email: "Email", contact_topic: "Enquiry topic", choose_topic: "Choose a topic",
+  contact_name: "Name", contact_email: "Email", contact_address: "Address", contact_send_heading: "Send a message", contact_topic: "Enquiry topic", choose_topic: "Choose a topic",
   contact_message: "Message", contact_phone: "Phone", contact_organisation: "Organisation", optional: "optional",
   topic_general: "General", topic_collaboration: "Collaboration", topic_volunteer: "Volunteer", topic_craft: "Craft", topic_theatre: "Theatre", topic_workshops: "Workshops & Learning",
   send_message: "Send message", sending: "Sending…", contact_thanks: "Thank you — your message has been received.",

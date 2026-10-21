@@ -45,8 +45,8 @@
 #theatre-reference .theatre-intro-heading::after { content: ""; display: block; width: 2.4rem; height: 2px; background: var(--t-ruby); margin-top: 1.4rem; }
 #theatre-reference .theatre-intro-copy p { margin: 0; color: var(--t-text); }
 
-/* Ruled sections */
-#theatre-reference .text-cols, #theatre-reference .theatre-archive { border-top: 1px solid var(--t-rule); }
+/* Sections stay separated by whitespace, not full-width grey rules. */
+html body #public-site #theatre-reference :is(.text-cols, .theatre-archive, .hb.band, .invite) { border-top: 0 !important; border-bottom: 0 !important; }
 #theatre-reference .text-cols { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 6vw, 6rem); }
 #theatre-reference .text-cols > *, #theatre-reference .stacked > * { min-width: 0; }
 

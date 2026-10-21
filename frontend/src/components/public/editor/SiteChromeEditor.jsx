@@ -25,7 +25,7 @@ export const SiteChromeEditor = () => {
     setPath(next); setArea(location); return true;
   };
   const fields = useMemo(() => {
-    const out = ["brand_label", "site_name", "full_name", "tagline", "privacy_html", "contact.email", "contact.phone", "logo_media_id"];
+    const out = ["brand_label", "site_name", "full_name", "tagline", "privacy_html", "contact.email", "contact.phone", "contact.address", "logo_media_id"];
     const menus = (items, prefix) => (items || []).forEach((item, i) => { out.push(`${prefix}.${i}.label`); menus(item.children, `${prefix}.${i}.children`); });
     menus(site?.menus?.main, "menus.main"); menus(site?.menus?.footer, "menus.footer");
     (site?.social || []).forEach((_, i) => out.push(`social.${i}.label`));
