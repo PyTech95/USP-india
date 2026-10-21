@@ -1,0 +1,20 @@
+/* Homepage "Our Work" cards: number + rule row, category, title, text, "Explore X ->" link */
+html body #public-site#public-site#public-site #home-reference .hb-related_work .work-grid { column-gap: 6% !important; row-gap: clamp(56px, 5vw, 88px) !important; }
+html body #public-site#public-site#public-site #home-reference .hb-related_work .work-card-body { padding: 0 !important; display: flex !important; flex-direction: column; }
+html body #public-site#public-site#public-site #home-reference .hb-related_work .work-num { display: grid !important; grid-template-columns: auto minmax(0, 1fr); column-gap: clamp(24px, 2.2vw, 42px); align-items: center; padding: 0 !important; margin: 0 0 clamp(28px, 2.6vw, 44px) !important; letter-spacing: 0 !important; text-transform: none !important; }
+html body #public-site#public-site#public-site #home-reference .hb-related_work .work-num::before { content: ""; position: static; inset: auto; grid-column: 2; grid-row: 1; border-top: 1px solid #d9d9d9; }
+html body #public-site#public-site#public-site #home-reference .hb-related_work .wn-n { position: static !important; grid-column: 1; grid-row: 1; font: 300 clamp(30px, 2.2vw, 40px)/1 var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif) !important; color: #2b2b2b !important; padding: 0 !important; margin: 0 !important; border: 0 !important; letter-spacing: 0 !important; }
+html body #public-site#public-site#public-site #home-reference .hb-related_work .wn-t { grid-column: 1 / -1; grid-row: 2; display: block; margin: clamp(28px, 2.6vw, 44px) 0 0 !important; font: 400 13px/20px var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif) !important; letter-spacing: .06em !important; text-transform: uppercase !important; color: #444 !important; }
+html body #public-site#public-site#public-site #home-reference .hb-related_work .work-card .h3 { max-width: none; margin: 0 0 clamp(28px, 2.6vw, 44px) !important; font-size: clamp(24px, 1.8vw, 30px) !important; line-height: 1.3 !important; font-weight: 300 !important; }
+html body #public-site#public-site#public-site #home-reference .hb-related_work .work-card .h3 a { color: #2b2b2b !important; }
+html body #public-site#public-site#public-site #home-reference .hb-related_work .work-card-body p { margin: 0 0 clamp(32px, 3vw, 48px) !important; max-width: 36em; flex: 1; font-size: clamp(16px, 1.05vw, 18px) !important; line-height: 1.65 !important; font-weight: 300; color: #2b2b2b !important; }
+html body #public-site#public-site#public-site #home-reference .hb-related_work .more-link.more-link-icon { display: inline-flex !important; align-items: center; gap: clamp(18px, 1.6vw, 28px) !important; margin: auto 0 0 !important; font: 400 clamp(15px, 1vw, 17px)/1.4 var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif) !important; letter-spacing: 0 !important; text-transform: none !important; color: #2b2b2b !important; }
+html body #public-site#public-site#public-site #home-reference .hb-related_work .more-link.more-link-icon svg { transition: transform .25s ease; }
+html body #public-site#public-site#public-site #home-reference .hb-related_work .more-link.more-link-icon:hover { color: #000 !important; }
+html body #public-site#public-site#public-site #home-reference .hb-related_work .more-link.more-link-icon:hover svg { transform: translateX(4px); }
+@media (max-width: 700px) {
+  html body #public-site#public-site#public-site #home-reference .hb-related_work .work-grid { row-gap: 56px !important; }
+  html body #public-site#public-site#public-site #home-reference .hb-related_work :is(.work-num, .work-card .h3) { margin-bottom: 24px !important; }
+  html body #public-site#public-site#public-site #home-reference .hb-related_work .wn-t { margin-top: 24px !important; }
+  html body #public-site#public-site#public-site #home-reference .hb-related_work .work-card-body p { margin-bottom: 28px !important; }
+}
