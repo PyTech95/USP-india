@@ -1,0 +1,30 @@
+{
+  "summary": "Focused retest of the iteration 13 follow-up fixes. All writes went to disposable clones (TEST_rak_<uuid>). Browser runs re-routed /api/admin/pages/rakhigarhi/live and /api/public/pages/rakhigarhi to the clone and blocked any other non-GET request mentioning rakhigarhi; none was blocked. I fingerprinted the real rakhigarhi doc (sha256 of the full doc, 19 revisions) before and after every run, and it was identical each time. All clones and their revisions were deleted afterwards. Results: (1) Clearing a box: Ctrl+A then Delete on box 2 sends body_2_html == '' in the PUT payload and stores ''. The box stays selectable (h = 18px), and text typed back in saves. (2) Concurrency: GET /live returns a 64-char version. The editor sends base_version and picks up the new version after each save; 3 saves in a row in one editor worked. Editor B loaded version V, editor A then saved, and B's save got a 409. B showed the toast 'This page changed in another editor. Your changes were not saved. Close and reopen...', kept the unsaved text and kept the 'Unsaved changes' status. The published content and the revision count did not change. After reopening, B saved fine. Requests without base_version are still accepted (200). (3) Atomic compare-and-set: an in-process pytest monkeypatches get_page so a competing write lands between the read and the update. With and without base_version the result is 409, the competing write survives and no revision is written. (4) normalizeReferenceContent: the original old-shape page shows all 3 boxes at 18px, the group wrapper has no font-size, and a font size of 24 on box 1 changes only box 1. Saved styles are body_N_html {fontSize: 18px} with no typography left in body_html. A clone seeded with body_html {fontSize, width: 720px, translateX: 6px} keeps width and translate on the group and saves body_html == {width, translateX}; the box font sizes stay independent (box 3 = 20px, the others 18px). Admin PageEditor on a clone: 3 rich fields, draft saves the new shape with typography on the boxes only, published is untouched, preview shows the draft edit.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": [
+    "/app/backend/tests/test_rakhigarhi_ambition_boxes.py",
+    "/app/tests/rak_ambition_three_boxes_editor.py",
+    "/app/tests/rak_ambition_admin_editor.py",
+    "/app/tests/rak_real_fingerprint.py",
+    "/app/test_reports/pytest/pytest_ambition_iter14.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "LiveEditor record(): rich fields are saved as '' when el.innerText.trim() is empty. A rich box holding only an image or embed with no text would be wiped on edit. Low risk for the ambition boxes; consider checking for media children too.",
+    "Field Note live save (PUT /admin/notes/{id}/live) and the PageEditor draft/publish endpoints still have no version/CAS protection, so the stale-tab overwrite seen in iteration 13 can still happen there.",
+    "live_page_version hashes json.dumps(published) with no default=. If a non-JSON type (datetime/ObjectId) ever lands inside published, GET /live and PUT /live would return 500. Today the content is sanitised strings, so this is fine; consider default=str."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_rakhigarhi_ambition_boxes.py",
+    "/app/tests/rak_ambition_three_boxes_editor.py",
+    "/app/tests/rak_ambition_admin_editor.py",
+    "/app/tests/rak_real_fingerprint.py"
+  ],
+  "success_rate": {"backend": "100% (8/8 pytest)", "frontend": "100% (LiveEditor 20/20, PageEditor 6/6)"},
+  "test_credentials": "admin@uspindia.org from /app/memory/test_credentials.md (existing account, none created)",
+  "seed_data_creation": "Only disposable TEST_rak_<uuid> page clones, all deleted with their revisions; none left (test_docs=0).",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "All 3 Rakhigarhi ambition tests are now isolated. They clone rakhigarhi to TEST_rak_<uuid>, browser routes are re-routed to it, and they never write to or restore the real doc. Run browser scripts with: PYTHONPATH=$(/root/.venv/bin/python -c 'import site;print(site.getsitepackages()[0])') /opt/plugins-venv/bin/python3 /app/tests/<script>.py. Run python /app/tests/rak_real_fingerprint.py before and after to prove the real page is untouched (baseline hash bd842e07..., 19 revisions). The in-process CAS pytest reuses one module-level event loop because motor binds to the first loop it sees. The real rakhigarhi page is still in the old body_html shape with styles.body_html {fontSize: 18px}."
+}
