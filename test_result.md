@@ -101,3 +101,10 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+## Responsive website / desktop-only Live Editor — current task
+- User: "lets make it responsive"; editor only on desktop, not mobile or tablet.
+- Scope: public website, preserve current desktop visual design and stored live edits. No data writes, no publishing, no placeholder removal, no auth/backend integration changes.
+- First QA pass: READ-ONLY baseline to identify concrete overflow, clipped/overlapping fields, unusable menu/contact/notes layouts across all public pages at phone/tablet widths. Record desktop bounding/style baseline for later regression.
+- Planned: responsive render-only geometry, navigation, section/grid/image layouts; viewport/input-capability gate for Live Editor including ?edit=1 and stored preference. Keep desktop drag/save controls intact.
+- Existing credentials: /app/memory/test_credentials.md. Do not modify real pages or settings. Tests may use browser route interception / DOM-only responsive fixtures.
