@@ -7,6 +7,7 @@ const COLOURS = [["backgroundColor", "Header background", "#ffffff"], ["color", 
 const TYPE_SIZES = [["brandFontSize", "Brand size", 16, 72], ["subtitleFontSize", "Subtitle size", 8, 24], ["fontSize", "Menu size", 10, 32]];
 const SPACING = [["minHeight", "Minimum height", 44, 240], ["logoHeight", "Logo height", 16, 160], ["paddingTop", "Top padding", 0, 160],
   ["paddingBottom", "Bottom padding", 0, 160], ["paddingLeft", "Left padding", 0, 160], ["paddingRight", "Right padding", 0, 160], ["navGap", "Menu gap", 0, 48]];
+const LINES = [["accentLineWidth", "Line length", 8, 240], ["accentLineThickness", "Line thickness", 1, 12], ["accentLineGap", "Space from text", 0, 120]];
 const slug = (key) => key.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
 
 export const HeaderStyleFields = ({ styles, change, reset }) => {
@@ -26,6 +27,9 @@ export const HeaderStyleFields = ({ styles, change, reset }) => {
       <label className="live-field">Position<select value={styles.position || ""} onChange={(e) => change("position", e.target.value)} data-testid="header-style-position">
         <option value="">Default</option><option value="relative">Scroll with page</option><option value="sticky">Sticky at top</option>
       </select></label>
+    </details>
+    <details open className="header-editor-group"><summary data-testid="header-lines-toggle">Red lines (whole site)</summary>{sizes(LINES)}
+      <p className="live-hint live-hint-small">Defaults: 42px long, 2px thick, 30px from the text. Thickness also sets the vertical lines.</p>
     </details>
     <button type="button" className="live-btn" onClick={reset} data-testid="header-styles-reset"><RotateCcw size={15} /> Reset styles</button>
   </div>;

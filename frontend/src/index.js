@@ -16,6 +16,7 @@ import "@/styles/site-overrides.css";
 import "@/styles/boxed-layout.css";
 import "@/styles/home-field-notes.css";
 import "@/styles/home-work.css";
+import "@/styles/accent-lines.css";
 import App from "@/App";
 
 const queryClient = new QueryClient({

@@ -9,7 +9,7 @@ html body #public-site#public-site #about-reference #team,
 html body #public-site#public-site .page-craft-livelihood .hb.hb-hero { background-color: #fff !important; }
 
 /* ===== Red accent lines: one thickness site-wide ===== */
-:root { --accent-line: 3px; --accent-line-w: 64px; }
+
 /* Vertical lines: 80% of the text height, vertically centred */
 html body #public-site :is(
   .page-workshops-learning #learning-intro .stacked.has-aside > div,
