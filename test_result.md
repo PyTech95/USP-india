@@ -130,3 +130,10 @@
 - Fix scope: narrow responsive stacking/menu to <=960px OR primary coarse/no-hover; preserve existing laptop columns, geometry, spacing >=961px fine/hover. Editor remains desktop-only with existing min1025 capability gate (not part of bug change). No data writes or deployment.
 - Test responsive sheet disabled IN BROWSER as old-layout reference for current preview data at laptop widths, versus fixed version; allow existing colored-band alignment/Craft Centre safeguards only. Do not equate no overflow with design fidelity. All8pages, particularly header/HomeFieldNotes/FieldNotes hero.
 
+
+## Contact scrollbar screenshot (same ongoing task)
+- Screenshot shows internal contact white-card scrollbar; confirmed from captured saved styles via iteration32. Default preview has no card height; saved production-shaped card height825px is smaller than content871..941px, overflow:auto causes nested scroll; translateY94 also collides with footer.
+- Implemented candidate verified in iteration32: PUBLIC ONLY card height:auto/overflow:visible; desktopfine>=961 min-height saved height and bottom margin for positive --ed-y. Editor exact resize behaviour unchanged. Phone no extra margin/gap. No data mutation.
+- Narrow-laptop FieldNotes saved widths370px exceeded columns298..323; added max-width100% only to card text/title. Columns/spacing/font/images unchanged, no stacking.
+- Retest ONLY contact base fixture (no candidate CSS injection) + narrow FieldNotes wrapping. Laptop fidelity/nav already passed iteration31 for9routes x5widths. No publishing.
+

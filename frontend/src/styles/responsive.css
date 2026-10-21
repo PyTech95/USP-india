@@ -9,6 +9,21 @@
     transform: translateY(var(--ed-y, 0px)) !important;
   }
 
+  /* Contact forms grow with their contents; only the page should scroll.
+     Editing retains the saved canvas size and its existing resize behaviour. */
+  body:not(.live-editing) #public-site .pcc-card[style*="--ed-h"] {
+    height: auto !important; overflow: visible !important;
+  }
+  @media (min-width: 961px) and (hover: hover) and (pointer: fine) {
+    body:not(.live-editing) #public-site .pcc-card[style*="--ed-h"] {
+      min-height: var(--ed-h) !important;
+      margin-bottom: max(0px, var(--ed-y, 0px)) !important;
+    }
+  }
+  body:not(.live-editing) #public-site .hfn .hfn-card :is(.hfn-card-text, .hfn-card-title)[style*="--ed-w"] {
+    max-width: 100% !important;
+  }
+
   /* Keep this column inside its section rails, even with offsets saved on
      the former full-width canvas. Preserve vertical placement and font sizes. */
   @media (min-width: 1440px) {
