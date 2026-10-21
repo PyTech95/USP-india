@@ -1,0 +1,2299 @@
+{
+"prod/390/": {
+"vw": 390,
+"docW": 390,
+"docH": 6487,
+"lines": 125,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 0,
+"textOnImg": [],
+"secOvN": 0,
+"secOv": [],
+"escapeN": 0,
+"escape": [],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [
+{
+"b": "sec:block-3-wrap",
+"x": 24,
+"r": 366,
+"tf": "none"
+}
+],
+"footerX": [
+24,
+366
+],
+"heroX": [
+24,
+366
+],
+"headerX": [
+0,
+390
+],
+"smallInputs": [],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px",
+"span[data-testid=site-text-ui_text-menu-r3]:11px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/390/about": {
+"vw": 390,
+"docW": 390,
+"docH": 5398,
+"lines": 78,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 0,
+"textOnImg": [],
+"secOvN": 0,
+"secOv": [],
+"escapeN": 0,
+"escape": [],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [
+{
+"b": "sec:block-0-wrap",
+"x": 24,
+"r": 366,
+"tf": "none"
+},
+{
+"b": "sec:block-3-wrap",
+"x": 12,
+"r": 378,
+"tf": "none"
+}
+],
+"footerX": [
+24,
+366
+],
+"heroX": [
+24,
+366
+],
+"headerX": [
+0,
+390
+],
+"smallInputs": [],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px",
+"span[data-testid=site-text-ui_text-menu-r3]:11px",
+"span[data-testid=block-3-person-0-image-placeholder-label]:10px",
+"span[data-testid=block-3-person-1-image-placeholder-label]:10px",
+"span[data-testid=block-3-person-2-image-placeholder-label]:10px",
+"span[data-testid=block-3-person-3-image-placeholder-label]:10px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/390/our-work/rakhigarhi": {
+"vw": 390,
+"docW": 390,
+"docH": 6455,
+"lines": 116,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 1,
+"textOnImg": [
+{
+"img": "figure.photo.crop[data-testid=block-2-detail-0][data-edit=collage.0]",
+"text": "p",
+"sec": "sec:block-2-wrap",
+"line": [
+24,
+2592,
+314,
+21
+],
+"txt": "Its architecture, materials, a"
+}
+],
+"secOvN": 0,
+"secOv": [],
+"escapeN": 0,
+"escape": [],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [
+{
+"b": "sec:block-7-wrap",
+"x": 24,
+"r": 366,
+"tf": "none"
+},
+{
+"b": "sec:block-8-wrap",
+"x": 24,
+"r": 366,
+"tf": "none"
+}
+],
+"footerX": [
+24,
+366
+],
+"heroX": [
+24,
+366
+],
+"headerX": [
+0,
+390
+],
+"smallInputs": [],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px",
+"span[data-testid=site-text-ui_text-menu-r3]:11px",
+"span:11px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/390/our-work/theatre": {
+"vw": 390,
+"docW": 390,
+"docH": 4579,
+"lines": 91,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 0,
+"textOnImg": [],
+"secOvN": 0,
+"secOv": [],
+"escapeN": 0,
+"escape": [],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [
+{
+"b": "sec:block-4-wrap",
+"x": 24,
+"r": 366,
+"tf": "none"
+},
+{
+"b": "sec:block-5-wrap",
+"x": 24,
+"r": 366,
+"tf": "none"
+}
+],
+"footerX": [
+24,
+366
+],
+"heroX": [
+24,
+366
+],
+"headerX": [
+0,
+390
+],
+"smallInputs": [],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px",
+"span[data-testid=site-text-ui_text-menu-r3]:11px",
+"p.eyebrow[data-testid=block-0-eyebrow][data-edit=eyebrow]:11px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/390/our-work/craft-livelihood": {
+"vw": 390,
+"docW": 390,
+"docH": 6464,
+"lines": 116,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 0,
+"textOnImg": [],
+"secOvN": 0,
+"secOv": [],
+"escapeN": 0,
+"escape": [],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [
+{
+"b": "sec:block-0-wrap",
+"x": 24,
+"r": 366,
+"tf": "none"
+},
+{
+"b": "sec:block-1-wrap",
+"x": 24,
+"r": 366,
+"tf": "none"
+},
+{
+"b": "sec:block-4-wrap",
+"x": 24,
+"r": 366,
+"tf": "none"
+},
+{
+"b": "sec:block-8-wrap",
+"x": 24,
+"r": 366,
+"tf": "none"
+}
+],
+"footerX": [
+24,
+366
+],
+"heroX": [
+24,
+366
+],
+"headerX": [
+0,
+390
+],
+"smallInputs": [],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px",
+"span[data-testid=site-text-ui_text-menu-r3]:11px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/390/our-work/workshops-learning": {
+"vw": 390,
+"docW": 390,
+"docH": 6048,
+"lines": 113,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 6,
+"textOnImg": [
+{
+"img": "figure.photo.crop[data-testid=block-3-image][data-edit=image]",
+"text": "p.eyebrow[data-testid=eyebrow-creative-exchange][data-edit=eyebrow]",
+"sec": "sec:block-3-wrap",
+"line": [
+24,
+2432,
+174,
+15
+],
+"txt": "Creative Exchange"
+},
+{
+"img": "figure.photo.crop[data-testid=block-3-image][data-edit=image]",
+"text": "h2.h2[data-testid=block-3-heading][data-edit=heading]",
+"sec": "sec:block-3-wrap",
+"line": [
+24,
+2469,
+205,
+33
+],
+"txt": "New Ideas. New Directions."
+},
+{
+"img": "figure.photo.crop[data-testid=block-3-image][data-edit=image]",
+"text": "p",
+"sec": "sec:block-3-wrap",
+"line": [
+24,
+2573,
+334,
+21
+],
+"txt": "Artists, designers and craft p"
+},
+{
+"img": "figure.photo.crop[data-testid=block-3-image][data-edit=image]",
+"text": "p",
+"sec": "sec:block-3-wrap",
+"line": [
+24,
+2719,
+272,
+21
+],
+"txt": "The women\u2019s existing knowledge"
+},
+{
+"img": "figure.photo.collage-0[data-testid=block-4-collage-0][data-edit=collage.0]",
+"text": "p.eyebrow[data-testid=eyebrow-student-projects][data-edit=eyebrow]",
+"sec": "sec:block-5-wrap",
+"line": [
+24,
+3941,
+162,
+15
+],
+"txt": "Student Projects"
+},
+{
+"img": "figure.photo.collage-0[data-testid=block-4-collage-0][data-edit=collage.0]",
+"text": "h2.h2[data-testid=block-5-heading][data-edit=heading]",
+"sec": "sec:block-5-wrap",
+"line": [
+24,
+3978,
+327,
+33
+],
+"txt": "Learning That Becomes a Contri"
+}
+],
+"secOvN": 0,
+"secOv": [],
+"escapeN": 0,
+"escape": [],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [
+{
+"b": "sec:block-0-wrap",
+"x": 24,
+"r": 366,
+"tf": "none"
+},
+{
+"b": "sec:block-1-wrap",
+"x": 24,
+"r": 366,
+"tf": "none"
+},
+{
+"b": "sec:block-6-wrap",
+"x": 24,
+"r": 366,
+"tf": "none"
+},
+{
+"b": "sec:block-7-wrap",
+"x": 24,
+"r": 366,
+"tf": "none"
+}
+],
+"footerX": [
+24,
+366
+],
+"heroX": [
+24,
+366
+],
+"headerX": [
+0,
+390
+],
+"smallInputs": [],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px",
+"span[data-testid=site-text-ui_text-menu-r3]:11px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/390/field-notes": {
+"vw": 390,
+"docW": 390,
+"docH": 2868,
+"lines": 30,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 0,
+"textOnImg": [],
+"secOvN": 0,
+"secOv": [],
+"escapeN": 0,
+"escape": [],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [],
+"footerX": [
+24,
+366
+],
+"heroX": [
+24,
+366
+],
+"headerX": [
+0,
+390
+],
+"smallInputs": [],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px",
+"span[data-testid=site-text-ui_text-menu-r3]:11px",
+"p.fn-eyebrow:11px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/390/connect": {
+"vw": 390,
+"docW": 390,
+"docH": 1768,
+"lines": 26,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 0,
+"textOnImg": [],
+"secOvN": 0,
+"secOv": [],
+"escapeN": 0,
+"escape": [],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [],
+"footerX": [
+24,
+366
+],
+"heroX": [
+24,
+366
+],
+"headerX": [
+0,
+390
+],
+"smallInputs": [],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px",
+"span[data-testid=site-text-ui_text-menu-r3]:11px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/390/field-notes/what-the-haveli-reveals": {
+"vw": 390,
+"docW": 390,
+"docH": 900,
+"lines": 13,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 0,
+"textOnImg": [],
+"secOvN": 0,
+"secOv": [],
+"escapeN": 0,
+"escape": [],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [],
+"footerX": [
+24,
+366
+],
+"heroX": [
+52,
+338
+],
+"headerX": [
+0,
+390
+],
+"smallInputs": [],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px",
+"span[data-testid=site-text-ui_text-menu-r3]:11px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/1024/": {
+"vw": 1024,
+"docW": 1024,
+"docH": 4243,
+"lines": 107,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 0,
+"textOnImg": [],
+"secOvN": 0,
+"secOv": [],
+"escapeN": 0,
+"escape": [],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [
+{
+"b": "sec:block-3-wrap",
+"x": 36,
+"r": 988,
+"tf": "none"
+}
+],
+"footerX": [
+36,
+988
+],
+"heroX": [
+36,
+988
+],
+"headerX": [
+0,
+1024
+],
+"smallInputs": [],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px",
+"span[data-testid=site-text-ui_text-menu-r3]:11px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/1024/about": {
+"vw": 1024,
+"docW": 1024,
+"docH": 2896,
+"lines": 68,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 0,
+"textOnImg": [],
+"secOvN": 0,
+"secOv": [],
+"escapeN": 0,
+"escape": [],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [
+{
+"b": "sec:block-0-wrap",
+"x": 41,
+"r": 983,
+"tf": "none"
+},
+{
+"b": "sec:block-3-wrap",
+"x": 41,
+"r": 983,
+"tf": "none"
+}
+],
+"footerX": [
+36,
+988
+],
+"heroX": [
+41,
+983
+],
+"headerX": [
+0,
+1024
+],
+"smallInputs": [],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px",
+"span[data-testid=site-text-ui_text-menu-r3]:11px",
+"span[data-testid=block-3-person-0-image-placeholder-label]:10px",
+"span[data-testid=block-3-person-1-image-placeholder-label]:10px",
+"span[data-testid=block-3-person-2-image-placeholder-label]:10px",
+"span[data-testid=block-3-person-3-image-placeholder-label]:10px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/1024/our-work/rakhigarhi": {
+"vw": 1024,
+"docW": 1024,
+"docH": 4589,
+"lines": 106,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 0,
+"textOnImg": [],
+"secOvN": 0,
+"secOv": [],
+"escapeN": 0,
+"escape": [],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [
+{
+"b": "sec:block-7-wrap",
+"x": 36,
+"r": 988,
+"tf": "none"
+},
+{
+"b": "sec:block-8-wrap",
+"x": 36,
+"r": 988,
+"tf": "none"
+}
+],
+"footerX": [
+36,
+988
+],
+"heroX": [
+36,
+988
+],
+"headerX": [
+0,
+1024
+],
+"smallInputs": [],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px",
+"span[data-testid=site-text-ui_text-menu-r3]:11px",
+"span:11px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/1024/our-work/theatre": {
+"vw": 1024,
+"docW": 1024,
+"docH": 4325,
+"lines": 71,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 0,
+"textOnImg": [],
+"secOvN": 0,
+"secOv": [],
+"escapeN": 0,
+"escape": [],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [
+{
+"b": "sec:block-4-wrap",
+"x": 36,
+"r": 988,
+"tf": "none"
+},
+{
+"b": "sec:block-5-wrap",
+"x": 36,
+"r": 988,
+"tf": "none"
+}
+],
+"footerX": [
+36,
+988
+],
+"heroX": [
+36,
+988
+],
+"headerX": [
+0,
+1024
+],
+"smallInputs": [],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px",
+"span[data-testid=site-text-ui_text-menu-r3]:11px",
+"p.eyebrow[data-testid=block-0-eyebrow][data-edit=eyebrow]:11px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/1024/our-work/craft-livelihood": {
+"vw": 1024,
+"docW": 1024,
+"docH": 6563,
+"lines": 80,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 0,
+"textOnImg": [],
+"secOvN": 0,
+"secOv": [],
+"escapeN": 0,
+"escape": [],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [
+{
+"b": "sec:block-0-wrap",
+"x": 36,
+"r": 988,
+"tf": "none"
+},
+{
+"b": "sec:block-1-wrap",
+"x": 36,
+"r": 988,
+"tf": "none"
+},
+{
+"b": "sec:block-4-wrap",
+"x": 36,
+"r": 988,
+"tf": "none"
+},
+{
+"b": "sec:block-8-wrap",
+"x": 36,
+"r": 988,
+"tf": "none"
+}
+],
+"footerX": [
+36,
+988
+],
+"heroX": [
+36,
+988
+],
+"headerX": [
+0,
+1024
+],
+"smallInputs": [],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px",
+"span[data-testid=site-text-ui_text-menu-r3]:11px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/1024/our-work/workshops-learning": {
+"vw": 1024,
+"docW": 1024,
+"docH": 4335,
+"lines": 97,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 0,
+"textOnImg": [],
+"secOvN": 0,
+"secOv": [],
+"escapeN": 0,
+"escape": [],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [
+{
+"b": "sec:block-0-wrap",
+"x": 36,
+"r": 988,
+"tf": "none"
+},
+{
+"b": "sec:block-1-wrap",
+"x": 36,
+"r": 988,
+"tf": "none"
+},
+{
+"b": "sec:block-6-wrap",
+"x": 36,
+"r": 988,
+"tf": "none"
+},
+{
+"b": "sec:block-7-wrap",
+"x": 36,
+"r": 988,
+"tf": "none"
+}
+],
+"footerX": [
+36,
+988
+],
+"heroX": [
+36,
+988
+],
+"headerX": [
+0,
+1024
+],
+"smallInputs": [],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px",
+"span[data-testid=site-text-ui_text-menu-r3]:11px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/1024/field-notes": {
+"vw": 1024,
+"docW": 1024,
+"docH": 2083,
+"lines": 27,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 0,
+"textOnImg": [],
+"secOvN": 0,
+"secOv": [],
+"escapeN": 0,
+"escape": [],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [],
+"footerX": [
+36,
+988
+],
+"heroX": [
+36,
+988
+],
+"headerX": [
+0,
+1024
+],
+"smallInputs": [],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px",
+"span[data-testid=site-text-ui_text-menu-r3]:11px",
+"p.fn-eyebrow:11px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/1024/connect": {
+"vw": 1024,
+"docW": 1024,
+"docH": 1835,
+"lines": 25,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 0,
+"textOnImg": [],
+"secOvN": 0,
+"secOv": [],
+"escapeN": 0,
+"escape": [],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [],
+"footerX": [
+36,
+988
+],
+"heroX": [
+36,
+988
+],
+"headerX": [
+0,
+1024
+],
+"smallInputs": [
+"input#f-name[data-testid=contact-name]:15px",
+"input#f-email[data-testid=contact-email]:15px",
+"input#f-phone[data-testid=contact-phone]:15px",
+"textarea#f-message[data-testid=contact-message]:15px",
+"input#f-website:15px"
+],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px",
+"span[data-testid=site-text-ui_text-menu-r3]:11px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/1024/field-notes/what-the-haveli-reveals": {
+"vw": 1024,
+"docW": 1024,
+"docH": 900,
+"lines": 12,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 0,
+"textOnImg": [],
+"secOvN": 0,
+"secOv": [],
+"escapeN": 0,
+"escape": [],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [],
+"footerX": [
+36,
+988
+],
+"heroX": [
+111,
+913
+],
+"headerX": [
+0,
+1024
+],
+"smallInputs": [],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px",
+"span[data-testid=site-text-ui_text-menu-r3]:11px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/1280/": {
+"vw": 1280,
+"docW": 1280,
+"docH": 4484,
+"lines": 104,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 0,
+"textOnImg": [],
+"secOvN": 0,
+"secOv": [],
+"escapeN": 0,
+"escape": [],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [
+{
+"b": "sec:block-3-wrap",
+"x": 45,
+"r": 1235,
+"tf": "none"
+}
+],
+"footerX": [
+45,
+1235
+],
+"heroX": [
+45,
+1235
+],
+"headerX": [
+0,
+1280
+],
+"smallInputs": [],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/1280/about": {
+"vw": 1280,
+"docW": 1280,
+"docH": 3173,
+"lines": 65,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 0,
+"textOnImg": [],
+"secOvN": 0,
+"secOv": [],
+"escapeN": 0,
+"escape": [],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [
+{
+"b": "sec:block-0-wrap",
+"x": 51,
+"r": 1229,
+"tf": "none"
+},
+{
+"b": "sec:block-3-wrap",
+"x": 51,
+"r": 1229,
+"tf": "none"
+}
+],
+"footerX": [
+45,
+1235
+],
+"heroX": [
+51,
+1229
+],
+"headerX": [
+0,
+1280
+],
+"smallInputs": [],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px",
+"span[data-testid=block-3-person-0-image-placeholder-label]:10px",
+"span[data-testid=block-3-person-1-image-placeholder-label]:10px",
+"span[data-testid=block-3-person-2-image-placeholder-label]:10px",
+"span[data-testid=block-3-person-3-image-placeholder-label]:10px",
+"span[data-testid=block-3-person-4-image-placeholder-label]:10px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/1280/our-work/rakhigarhi": {
+"vw": 1280,
+"docW": 1280,
+"docH": 4581,
+"lines": 96,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 0,
+"textOnImg": [],
+"secOvN": 0,
+"secOv": [],
+"escapeN": 0,
+"escape": [],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [
+{
+"b": "sec:block-7-wrap",
+"x": 45,
+"r": 1235,
+"tf": "none"
+},
+{
+"b": "sec:block-8-wrap",
+"x": 45,
+"r": 1235,
+"tf": "none"
+}
+],
+"footerX": [
+45,
+1235
+],
+"heroX": [
+45,
+1235
+],
+"headerX": [
+0,
+1280
+],
+"smallInputs": [],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px",
+"span:11px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/1280/our-work/theatre": {
+"vw": 1280,
+"docW": 1280,
+"docH": 3859,
+"lines": 69,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 4,
+"textOnImg": [
+{
+"img": "figure.photo.theatre-split-art[data-testid=block-0-image][data-edit=image]",
+"text": "span.theatre-hero-line",
+"sec": "sec:block-0-wrap",
+"line": [
+131,
+255,
+403,
+45
+],
+"txt": "Stories Brought to Life."
+},
+{
+"img": "figure.photo.theatre-split-art[data-testid=block-0-image][data-edit=image]",
+"text": "span.theatre-hero-line",
+"sec": "sec:block-0-wrap",
+"line": [
+131,
+297,
+402,
+45
+],
+"txt": "Conversations Opened."
+},
+{
+"img": "figure.photo.theatre-split-art[data-testid=block-0-image][data-edit=image]",
+"text": "p.theatre-split-lead[data-testid=block-0-intro-heading][data-edit=intro_heading]",
+"sec": "sec:block-0-wrap",
+"line": [
+131,
+370,
+376,
+21
+],
+"txt": "Original stories rooted in the"
+},
+{
+"img": "figure.photo.theatre-split-art[data-testid=block-0-image][data-edit=image]",
+"text": "p",
+"sec": "sec:block-0-wrap",
+"line": [
+131,
+494,
+388,
+21
+],
+"txt": "Drawn from shared experiences,"
+}
+],
+"secOvN": 0,
+"secOv": [],
+"escapeN": 0,
+"escape": [],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [
+{
+"b": "sec:block-4-wrap",
+"x": 45,
+"r": 1235,
+"tf": "none"
+},
+{
+"b": "sec:block-5-wrap",
+"x": 45,
+"r": 1235,
+"tf": "none"
+}
+],
+"footerX": [
+45,
+1235
+],
+"heroX": [
+45,
+1235
+],
+"headerX": [
+0,
+1280
+],
+"smallInputs": [],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/1280/our-work/craft-livelihood": {
+"vw": 1280,
+"docW": 1280,
+"docH": 5606,
+"lines": 85,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 3,
+"textOnImg": [
+{
+"img": "figure.photo.crop[data-testid=block-0-image][data-edit=image]",
+"text": "p.eyebrow[data-testid=block-0-eyebrow][data-edit=eyebrow]",
+"sec": "sec:block-0-wrap",
+"line": [
+109,
+593,
+177,
+15
+],
+"txt": "Craft & Livelihood"
+},
+{
+"img": "figure.photo.crop[data-testid=block-0-image][data-edit=image]",
+"text": "span.craft-hero-line",
+"sec": "sec:block-0-wrap",
+"line": [
+109,
+634,
+261,
+45
+],
+"txt": "Made by Hand."
+},
+{
+"img": "figure.photo.crop[data-testid=block-0-image][data-edit=image]",
+"text": "span.craft-hero-line",
+"sec": "sec:block-0-wrap",
+"line": [
+109,
+678,
+400,
+45
+],
+"txt": "Shaped by Knowledge."
+}
+],
+"secOvN": 0,
+"secOv": [],
+"escapeN": 0,
+"escape": [],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [
+{
+"b": "sec:block-0-wrap",
+"x": 45,
+"r": 1235,
+"tf": "none"
+},
+{
+"b": "sec:block-1-wrap",
+"x": 45,
+"r": 1235,
+"tf": "none"
+},
+{
+"b": "sec:block-4-wrap",
+"x": 45,
+"r": 1235,
+"tf": "none"
+},
+{
+"b": "sec:block-8-wrap",
+"x": 45,
+"r": 1235,
+"tf": "none"
+}
+],
+"footerX": [
+45,
+1235
+],
+"heroX": [
+45,
+1235
+],
+"headerX": [
+0,
+1280
+],
+"smallInputs": [],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/1280/our-work/workshops-learning": {
+"vw": 1280,
+"docW": 1280,
+"docH": 4102,
+"lines": 87,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 0,
+"textOnImg": [],
+"secOvN": 0,
+"secOv": [],
+"escapeN": 0,
+"escape": [],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [
+{
+"b": "sec:block-0-wrap",
+"x": 45,
+"r": 1235,
+"tf": "none"
+},
+{
+"b": "sec:block-1-wrap",
+"x": 45,
+"r": 1235,
+"tf": "none"
+},
+{
+"b": "sec:block-6-wrap",
+"x": 45,
+"r": 1235,
+"tf": "none"
+},
+{
+"b": "sec:block-7-wrap",
+"x": 45,
+"r": 1235,
+"tf": "none"
+}
+],
+"footerX": [
+45,
+1235
+],
+"heroX": [
+45,
+1235
+],
+"headerX": [
+0,
+1280
+],
+"smallInputs": [],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/1280/field-notes": {
+"vw": 1280,
+"docW": 1280,
+"docH": 2420,
+"lines": 30,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 0,
+"textOnImg": [],
+"secOvN": 0,
+"secOv": [],
+"escapeN": 0,
+"escape": [],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [],
+"footerX": [
+45,
+1235
+],
+"heroX": [
+45,
+1235
+],
+"headerX": [
+0,
+1280
+],
+"smallInputs": [],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px",
+"p.fn-eyebrow:11px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/1280/connect": {
+"vw": 1280,
+"docW": 1280,
+"docH": 1413,
+"lines": 28,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 0,
+"textOnImg": [],
+"secOvN": 0,
+"secOv": [],
+"escapeN": 0,
+"escape": [],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [],
+"footerX": [
+45,
+1235
+],
+"heroX": [
+45,
+1235
+],
+"headerX": [
+0,
+1280
+],
+"smallInputs": [
+"input#f-name[data-testid=contact-name]:15px",
+"input#f-email[data-testid=contact-email]:15px",
+"input#f-phone[data-testid=contact-phone]:15px",
+"textarea#f-message[data-testid=contact-message]:15px",
+"input#f-website:15px"
+],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/1280/field-notes/what-the-haveli-reveals": {
+"vw": 1280,
+"docW": 1280,
+"docH": 900,
+"lines": 15,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 0,
+"textOnImg": [],
+"secOvN": 0,
+"secOv": [],
+"escapeN": 0,
+"escape": [],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [],
+"footerX": [
+45,
+1235
+],
+"heroX": [
+138,
+1142
+],
+"headerX": [
+0,
+1280
+],
+"smallInputs": [],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/1440/": {
+"vw": 1440,
+"docW": 1440,
+"docH": 4462,
+"lines": 102,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 0,
+"textOnImg": [],
+"secOvN": 1,
+"secOv": [
+{
+"a": "sec:block-4-wrap",
+"b": "sec:block-5-wrap",
+"overlap": 9
+}
+],
+"escapeN": 0,
+"escape": [],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [
+{
+"b": "sec:block-3-wrap",
+"x": 50,
+"r": 1390,
+"tf": "matrix(1, 0, 0, 1, 0, 0)"
+}
+],
+"footerX": [
+50,
+1390
+],
+"heroX": [
+50,
+1390
+],
+"headerX": [
+0,
+1440
+],
+"smallInputs": [],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/1440/about": {
+"vw": 1440,
+"docW": 1440,
+"docH": 3289,
+"lines": 63,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 0,
+"textOnImg": [],
+"secOvN": 1,
+"secOv": [
+{
+"a": "div.about-intro-grid[data-testid=about-intro-grid-1]",
+"b": "sec:block-3-wrap",
+"overlap": 45
+}
+],
+"escapeN": 0,
+"escape": [],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [
+{
+"b": "sec:block-0-wrap",
+"x": 58,
+"r": 1382,
+"tf": "matrix(1, 0, 0, 1, 0, 0)"
+},
+{
+"b": "sec:block-3-wrap",
+"x": 58,
+"r": 1382,
+"tf": "matrix(1, 0, 0, 1, 0, -45)"
+}
+],
+"footerX": [
+50,
+1390
+],
+"heroX": [
+58,
+1382
+],
+"headerX": [
+0,
+1440
+],
+"smallInputs": [],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px",
+"span[data-testid=block-3-person-0-image-placeholder-label]:10px",
+"span[data-testid=block-3-person-1-image-placeholder-label]:10px",
+"span[data-testid=block-3-person-2-image-placeholder-label]:10px",
+"span[data-testid=block-3-person-3-image-placeholder-label]:10px",
+"span[data-testid=block-3-person-4-image-placeholder-label]:10px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/1440/our-work/rakhigarhi": {
+"vw": 1440,
+"docW": 1440,
+"docH": 4631,
+"lines": 93,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 0,
+"textOnImg": [],
+"secOvN": 0,
+"secOv": [],
+"escapeN": 1,
+"escape": [
+{
+"el": "p",
+"sec": "sec:block-7-wrap",
+"line": [
+147,
+3625,
+997,
+26
+],
+"secBox": [
+50,
+3629,
+1339,
+162
+],
+"txt": "Part workshop, part gathering "
+}
+],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [
+{
+"b": "sec:block-7-wrap",
+"x": 50,
+"r": 1390,
+"tf": "matrix(1, 0, 0, 1, 0, 0)"
+},
+{
+"b": "sec:block-8-wrap",
+"x": 50,
+"r": 1390,
+"tf": "matrix(1, 0, 0, 1, 0, 0)"
+}
+],
+"footerX": [
+50,
+1390
+],
+"heroX": [
+50,
+1390
+],
+"headerX": [
+0,
+1440
+],
+"smallInputs": [],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px",
+"span:11px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/1440/our-work/theatre": {
+"vw": 1440,
+"docW": 1440,
+"docH": 3932,
+"lines": 68,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 0,
+"textOnImg": [],
+"secOvN": 1,
+"secOv": [
+{
+"a": "sec:block-1-wrap",
+"b": "sec:block-2-wrap",
+"overlap": 60
+}
+],
+"escapeN": 0,
+"escape": [],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [
+{
+"b": "sec:block-4-wrap",
+"x": 50,
+"r": 1390,
+"tf": "matrix(1, 0, 0, 1, 0, 0)"
+},
+{
+"b": "sec:block-5-wrap",
+"x": 50,
+"r": 1390,
+"tf": "matrix(1, 0, 0, 1, 0, 0)"
+}
+],
+"footerX": [
+50,
+1390
+],
+"heroX": [
+51,
+1388
+],
+"headerX": [
+0,
+1440
+],
+"smallInputs": [],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/1440/our-work/craft-livelihood": {
+"vw": 1440,
+"docW": 1440,
+"docH": 5775,
+"lines": 84,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 4,
+"textOnImg": [
+{
+"img": "figure.photo.crop[data-testid=block-0-image][data-edit=image]",
+"text": "p.eyebrow[data-testid=block-0-eyebrow][data-edit=eyebrow]",
+"sec": "sec:block-0-wrap",
+"line": [
+108,
+506,
+177,
+15
+],
+"txt": "Craft & Livelihood"
+},
+{
+"img": "figure.photo.crop[data-testid=block-0-image][data-edit=image]",
+"text": "span.craft-hero-line",
+"sec": "sec:block-0-wrap",
+"line": [
+108,
+551,
+261,
+45
+],
+"txt": "Made by Hand."
+},
+{
+"img": "figure.photo.crop[data-testid=block-0-image][data-edit=image]",
+"text": "span.craft-hero-line",
+"sec": "sec:block-0-wrap",
+"line": [
+108,
+595,
+400,
+45
+],
+"txt": "Shaped by Knowledge."
+},
+{
+"img": "figure.photo.crop[data-testid=block-0-image][data-edit=image]",
+"text": "p",
+"sec": "sec:block-0-wrap",
+"line": [
+336,
+847,
+993,
+24
+],
+"txt": "In Rakhigarhi, women are build"
+}
+],
+"secOvN": 3,
+"secOv": [
+{
+"a": "sec:block-2-wrap",
+"b": "sec:block-3-wrap",
+"overlap": 18
+},
+{
+"a": "sec:block-4-wrap",
+"b": "sec:block-5-wrap",
+"overlap": 68
+},
+{
+"a": "sec:block-6-wrap",
+"b": "sec:block-7-wrap",
+"overlap": 69
+}
+],
+"escapeN": 0,
+"escape": [],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [
+{
+"b": "sec:block-0-wrap",
+"x": 50,
+"r": 1390,
+"tf": "none"
+},
+{
+"b": "sec:block-1-wrap",
+"x": 50,
+"r": 1390,
+"tf": "matrix(1, 0, 0, 1, 0, 0)"
+},
+{
+"b": "sec:block-4-wrap",
+"x": 50,
+"r": 1390,
+"tf": "matrix(1, 0, 0, 1, 0, 67.90625)"
+},
+{
+"b": "sec:block-8-wrap",
+"x": 50,
+"r": 1390,
+"tf": "matrix(1, 0, 0, 1, 0, 0)"
+}
+],
+"footerX": [
+50,
+1390
+],
+"heroX": [
+50,
+1390
+],
+"headerX": [
+0,
+1440
+],
+"smallInputs": [],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/1440/our-work/workshops-learning": {
+"vw": 1440,
+"docW": 1440,
+"docH": 4463,
+"lines": 85,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 0,
+"textOnImg": [],
+"secOvN": 0,
+"secOv": [],
+"escapeN": 0,
+"escape": [],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [
+{
+"b": "sec:block-0-wrap",
+"x": 50,
+"r": 1390,
+"tf": "matrix(1, 0, 0, 1, 0, 0)"
+},
+{
+"b": "sec:block-1-wrap",
+"x": 50,
+"r": 1390,
+"tf": "matrix(1, 0, 0, 1, 0, 2)"
+},
+{
+"b": "sec:block-6-wrap",
+"x": 50,
+"r": 1390,
+"tf": "matrix(1, 0, 0, 1, 0, 0)"
+},
+{
+"b": "sec:block-7-wrap",
+"x": 50,
+"r": 1390,
+"tf": "matrix(1, 0, 0, 1, 0, 0)"
+}
+],
+"footerX": [
+50,
+1390
+],
+"heroX": [
+50,
+1390
+],
+"headerX": [
+0,
+1440
+],
+"smallInputs": [],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/1440/field-notes": {
+"vw": 1440,
+"docW": 1440,
+"docH": 2604,
+"lines": 29,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 0,
+"textOnImg": [],
+"secOvN": 0,
+"secOv": [],
+"escapeN": 0,
+"escape": [],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [],
+"footerX": [
+50,
+1390
+],
+"heroX": [
+50,
+1390
+],
+"headerX": [
+0,
+1440
+],
+"smallInputs": [],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px",
+"p.fn-eyebrow:11px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/1440/connect": {
+"vw": 1440,
+"docW": 1440,
+"docH": 1350,
+"lines": 28,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 0,
+"textOnImg": [],
+"secOvN": 0,
+"secOv": [],
+"escapeN": 1,
+"escape": [
+{
+"el": "span[data-testid=site-text-ui_text-send_message-rt]",
+"sec": "sec:block-0-wrap",
+"line": [
+764,
+1079,
+106,
+17
+],
+"secBox": [
+50,
+109,
+1339,
+969
+],
+"txt": "Send message"
+}
+],
+"footHit": [
+{
+"el": "span[data-testid=site-text-ui_text-send_message-rt]",
+"line": [
+764,
+1079,
+106,
+17
+]
+}
+],
+"mainBelowFooter": 0,
+"bands": [],
+"footerX": [
+50,
+1390
+],
+"heroX": [
+50,
+1390
+],
+"headerX": [
+0,
+1440
+],
+"smallInputs": [
+"input#f-name[data-testid=contact-name]:15px",
+"input#f-email[data-testid=contact-email]:15px",
+"input#f-phone[data-testid=contact-phone]:15px",
+"textarea#f-message[data-testid=contact-message]:15px",
+"input#f-website:15px"
+],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+},
+"prod/1440/field-notes/what-the-haveli-reveals": {
+"vw": 1440,
+"docW": 1440,
+"docH": 900,
+"lines": 15,
+"textOffN": 0,
+"textOff": [],
+"textClipN": 0,
+"textClip": [],
+"textOvN": 0,
+"textOv": [],
+"imgOffN": 0,
+"imgOff": [],
+"imgBroken": [],
+"textOnImgN": 0,
+"textOnImg": [],
+"secOvN": 0,
+"secOv": [],
+"escapeN": 0,
+"escape": [],
+"footHit": [],
+"mainBelowFooter": 0,
+"bands": [],
+"footerX": [
+50,
+1390
+],
+"heroX": [
+156,
+1284
+],
+"headerX": [
+0,
+1440
+],
+"smallInputs": [],
+"tiny": [
+"span.brand-sub[data-testid=header-brand-subtitle]:11px"
+],
+"editorDock": false,
+"liveEditing": false,
+"contentEditable": 0
+}
+}

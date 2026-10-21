@@ -2,19 +2,22 @@
    Saved typography/crop and CMS data stay intact; only the public layout reflows. */
 @layer responsive {
   /* Coloured section boundaries share the header/hero/footer rails. */
-  body:not(.live-editing) #public-site main > div > .hb:is(.band, .hb-bg) {
+  body:not(.live-editing) #public-site main > div > .hb[data-boxed-band] {
     width: min(var(--box-w), 100%) !important;
     max-width: 100% !important;
     margin-inline: auto !important;
     transform: translateY(var(--ed-y, 0px)) !important;
   }
 
-  /* The overlapping desktop Craft grid needs a bounded text column, otherwise
-     a saved offset is measured from a full-width column instead of its centre. */
+  /* Keep this column inside its section rails, even with offsets saved on
+     the former full-width canvas. Preserve vertical placement and font sizes. */
   @media (min-width: 1440px) {
-    #public-site #craft-reference #craft-centre[style*="--ed-h"] > .split > .split-text {
+    body:not(.live-editing) #public-site #craft-reference #craft-centre[style*="--ed-h"] > .split > .split-text {
       width: min(540px, 100%) !important;
-      justify-self: center !important;
+      justify-self: start !important;
+    }
+    body:not(.live-editing) #public-site #craft-reference #craft-centre[style*="--ed-h"] .split-text [data-edit][style*="--ed-t"] {
+      transform: translateY(var(--ed-y, 0px)) !important;
     }
   }
 
@@ -37,8 +40,12 @@
     body:not(.live-editing) #public-site main :is(.hb.hb-hero, .hb.hb-contact_form) {
       width: min(var(--box-w), 100%) !important; margin-inline: auto !important;
     }
-    body:not(.live-editing) #public-site main > div > .hb:is(.band, .hb-bg) {
+    body:not(.live-editing) #public-site main > div > .hb[data-boxed-band] {
       width: min(var(--box-w), 100%) !important; transform: none !important;
+    }
+    body:not(.live-editing) #public-site .page-about > .hb-hero {
+      width: var(--box-w) !important; max-width: none !important;
+      margin-inline: calc((100% - var(--box-w)) / 2) !important;
     }
     body:not(.live-editing) #public-site main :is([data-edit], .prose, .split-text, .sec-head > *, .text-cols > *, .stacked > *, .hfn-head > *) {
       min-width: 0; overflow-wrap: anywhere;
@@ -50,6 +57,7 @@
     body:not(.live-editing) #public-site [data-edit-group="action"] > [data-edit-text] {
       flex: 0 1 auto !important; min-width: 0 !important;
     }
+    body:not(.live-editing) #public-site figure.photo[style*="--ed-h"] { aspect-ratio: auto !important; }
     body:not(.live-editing) #public-site figure.photo[style*="--ed-h"] > .photo-frame { flex: none !important; height: auto !important; }
     body:not(.live-editing) #public-site figure.photo[style*="--ed-h"] > .photo-frame > img {
       height: auto !important; aspect-ratio: var(--ed-crop, var(--ed-ar, auto)) !important;
@@ -81,6 +89,7 @@
 
   /* Navigation collapses before laptop links crowd; touch tablets get the same menu. */
   @media (max-width: 1100px), (hover: none), (pointer: coarse) {
+    #public-site .cf-compact :is(input, textarea), #public-site form select { font-size: 16px !important; }
     #public-site #site-header .header-inner {
       display: flex !important; align-items: center !important; justify-content: space-between !important;
       min-height: 80px !important; gap: 16px !important;

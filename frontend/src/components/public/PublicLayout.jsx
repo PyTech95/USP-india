@@ -18,8 +18,8 @@ function Dropdown({ item, onNavigate }) {
   useEffect(() => setOpen(false), [loc.pathname, loc.hash]);
   useEffect(() => {
     const close = (e) => ref.current && !ref.current.contains(e.target) && setOpen(false);
-    document.addEventListener("pointerdown", close);
-    return () => document.removeEventListener("pointerdown", close);
+    document.addEventListener("click", close);
+    return () => document.removeEventListener("click", close);
   }, []);
   const active = loc.pathname.startsWith(item.href);
   const timer = useRef(null);

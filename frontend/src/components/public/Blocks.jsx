@@ -223,7 +223,8 @@ export function Block(props) {
     }
   }
   const hasBg = !!secStyle?.backgroundColor;
-  return <div id={d.anchor || undefined} className={`hb hb-${t} ${d.band ? "band" : ""} ${hasBg ? "hb-bg" : ""}`} data-block-type={t} data-sec={props.s.id} style={style} ref={(node) => {
+  const boxedBand = hasBg && !["transparent", "white", "#fff", "#ffffff"].includes(secStyle.backgroundColor.toLowerCase()) && !["hero", "contact_form"].includes(t);
+  return <div data-boxed-band={boxedBand || undefined} id={d.anchor || undefined} className={`hb hb-${t} ${d.band ? "band" : ""} ${hasBg ? "hb-bg" : ""}`} data-block-type={t} data-sec={props.s.id} style={style} ref={(node) => {
     applyProps(node, style || {}, [...LAYOUT_PROPS, "backgroundColor", "borderRadius", "--section-pt", "--section-pb"]);
     if (node) node.querySelectorAll(":scope > section, .hero-plain, .rak-hero, .workshops-hero, .craft-hero-intro, .about-hero").forEach((child) => {
       if (hasBg) child.style.setProperty("background-color", "transparent", "important");

@@ -1,0 +1,84 @@
+{
+ "touch1366": {
+  "dock": false,
+  "dockVisible": false,
+  "panel": false,
+  "panelVisible": false,
+  "liveUiVisible": 0,
+  "ce": 0,
+  "liveEditing": false,
+  "session": "1",
+  "status": null,
+  "adminReq": []
+ },
+ "desk1280": {
+  "dock": true,
+  "dockVisible": false,
+  "panel": true,
+  "panelVisible": false,
+  "liveUiVisible": 0,
+  "ce": 0,
+  "liveEditing": true,
+  "session": "1",
+  "status": "Everything is saved",
+  "adminReq": [
+   "GET /admin/pages/about/live",
+   "GET /admin/pages/about/live"
+  ]
+ },
+ "desk1920": {
+  "dock": true,
+  "dockVisible": false,
+  "panel": true,
+  "panelVisible": false,
+  "liveUiVisible": 0,
+  "ce": 0,
+  "liveEditing": true,
+  "session": "1",
+  "status": "Everything is saved",
+  "adminReq": [
+   "GET /admin/pages/about/live",
+   "GET /admin/pages/about/live"
+  ]
+ },
+ "desk1440": {
+  "dock": true,
+  "dockVisible": false,
+  "panel": true,
+  "panelVisible": false,
+  "liveUiVisible": 0,
+  "ce": 0,
+  "liveEditing": true,
+  "session": "1",
+  "status": "Everything is saved",
+  "adminReq": [
+   "GET /admin/pages/about/live",
+   "GET /admin/pages/about/live"
+  ]
+ },
+ "dirtyMobile": {
+  "dock": false,
+  "dockVisible": false,
+  "panel": false,
+  "panelVisible": false,
+  "liveUiVisible": 0,
+  "ce": 0,
+  "liveEditing": false,
+  "session": "1",
+  "status": null
+ },
+ "dirtyBack": {
+  "dock": true,
+  "dockVisible": false,
+  "panel": true,
+  "panelVisible": false,
+  "liveUiVisible": 0,
+  "ce": 1,
+  "liveEditing": true,
+  "session": "1",
+  "status": "Unsaved changes \u2014 press Save to publish"
+ },
+ "savePuts": [
+  "PUT /admin/pages/about/live"
+ ]
+}
