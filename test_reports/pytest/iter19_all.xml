@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="2" failures="4" skipped="0" tests="50" time="4.748" timestamp="2026-10-21T15:15:17.866262+00:00" hostname="agent-env-43025ad9-f977-4645-bcc4-dafb4491b71c"><testcase classname="" name="tests.test_accent_lines" time="0.000"><error message="collection failure">tests/test_accent_lines.py:6: in &lt;module&gt;
+    BASE_URL = os.environ.get("REACT_APP_BACKEND_URL").rstrip("/")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'NoneType' object has no attribute 'rstrip'</error><error message="collection failure">tests/test_accent_lines.py:6: in &lt;module&gt;
+    BASE_URL = os.environ.get("REACT_APP_BACKEND_URL").rstrip("/")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'NoneType' object has no attribute 'rstrip'</error></testcase><testcase classname="tests.test_smoke_cms" name="test_health" time="0.320" /><testcase classname="tests.test_smoke_cms" name="test_public_site" time="0.200" /><testcase classname="tests.test_smoke_cms" name="test_public_pages[home]" time="0.119" /><testcase classname="tests.test_rakhigarhi_ambition_boxes" name="test_live_save_three_boxes_roundtrip_and_sanitize" time="0.784" /><testcase classname="tests.test_smoke_cms" name="test_public_pages[about]" time="0.099" /><testcase classname="tests.test_smoke_cms" name="test_public_pages[our-work]" time="0.116" /><testcase classname="tests.test_rakhigarhi_ambition_boxes" name="test_live_save_empty_box_ok" time="0.138" /><testcase classname="tests.test_smoke_cms" name="test_public_pages[rakhigarhi]" time="0.102" /><testcase classname="tests.test_rakhigarhi_ambition_boxes" name="test_version_stable_and_returned_after_save" time="0.285" /><testcase classname="tests.test_smoke_cms" name="test_public_pages[theatre]" time="0.098" /><testcase classname="tests.test_smoke_cms" name="test_public_pages[craft-livelihood]" time="0.126" /><testcase classname="tests.test_smoke_cms" name="test_public_pages[workshops-learning]" time="0.095" /><testcase classname="tests.test_rakhigarhi_ambition_boxes" name="test_stale_save_returns_409_and_writes_nothing" time="0.466" /><testcase classname="tests.test_smoke_cms" name="test_public_pages[field-notes]" time="0.141" /><testcase classname="tests.test_smoke_cms" name="test_public_pages[connect]" time="0.103" /><testcase classname="tests.test_smoke_cms" name="test_public_notes_and_detail_and_media" time="0.449" /><testcase classname="tests.test_rakhigarhi_ambition_boxes" name="test_legacy_save_without_base_version" time="0.152" /><testcase classname="tests.test_rakhigarhi_ambition_boxes" name="test_live_save_requires_auth" time="0.108" /><testcase classname="tests.test_rakhigarhi_ambition_boxes" name="test_atomic_cas_race_in_process[True]" time="0.251" /><testcase classname="tests.test_smoke_cms" name="test_note_404" time="0.095" /><testcase classname="tests.test_smoke_cms" name="test_login_bad_password" time="0.098" /><testcase classname="tests.test_rakhigarhi_ambition_boxes" name="test_atomic_cas_race_in_process[False]" time="0.008" /><testcase classname="tests.test_content_merge_preservation.TestMergePreservation" name="test_incoming_restored_label_keeps_live_font_and_position" time="0.001" /><testcase classname="tests.test_content_merge_preservation.TestMergePreservation" name="test_section_geometry_correction_not_replaced" time="0.000" /><testcase classname="tests.test_content_merge_preservation.TestMergePreservation" name="test_geometry_conflict_live_wins" time="0.000" /><testcase classname="tests.test_content_merge_preservation.TestMergePreservation" name="test_production_typography_preserved" time="0.000" /><testcase classname="tests.test_content_merge_preservation.TestMergePreservation" name="test_ordinary_conflicting_live_edit_has_priority" time="0.000" /><testcase classname="tests.test_content_merge_preservation.TestMergePreservation" name="test_non_conflicting_incoming_change_applied" time="0.000" /><testcase classname="tests.test_content_merge_preservation.TestMergePreservation" name="test_inputs_not_mutated" time="0.000" /><testcase classname="tests.test_contact_site_live" name="test_address_multiline_persists" time="0.018"><failure message="RuntimeError: Task &lt;Task pending name='Task-3' coro=&lt;site_live_patch() running at /app/backend/routes_admin.py:448&gt; cb=[_run_until_complete_cb() at /usr/local/lib/python3.11/asyncio/base_events.py:181]&gt; got Future &lt;Future pending cb=[_chain_future.&lt;locals&gt;._call_check_cancel() at /usr/local/lib/python3.11/asyncio/futures.py:387]&gt; attached to a different loop">env = {'mod': &lt;module 'routes_admin' from '/app/backend/routes_admin.py'&gt;, 'loop': &lt;_UnixSelectorEventLoop running=False clo...e', 'site_name': 'USP India', 'full_name': 'Urban Suburban Perspectives', 'tagline': 'Heritage, Art and Culture', ...}}
+
+    def test_address_multiline_persists(env):
+        val = "TEST House\nLine 2, Lane\nGurgaon 122009"
+&gt;       r = _call(env, "contact.address", val)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_contact_site_live.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_contact_site_live.py:60: in _call
+    return env["loop"].run_until_complete(m.site_live_patch(m.SiteLivePatch(path=path, value=value), USER))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/asyncio/base_events.py:654: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+body = SiteLivePatch(path='contact.address', value='TEST House\nLine 2, Lane\nGurgaon 122009', area='main', styles=None)
+user = {'id': 'TEST_user', 'email': 'admin@uspindia.org', 'name': 'TEST', 'role': 'admin'}
+
+    @router.put("/site-live")
+    async def site_live_patch(body: SiteLivePatch, user=Depends(require("config"))):
+        """Patch public copy only; never accept arbitrary settings or Mongo paths."""
+        path = body.path
+        plain = {"brand_label", "site_name", "full_name", "tagline", "privacy_html", "logo_media_id", "contact.email", "contact.phone", "contact.address"}
+        menu = re.fullmatch(r"menus\.(main|footer)\.\d+(?:\.children\.\d+){0,2}\.label", path)
+        ui = re.fullmatch(r"ui_text\.[a-z][a-z0-9_]{0,79}", path)
+        social = re.fullmatch(r"social\.\d+\.label", path)
+        display = re.fullmatch(r"display\.[a-z][a-z0-9_-]{0,79}", path)
+        if path not in plain and not (menu or ui or social or display):
+            raise HTTPException(400, "This setting is not editable as public copy")
+&gt;       s = await db.settings.find_one({"key": "site"}, {"_id": 0})
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       RuntimeError: Task &lt;Task pending name='Task-3' coro=&lt;site_live_patch() running at /app/backend/routes_admin.py:448&gt; cb=[_run_until_complete_cb() at /usr/local/lib/python3.11/asyncio/base_events.py:181]&gt; got Future &lt;Future pending cb=[_chain_future.&lt;locals&gt;._call_check_cancel() at /usr/local/lib/python3.11/asyncio/futures.py:387]&gt; attached to a different loop
+
+routes_admin.py:448: RuntimeError</failure></testcase><testcase classname="tests.test_contact_site_live" name="test_phone_and_email_persist" time="0.001"><failure message="RuntimeError: Task &lt;Task pending name='Task-4' coro=&lt;site_live_patch() running at /app/backend/routes_admin.py:448&gt; cb=[_run_until_complete_cb() at /usr/local/lib/python3.11/asyncio/base_events.py:181]&gt; got Future &lt;Future pending cb=[_chain_future.&lt;locals&gt;._call_check_cancel() at /usr/local/lib/python3.11/asyncio/futures.py:387]&gt; attached to a different loop">env = {'mod': &lt;module 'routes_admin' from '/app/backend/routes_admin.py'&gt;, 'loop': &lt;_UnixSelectorEventLoop running=False clo...e', 'site_name': 'USP India', 'full_name': 'Urban Suburban Perspectives', 'tagline': 'Heritage, Art and Culture', ...}}
+
+    def test_phone_and_email_persist(env):
+&gt;       _call(env, "contact.phone", "+91 98100 00000")
+
+tests/test_contact_site_live.py:75: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_contact_site_live.py:60: in _call
+    return env["loop"].run_until_complete(m.site_live_patch(m.SiteLivePatch(path=path, value=value), USER))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/asyncio/base_events.py:654: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+body = SiteLivePatch(path='contact.phone', value='+91 98100 00000', area='main', styles=None)
+user = {'id': 'TEST_user', 'email': 'admin@uspindia.org', 'name': 'TEST', 'role': 'admin'}
+
+    @router.put("/site-live")
+    async def site_live_patch(body: SiteLivePatch, user=Depends(require("config"))):
+        """Patch public copy only; never accept arbitrary settings or Mongo paths."""
+        path = body.path
+        plain = {"brand_label", "site_name", "full_name", "tagline", "privacy_html", "logo_media_id", "contact.email", "contact.phone", "contact.address"}
+        menu = re.fullmatch(r"menus\.(main|footer)\.\d+(?:\.children\.\d+){0,2}\.label", path)
+        ui = re.fullmatch(r"ui_text\.[a-z][a-z0-9_]{0,79}", path)
+        social = re.fullmatch(r"social\.\d+\.label", path)
+        display = re.fullmatch(r"display\.[a-z][a-z0-9_-]{0,79}", path)
+        if path not in plain and not (menu or ui or social or display):
+            raise HTTPException(400, "This setting is not editable as public copy")
+&gt;       s = await db.settings.find_one({"key": "site"}, {"_id": 0})
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       RuntimeError: Task &lt;Task pending name='Task-4' coro=&lt;site_live_patch() running at /app/backend/routes_admin.py:448&gt; cb=[_run_until_complete_cb() at /usr/local/lib/python3.11/asyncio/base_events.py:181]&gt; got Future &lt;Future pending cb=[_chain_future.&lt;locals&gt;._call_check_cancel() at /usr/local/lib/python3.11/asyncio/futures.py:387]&gt; attached to a different loop
+
+routes_admin.py:448: RuntimeError</failure></testcase><testcase classname="tests.test_contact_site_live" name="test_blank_phone_allowed" time="0.001"><failure message="RuntimeError: Task &lt;Task pending name='Task-5' coro=&lt;site_live_patch() running at /app/backend/routes_admin.py:448&gt; cb=[_run_until_complete_cb() at /usr/local/lib/python3.11/asyncio/base_events.py:181]&gt; got Future &lt;Future pending cb=[_chain_future.&lt;locals&gt;._call_check_cancel() at /usr/local/lib/python3.11/asyncio/futures.py:387]&gt; attached to a different loop">env = {'mod': &lt;module 'routes_admin' from '/app/backend/routes_admin.py'&gt;, 'loop': &lt;_UnixSelectorEventLoop running=False clo...e', 'site_name': 'USP India', 'full_name': 'Urban Suburban Perspectives', 'tagline': 'Heritage, Art and Culture', ...}}
+
+    def test_blank_phone_allowed(env):
+&gt;       _call(env, "contact.phone", "")
+
+tests/test_contact_site_live.py:83: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_contact_site_live.py:60: in _call
+    return env["loop"].run_until_complete(m.site_live_patch(m.SiteLivePatch(path=path, value=value), USER))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/asyncio/base_events.py:654: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+body = SiteLivePatch(path='contact.phone', value='', area='main', styles=None)
+user = {'id': 'TEST_user', 'email': 'admin@uspindia.org', 'name': 'TEST', 'role': 'admin'}
+
+    @router.put("/site-live")
+    async def site_live_patch(body: SiteLivePatch, user=Depends(require("config"))):
+        """Patch public copy only; never accept arbitrary settings or Mongo paths."""
+        path = body.path
+        plain = {"brand_label", "site_name", "full_name", "tagline", "privacy_html", "logo_media_id", "contact.email", "contact.phone", "contact.address"}
+        menu = re.fullmatch(r"menus\.(main|footer)\.\d+(?:\.children\.\d+){0,2}\.label", path)
+        ui = re.fullmatch(r"ui_text\.[a-z][a-z0-9_]{0,79}", path)
+        social = re.fullmatch(r"social\.\d+\.label", path)
+        display = re.fullmatch(r"display\.[a-z][a-z0-9_-]{0,79}", path)
+        if path not in plain and not (menu or ui or social or display):
+            raise HTTPException(400, "This setting is not editable as public copy")
+&gt;       s = await db.settings.find_one({"key": "site"}, {"_id": 0})
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       RuntimeError: Task &lt;Task pending name='Task-5' coro=&lt;site_live_patch() running at /app/backend/routes_admin.py:448&gt; cb=[_run_until_complete_cb() at /usr/local/lib/python3.11/asyncio/base_events.py:181]&gt; got Future &lt;Future pending cb=[_chain_future.&lt;locals&gt;._call_check_cancel() at /usr/local/lib/python3.11/asyncio/futures.py:387]&gt; attached to a different loop
+
+routes_admin.py:448: RuntimeError</failure></testcase><testcase classname="tests.test_contact_site_live" name="test_non_allowlisted_rejected" time="0.001" /><testcase classname="tests.test_contact_site_live" name="test_http_requires_auth_and_rejects_bad_path" time="0.452" /><testcase classname="tests.test_smoke_cms" name="test_me" time="0.385" /><testcase classname="tests.test_smoke_cms" name="test_csrf_required" time="0.220" /><testcase classname="tests.test_smoke_cms" name="test_admin_lists[dashboard]" time="0.047" /><testcase classname="tests.test_smoke_cms" name="test_admin_lists[pages]" time="0.046" /><testcase classname="tests.test_contact_site_live" name="test_public_settings_real_phone_empty" time="0.100"><failure message="AssertionError: real phone should be empty (no fake seeded)&#10;assert not '+9100000'&#10; +  where '+9100000' = &lt;built-in method get of dict object at 0xfe7f6c5b0cc0&gt;('phone')&#10; +    where &lt;built-in method get of dict object at 0xfe7f6c5b0cc0&gt; = ({'address': 'Dharfari House\n4528, Hibiscus Lane\nPhase IV, Gurgaon 122009', 'email': 'info@uspindia.org', 'phone': '+9100000'}).get&#10; +      where {'address': 'Dharfari House\n4528, Hibiscus Lane\nPhase IV, Gurgaon 122009', 'email': 'info@uspindia.org', 'phone': '+9100000'} = &lt;built-in method get of dict object at 0xfe7f6c5df5c0&gt;('contact')&#10; +        where &lt;built-in method get of dict object at 0xfe7f6c5df5c0&gt; = {'site_name': 'USP India', 'full_name': 'Urban Suburban Perspectives', 'tagline': 'Heritage, Art and Culture', 'theme'...urface': '#EDEAE7', ...}, 'fonts': {'body': 'Public Sans', 'heading': 'Public Sans', 'site': 'Public Sans'}, ...}, ...}.get&#10; +          where {'site_name': 'USP India', 'full_name': 'Urban Suburban Perspectives', 'tagline': 'Heritage, Art and Culture', 'theme'...urface': '#EDEAE7', ...}, 'fonts': {'body': 'Public Sans', 'heading': 'Public Sans', 'site': 'Public Sans'}, ...}, ...} = json()&#10; +            where json = &lt;Response [200]&gt;.json">def test_public_settings_real_phone_empty():
+        r = requests.get(f"{BASE_URL}/api/public/site")
+        if r.status_code == 404:
+            pytest.skip("public site endpoint differs")
+        assert r.status_code == 200
+&gt;       assert not (r.json().get("contact") or {}).get("phone"), "real phone should be empty (no fake seeded)"
+E       AssertionError: real phone should be empty (no fake seeded)
+E       assert not '+9100000'
+E        +  where '+9100000' = &lt;built-in method get of dict object at 0xfe7f6c5b0cc0&gt;('phone')
+E        +    where &lt;built-in method get of dict object at 0xfe7f6c5b0cc0&gt; = ({'address': 'Dharfari House\n4528, Hibiscus Lane\nPhase IV, Gurgaon 122009', 'email': 'info@uspindia.org', 'phone': '+9100000'}).get
+E        +      where {'address': 'Dharfari House\n4528, Hibiscus Lane\nPhase IV, Gurgaon 122009', 'email': 'info@uspindia.org', 'phone': '+9100000'} = &lt;built-in method get of dict object at 0xfe7f6c5df5c0&gt;('contact')
+E        +        where &lt;built-in method get of dict object at 0xfe7f6c5df5c0&gt; = {'site_name': 'USP India', 'full_name': 'Urban Suburban Perspectives', 'tagline': 'Heritage, Art and Culture', 'theme'...urface': '#EDEAE7', ...}, 'fonts': {'body': 'Public Sans', 'heading': 'Public Sans', 'site': 'Public Sans'}, ...}, ...}.get
+E        +          where {'site_name': 'USP India', 'full_name': 'Urban Suburban Perspectives', 'tagline': 'Heritage, Art and Culture', 'theme'...urface': '#EDEAE7', ...}, 'fonts': {'body': 'Public Sans', 'heading': 'Public Sans', 'site': 'Public Sans'}, ...}, ...} = json()
+E        +            where json = &lt;Response [200]&gt;.json
+
+tests/test_contact_site_live.py:113: AssertionError</failure></testcase><testcase classname="tests.test_smoke_cms" name="test_admin_lists[notes]" time="0.049" /><testcase classname="tests.test_smoke_cms" name="test_admin_lists[media]" time="0.048" /><testcase classname="tests.test_smoke_cms" name="test_admin_lists[settings]" time="0.041" /><testcase classname="tests.test_smoke_cms" name="test_admin_lists[enquiries]" time="0.052" /><testcase classname="tests.test_smoke_cms" name="test_admin_lists[users]" time="0.047" /><testcase classname="tests.test_smoke_cms" name="test_admin_lists[redirects]" time="0.044" /><testcase classname="tests.test_smoke_cms" name="test_enquiry_flow" time="0.187" /><testcase classname="tests.test_smoke_cms" name="test_enquiry_bot_rejected" time="0.211" /><testcase classname="tests.test_smoke_cms" name="test_note_crud" time="0.333" /></testsuite></testsuites>

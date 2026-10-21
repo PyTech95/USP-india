@@ -98,3 +98,8 @@ body .live-panel .live-top { position: sticky; top: -14px; z-index: 4; backgroun
 body.live-editing .live-add-menu { z-index: 100070; }
 body.live-editing [data-slot="dialog-overlay"] { z-index: 100079; }
 body.live-editing [role="dialog"] { z-index: 100080; }
+body.live-editing #public-site.site > main { z-index: auto !important; }
+body .live-panel[data-panel-side="left"] { left: 12px; right: auto; }
+@media (max-width: 960px) { body .live-panel[data-panel-side="left"] { left: auto; right: 12px; } .live-panel-side { display: none; } }
+
+

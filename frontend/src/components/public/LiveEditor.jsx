@@ -102,6 +102,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
   const [rect, setRect] = useState(null);
   const [device, setDevice] = useState("desktop");
   const [hist, setHist] = useState({ past: [], future: [] });
+  const [panelSide, setPanelSide] = useState("right");
   const [guides, setGuides] = useState([]);
   const fileRef = useRef(null);
   const inlineDraft = useRef(null);
@@ -142,6 +143,13 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
   }, [content, setContent]);
 
   const patchSec = (id, fn) => commit(sections.map((s) => (s.id === id ? fn(s) : s)));
+  const revealSelection = (next) => {
+    if (next && window.innerWidth > 960) {
+      const box = findEl(next)?.getBoundingClientRect();
+      if (box?.left > window.innerWidth / 2) setPanelSide("left");
+      else if (box?.right < window.innerWidth / 2) setPanelSide("right");
+    }
+  };
   const selectField = (next) => {
     // Clicking the already-selected text again must keep it focused for inline typing.
     const cur = selRef.current;
@@ -151,6 +159,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
       inlineDraft.current = null;
       patchSec(draft.sec, (s) => ({ ...s, data: setPath(s.data, draft.field, draft.value) }));
     }
+    revealSelection(next);
     setSel(next);
   };
   const setStyles = (patch) => {
@@ -499,7 +508,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
         </div>
       )}
 
-      <aside className="live-ui live-panel" data-testid="live-editor-panel" data-live-panel-ready="true">
+      <aside className="live-ui live-panel" data-panel-side={panelSide} data-testid="live-editor-panel" data-live-panel-ready="true">
         <div className="live-row live-top">
           <strong data-testid="live-panel-title">Live editor</strong>
           <button type="button" className="live-btn" disabled={!hist.past.length} onClick={undo} title="Undo (Ctrl/⌘+Z)" data-testid="live-undo"><Undo2 size={14} /></button>
@@ -510,6 +519,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
         <p className={`live-status ${dirty ? "is-dirty" : ""}`} data-testid="live-status">{dirty ? "Unsaved changes — press Save to publish" : "Everything is saved"}</p>
 
         <div className="live-devs" role="group" aria-label="Preview device">
+          <button className="live-btn live-panel-side" onClick={() => setPanelSide(panelSide === "right" ? "left" : "right")} type="button" data-testid="live-panel-side" title="Move the inspector aside without changing its top position">Panel {panelSide === "right" ? "left" : "right"}</button>
           {[["desktop", Monitor], ["tablet", Tablet], ["mobile", Smartphone]].map(([d, I]) => (
             <button key={d} type="button" className={`live-btn ${device === d ? "live-on" : ""}`} onClick={() => setDevice(d)} aria-label={d} data-testid={`live-device-${d}`}><I size={14} /></button>
           ))}
@@ -685,6 +695,10 @@ function Group({ title, open = false, testid, children }) {
 
 function SectionStyle({ sec, onChange }) {
   const s = (sec.styles || {})._section || {};
+  const root = document.querySelector(`[data-sec="${CSS.escape(sec.id)}"]`);
+  const inner = sec.data?.layout === "rakhigarhi-ambition-aligned" ? root?.querySelector(":scope > section") : root;
+  const padding = inner ? window.getComputedStyle(inner) : null;
+  const placeholder = (key) => String(Math.round(parseFloat(padding?.[key]) || 0));
   return (
     <>
       <div className="live-row">
@@ -692,8 +706,8 @@ function SectionStyle({ sec, onChange }) {
         <button type="button" className="live-btn" onClick={() => onChange({ backgroundColor: "" })} data-testid="live-sec-bg-clear" title="Clear background"><RotateCcw size={14} /></button>
       </div>
       <div className="live-row">
-        <label className="live-field">Space top (px)<input type="number" value={px(s.paddingTop)} placeholder="auto" onChange={(e) => onChange({ paddingTop: e.target.value ? `${e.target.value}px` : "" })} data-testid="live-sec-pad-top" /></label>
-        <label className="live-field">Space bottom (px)<input type="number" value={px(s.paddingBottom)} placeholder="auto" onChange={(e) => onChange({ paddingBottom: e.target.value ? `${e.target.value}px` : "" })} data-testid="live-sec-pad-bottom" /></label>
+        <label className="live-field">Space top (px)<input type="number" value={px(s.paddingTop)} placeholder={placeholder("paddingTop")} onChange={(e) => onChange({ paddingTop: e.target.value ? `${e.target.value}px` : "" })} data-testid="live-sec-pad-top" /></label>
+        <label className="live-field">Space bottom (px)<input type="number" value={px(s.paddingBottom)} placeholder={placeholder("paddingBottom")} onChange={(e) => onChange({ paddingBottom: e.target.value ? `${e.target.value}px` : "" })} data-testid="live-sec-pad-bottom" /></label>
       </div>
     </>
   );

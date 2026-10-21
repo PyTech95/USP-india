@@ -105,9 +105,8 @@ def test_http_requires_auth_and_rejects_bad_path():
     assert r.status_code == 400
 
 
-def test_public_settings_real_phone_empty():
+def test_public_settings_matches_saved_contact():
     r = requests.get(f"{BASE_URL}/api/public/site")
-    if r.status_code == 404:
-        pytest.skip("public site endpoint differs")
     assert r.status_code == 200
-    assert not (r.json().get("contact") or {}).get("phone"), "real phone should be empty (no fake seeded)"
+    saved = sync.settings.find_one({"key": "site"}, {"_id": 0, "contact": 1})
+    assert (r.json().get("contact") or {}).get("phone", "") == (saved.get("contact") or {}).get("phone", "")
