@@ -116,3 +116,10 @@
 - Responsive navigation <=1100/coarse input, Escape/outside/route close; touch targets, action wrapping, images, contact, notes dates and footer.
 - LiveEditorProvider gates editing and dock by min1025px + hover + fine pointer. Separate enabled session preserves unsaved page/header/site drafts while resizing; no changes to auth or DB.
 - QA: test prod fixture replay as well as preview; full phone/tablet/laptop sweeps + desktop baseline regression. No real data writes; use intercepted admin live data/save responses for editor tests, clearly mark test stubs. No deployment requested for this batch.
+
+## Final responsive verification
+- iterations28-29: all main responsive/editor/navigation/image fixes verified. No DB writes. QA-only edit/save stubs.
+- Remaining iteration29 About 5px inset fixed by raising selector specificity in responsive.css.
+- Main browser retest PASS at1024,1280,1440: About hero exactly aligns to footer rails. /app/test_reports/iteration_30.json.
+- No open responsive product failures; no publishing performed for this batch. User requested completion without unrelated modifications.
+

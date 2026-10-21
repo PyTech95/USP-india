@@ -1,0 +1,45 @@
+{
+  "summary": "Targeted frontend retest of the iteration-28 failures only. Read-only: fixture replay (prod and preview), GET only, every non-GET aborted. No app source or data changes, no deployments. Chromium and WebKit. RESULT: 4 of 5 targets PASS, 1 minor still open. (1) PASS: prod Craft Centre text is inside the rails in both engines. At 1440 the text runs x=125 to 597 (Chromium) and 125 to 601 (WebKit), inside the 50 to 1390 band rail. At 1920 it runs 365 to 841 / 365 to 827, inside the 290 to 1630 rail. 0 text-on-image overlaps. .split-text has justify-self:start and is 540px wide. The children now carry only translateY (312/306/299px), from the preserved --ed-y. Fonts are 13/28/18px, unchanged. The Craft Knowledge band is still on the hero rail (50 to 1389 at 1440, 290 to 1629 at 1920). (2) PASS: the saved-height figures, Workshops block-3-image and block-4-collage-0 and Rakhigarhi block-2-detail-0, at 390/768/1366 in Chromium and WebKit (18 checks). The figure now uses aspect-ratio:auto, and figure height = frame height = img height (e.g. 550/550/550, 303/303/303, 240/240/240). The image stays inside its figure, with 0 overlaps on any heading or paragraph. (3) PASS: the menu at 390 and 1024, in Chromium and WebKit, with mouse and touch (16 navigations). With the Our Work submenu expanded, Field Notes and Connect both navigate. Escape and an outside tap or click still close the menu and submenu without navigating. (4) PASS: desktop 1440/1920 diff against responsive_desktop_baseline.json, with reduced motion, 32 captures. Fonts: 0 changes. docH: identical everywhere. Preview: 0 diffs on all 16 captures, so the iter28 uncoloured-section X regression is gone. Prod: only 4 routes differ, and every changed section is a coloured data-boxed-band block that was moved onto the rail (details in design_issues). The white Rakhigarhi block-4 (hb-bg, rgb 255,255,255) is correctly not boxed and keeps its saved 9.8px X, unchanged. Input font-size is 16px at 390/768/1024/1100 and 15px at 1101 and above, which passes. (5) MINOR, STILL OPEN: the About hero at 1024/1280 is still inset (41 to 983 vs the 36 to 988 rail at 1024; 51 to 1229 vs 45 to 1235 at 1280). At 1440 it is the original 50 to 1390. Root cause is in design_issues.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "About hero, prod, below 1440 (1024/1280)",
+        "issues": [
+          "The new rule at responsive.css:46-49 (body:not(.live-editing) #public-site .page-about > .hb-hero, specificity 1,3,1) loses to the rule at responsive.css:40-42 (body:not(.live-editing) #public-site main :is(.hb.hb-hero, .hb.hb-contact_form), specificity 1,3,2). The hero therefore gets width:min(var(--box-w),100%) with margin-inline:auto. Its parent #about-reference.page-about is itself only 942px wide (41 to 983) at 1024, so the hero stays 942 wide with a 0 margin instead of 952 with a -5px margin. Suggested fix: raise the About selector's specificity, e.g. body:not(.live-editing) #public-site main > .page-about > .hb.hb-hero. With the -5px margin it would land at 36 to 988. 1440 and above is unaffected (50 to 1390, original)."
+        ]
+      },
+      {
+        "screen": "Desktop 1440/1920 prod: expected changes only (informational)",
+        "issues": [
+          "The only prod sections that differ from the baseline are coloured data-boxed-band blocks. Each is now 1339 wide at x=50 (1440) or x=290 (1920), with no X translate. Home block-3 (rgb 245,243,241) was 1245 wide, so its body column moves 48px right. Theatre block-4 and block-5 (rgb 248,247,246) had saved --ed-t X of 49 and 58px; block-5 text moves 11-12px left. Craft block-1 (rgb 237,234,231) went from 1313 wide at x=46 to the rail; text moves 6px (14px at 1920). Workshops block-7 (rgb 237,234,231) went from 1313 to 1339; its inner text grows 820 to 837 and the button moves 23px. The matched rule is responsive.css:5-10 (main > div > .hb[data-boxed-band]). All text shifts follow from the band width or X normalisation, not from any inherited font or rail change on uncoloured sections. Craft Centre text moved from -133 to 125 (the intended fix)."
+        ]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/tests/iter29_targeted.py",
+    "/app/tests/iter29_about_probe.py",
+    "/app/tests/iter29_desktop_diff.py",
+    "/app/test_reports/iter29_targeted.json",
+    "/app/test_reports/iter29_desktop_after.json",
+    "/app/test_reports/iter29_desktop_diff.json"
+  ],
+  "action_items": [
+    "Minor, optional: raise the specificity of the About hero <1440 rule (responsive.css:46-49) above the generic main :is(.hb.hb-hero, ...) rule at line 40, so the About hero meets the 36 to 988 rail at 1024 (and the matching rail at 1280)."
+  ],
+  "critical_code_review_comments": [
+    "responsive.css:40 vs :46: same-layer specificity conflict. The About-specific override never applies below 1440.",
+    "Blocks.jsx:226: the boxedBand whitelist only excludes 'transparent', 'white', '#fff' and '#ffffff'. A white saved as 'rgb(255, 255, 255)' would wrongly be boxed. The current fixtures pass (the Rakhigarhi block-4 white was correctly excluded), but normalising the colour would be more robust."
+  ],
+  "updated_files": ["/app/tests/iter29_targeted.py", "/app/tests/iter29_about_probe.py", "/app/tests/iter29_desktop_diff.py"],
+  "success_rate": {"backend": "N/A (skipped)", "frontend": "~98% (4 of 5 targets pass; 1 minor About inset at 1024/1280)"},
+  "test_credentials": "None needed (public fixtures only)",
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Targeted runner: g={}; exec(open('/app/tests/iter29_targeted.py').read(), g); await g['main'](page, ['craft','figs','menu','misc']). It launches WebKit itself via async_playwright, and you can run the parts separately. For the desktop diff, call page.emulate_media(reduced_motion='reduce') FIRST; without it, reveal animations give false +44px Y / -46px X diffs everywhere. Then run iter27_desktop_baseline.run(page, [mode]), dump the result to iter29_desktop_after.json, and run python3 /app/tests/iter29_desktop_diff.py. Headless WebKit image loading remains a known network artifact.",
+  "rca of the issue": "About inset at <1440: CSS specificity. Selector (1,3,1) loses to (1,3,2) in the same @layer responsive with !important, and the parent .page-about is narrowed to 942px."
+}

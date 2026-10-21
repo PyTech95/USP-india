@@ -43,7 +43,7 @@
     body:not(.live-editing) #public-site main > div > .hb[data-boxed-band] {
       width: min(var(--box-w), 100%) !important; transform: none !important;
     }
-    body:not(.live-editing) #public-site .page-about > .hb-hero {
+    body:not(.live-editing) #public-site main > .page-about > .hb.hb-hero {
       width: var(--box-w) !important; max-width: none !important;
       margin-inline: calc((100% - var(--box-w)) / 2) !important;
     }

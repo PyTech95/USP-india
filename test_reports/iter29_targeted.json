@@ -1,0 +1,730 @@
+{
+ "craft/chromium/1440": {
+  "vw": 1440,
+  "rail": [
+   0,
+   1440
+  ],
+  "footRail": [
+   138,
+   1302
+  ],
+  "sec": [
+   20,
+   3984,
+   779,
+   4790
+  ],
+  "img": [
+   735,
+   4029,
+   1284,
+   4763
+  ],
+  "textL": 125,
+  "textR": 597,
+  "inside": true,
+  "textOnImg": 0,
+  "splitText": {
+   "box": [
+    125,
+    4027,
+    665,
+    4349
+   ],
+   "js": "start",
+   "w": "540px"
+  },
+  "kids": [
+   {
+    "tid": "eyebrow-the-craft-centre",
+    "tf": "matrix(1, 0, 0, 1, 0, 312)",
+    "edy": "312px",
+    "edt": "translate(-293px, 312px)",
+    "fs": "13px"
+   },
+   {
+    "tid": "block-6-heading",
+    "tf": "matrix(1, 0, 0, 1, 0, 306)",
+    "edy": "306px",
+    "edt": "translate(-293px, 306px)",
+    "fs": "28px"
+   },
+   {
+    "tid": "block-6-body",
+    "tf": "matrix(1, 0, 0, 1, 0, 299)",
+    "edy": "299px",
+    "edt": "translate(-289px, 299px)",
+    "fs": "18px"
+   }
+  ],
+  "n": 8,
+  "band": [
+   {
+    "sec": "2f77f69154024bc18e63c209b09dd8bb",
+    "box": [
+     50,
+     928,
+     1390,
+     1573
+    ],
+    "bg": "rgb(237, 234, 231)"
+   }
+  ]
+ },
+ "craft/chromium/1920": {
+  "vw": 1920,
+  "rail": [
+   240,
+   1680
+  ],
+  "footRail": [
+   378,
+   1542
+  ],
+  "sec": [
+   252,
+   4000,
+   1027,
+   4806
+  ],
+  "img": [
+   975,
+   4050,
+   1524,
+   4784
+  ],
+  "textL": 365,
+  "textR": 841,
+  "inside": true,
+  "textOnImg": 0,
+  "splitText": {
+   "box": [
+    365,
+    4048,
+    905,
+    4377
+   ],
+   "js": "start",
+   "w": "540px"
+  },
+  "kids": [
+   {
+    "tid": "eyebrow-the-craft-centre",
+    "tf": "matrix(1, 0, 0, 1, 0, 312)",
+    "edy": "312px",
+    "edt": "translate(-293px, 312px)",
+    "fs": "13px"
+   },
+   {
+    "tid": "block-6-heading",
+    "tf": "matrix(1, 0, 0, 1, 0, 306)",
+    "edy": "306px",
+    "edt": "translate(-293px, 306px)",
+    "fs": "28px"
+   },
+   {
+    "tid": "block-6-body",
+    "tf": "matrix(1, 0, 0, 1, 0, 299)",
+    "edy": "299px",
+    "edt": "translate(-289px, 299px)",
+    "fs": "18px"
+   }
+  ],
+  "n": 9,
+  "band": [
+   {
+    "sec": "2f77f69154024bc18e63c209b09dd8bb",
+    "box": [
+     290,
+     928,
+     1630,
+     1573
+    ],
+    "bg": "rgb(237, 234, 231)"
+   }
+  ]
+ },
+ "craft/webkit/1440": {
+  "vw": 1440,
+  "rail": [
+   0,
+   1440
+  ],
+  "footRail": [
+   138,
+   1302
+  ],
+  "sec": [
+   20,
+   3983,
+   1420,
+   4789
+  ],
+  "img": [
+   735,
+   4028,
+   1284,
+   4762
+  ],
+  "textL": 125,
+  "textR": 601,
+  "inside": true,
+  "textOnImg": 0,
+  "splitText": {
+   "box": [
+    125,
+    4026,
+    665,
+    4347
+   ],
+   "js": "start",
+   "w": "540px"
+  },
+  "kids": [
+   {
+    "tid": "eyebrow-the-craft-centre",
+    "tf": "matrix(1, 0, 0, 1, 0, 312)",
+    "edy": "312px",
+    "edt": "translate(-293px, 312px)",
+    "fs": "13px"
+   },
+   {
+    "tid": "block-6-heading",
+    "tf": "matrix(1, 0, 0, 1, 0, 306)",
+    "edy": "306px",
+    "edt": "translate(-293px, 306px)",
+    "fs": "28px"
+   },
+   {
+    "tid": "block-6-body",
+    "tf": "matrix(1, 0, 0, 1, 0, 299)",
+    "edy": "299px",
+    "edt": "translate(-289px, 299px)",
+    "fs": "18px"
+   }
+  ],
+  "n": 8,
+  "band": [
+   {
+    "sec": "2f77f69154024bc18e63c209b09dd8bb",
+    "box": [
+     50,
+     928,
+     1390,
+     1573
+    ],
+    "bg": "rgb(237, 234, 231)"
+   }
+  ]
+ },
+ "craft/webkit/1920": {
+  "vw": 1920,
+  "rail": [
+   240,
+   1680
+  ],
+  "footRail": [
+   378,
+   1542
+  ],
+  "sec": [
+   252,
+   3999,
+   1668,
+   4805
+  ],
+  "img": [
+   975,
+   4049,
+   1524,
+   4783
+  ],
+  "textL": 365,
+  "textR": 827,
+  "inside": true,
+  "textOnImg": 0,
+  "splitText": {
+   "box": [
+    365,
+    4047,
+    905,
+    4376
+   ],
+   "js": "start",
+   "w": "540px"
+  },
+  "kids": [
+   {
+    "tid": "eyebrow-the-craft-centre",
+    "tf": "matrix(1, 0, 0, 1, 0, 312)",
+    "edy": "312px",
+    "edt": "translate(-293px, 312px)",
+    "fs": "13px"
+   },
+   {
+    "tid": "block-6-heading",
+    "tf": "matrix(1, 0, 0, 1, 0, 306)",
+    "edy": "306px",
+    "edt": "translate(-293px, 306px)",
+    "fs": "28px"
+   },
+   {
+    "tid": "block-6-body",
+    "tf": "matrix(1, 0, 0, 1, 0, 299)",
+    "edy": "299px",
+    "edt": "translate(-289px, 299px)",
+    "fs": "18px"
+   }
+  ],
+  "n": 10,
+  "band": [
+   {
+    "sec": "2f77f69154024bc18e63c209b09dd8bb",
+    "box": [
+     290,
+     928,
+     1630,
+     1573
+    ],
+    "bg": "rgb(237, 234, 231)"
+   }
+  ]
+ },
+ "figs/chromium/390/our-work/workshops-learning": [
+  {
+   "tid": "block-3-image",
+   "figH": 550,
+   "frameH": 550,
+   "imgH": 550,
+   "imgW": 286,
+   "figAR": "auto",
+   "imgAR": "286 / 550",
+   "contained": true,
+   "overlaps": []
+  },
+  {
+   "tid": "block-4-collage-0",
+   "figH": 303,
+   "frameH": 303,
+   "imgH": 303,
+   "imgW": 184,
+   "figAR": "auto",
+   "imgAR": "407 / 673",
+   "contained": true,
+   "overlaps": []
+  }
+ ],
+ "figs/chromium/390/our-work/rakhigarhi": [
+  {
+   "tid": "block-2-detail-0",
+   "figH": 240,
+   "frameH": 240,
+   "imgH": 240,
+   "imgW": 180,
+   "figAR": "auto",
+   "imgAR": "366 / 489",
+   "contained": true,
+   "overlaps": []
+  }
+ ],
+ "figs/chromium/768/our-work/workshops-learning": [
+  {
+   "tid": "block-3-image",
+   "figH": 550,
+   "frameH": 550,
+   "imgH": 550,
+   "imgW": 286,
+   "figAR": "auto",
+   "imgAR": "286 / 550",
+   "contained": true,
+   "overlaps": []
+  },
+  {
+   "tid": "block-4-collage-0",
+   "figH": 634,
+   "frameH": 634,
+   "imgH": 634,
+   "imgW": 384,
+   "figAR": "auto",
+   "imgAR": "407 / 673",
+   "contained": true,
+   "overlaps": []
+  }
+ ],
+ "figs/chromium/768/our-work/rakhigarhi": [
+  {
+   "tid": "block-2-detail-0",
+   "figH": 190,
+   "frameH": 190,
+   "imgH": 190,
+   "imgW": 142,
+   "figAR": "auto",
+   "imgAR": "366 / 489",
+   "contained": true,
+   "overlaps": []
+  }
+ ],
+ "figs/chromium/1366/our-work/workshops-learning": [
+  {
+   "tid": "block-3-image",
+   "figH": 550,
+   "frameH": 550,
+   "imgH": 550,
+   "imgW": 286,
+   "figAR": "auto",
+   "imgAR": "286 / 550",
+   "contained": true,
+   "overlaps": []
+  },
+  {
+   "tid": "block-4-collage-0",
+   "figH": 639,
+   "frameH": 639,
+   "imgH": 639,
+   "imgW": 386,
+   "figAR": "auto",
+   "imgAR": "407 / 673",
+   "contained": true,
+   "overlaps": []
+  }
+ ],
+ "figs/chromium/1366/our-work/rakhigarhi": [
+  {
+   "tid": "block-2-detail-0",
+   "figH": 321,
+   "frameH": 321,
+   "imgH": 321,
+   "imgW": 240,
+   "figAR": "auto",
+   "imgAR": "366 / 489",
+   "contained": true,
+   "overlaps": []
+  }
+ ],
+ "figs/webkit/390/our-work/workshops-learning": [
+  {
+   "tid": "block-3-image",
+   "figH": 550,
+   "frameH": 550,
+   "imgH": 550,
+   "imgW": 286,
+   "figAR": "auto",
+   "imgAR": "286 / 550",
+   "contained": true,
+   "overlaps": []
+  },
+  {
+   "tid": "block-4-collage-0",
+   "figH": 303,
+   "frameH": 303,
+   "imgH": 303,
+   "imgW": 184,
+   "figAR": "auto",
+   "imgAR": "407 / 673",
+   "contained": true,
+   "overlaps": []
+  }
+ ],
+ "figs/webkit/390/our-work/rakhigarhi": [
+  {
+   "tid": "block-2-detail-0",
+   "figH": 240,
+   "frameH": 240,
+   "imgH": 240,
+   "imgW": 180,
+   "figAR": "auto",
+   "imgAR": "366 / 489",
+   "contained": true,
+   "overlaps": []
+  }
+ ],
+ "figs/webkit/768/our-work/workshops-learning": [
+  {
+   "tid": "block-3-image",
+   "figH": 550,
+   "frameH": 550,
+   "imgH": 550,
+   "imgW": 286,
+   "figAR": "auto",
+   "imgAR": "286 / 550",
+   "contained": true,
+   "overlaps": []
+  },
+  {
+   "tid": "block-4-collage-0",
+   "figH": 634,
+   "frameH": 634,
+   "imgH": 634,
+   "imgW": 384,
+   "figAR": "auto",
+   "imgAR": "407 / 673",
+   "contained": true,
+   "overlaps": []
+  }
+ ],
+ "figs/webkit/768/our-work/rakhigarhi": [
+  {
+   "tid": "block-2-detail-0",
+   "figH": 190,
+   "frameH": 190,
+   "imgH": 190,
+   "imgW": 142,
+   "figAR": "auto",
+   "imgAR": "366 / 489",
+   "contained": true,
+   "overlaps": []
+  }
+ ],
+ "figs/webkit/1366/our-work/workshops-learning": [
+  {
+   "tid": "block-3-image",
+   "figH": 550,
+   "frameH": 550,
+   "imgH": 550,
+   "imgW": 286,
+   "figAR": "auto",
+   "imgAR": "286 / 550",
+   "contained": true,
+   "overlaps": []
+  },
+  {
+   "tid": "block-4-collage-0",
+   "figH": 639,
+   "frameH": 639,
+   "imgH": 639,
+   "imgW": 386,
+   "figAR": "auto",
+   "imgAR": "407 / 673",
+   "contained": true,
+   "overlaps": []
+  }
+ ],
+ "figs/webkit/1366/our-work/rakhigarhi": [
+  {
+   "tid": "block-2-detail-0",
+   "figH": 321,
+   "frameH": 321,
+   "imgH": 321,
+   "imgW": 240,
+   "figAR": "auto",
+   "imgAR": "366 / 489",
+   "contained": true,
+   "overlaps": []
+  }
+ ],
+ "menu/chromium/mouse/390/nav-m-notes": {
+  "submenuOpen": true,
+  "url": "/field-notes",
+  "pass": true
+ },
+ "menu/chromium/mouse/390/nav-m-connect": {
+  "submenuOpen": true,
+  "url": "/connect",
+  "pass": true
+ },
+ "menu/chromium/mouse/390/dismiss": {
+  "escSubmenuCount": 0,
+  "escMenuOpen": false,
+  "outsideMenuOpen": false,
+  "outsideSubCount": 0,
+  "url": "/our-work/theatre"
+ },
+ "menu/chromium/mouse/1024/nav-m-notes": {
+  "submenuOpen": true,
+  "url": "/field-notes",
+  "pass": true
+ },
+ "menu/chromium/mouse/1024/nav-m-connect": {
+  "submenuOpen": true,
+  "url": "/connect",
+  "pass": true
+ },
+ "menu/chromium/mouse/1024/dismiss": {
+  "escSubmenuCount": 0,
+  "escMenuOpen": false,
+  "outsideMenuOpen": false,
+  "outsideSubCount": 0,
+  "url": "/our-work/theatre"
+ },
+ "menu/chromium/touch/390/nav-m-notes": {
+  "submenuOpen": true,
+  "url": "/field-notes",
+  "pass": true
+ },
+ "menu/chromium/touch/390/nav-m-connect": {
+  "submenuOpen": true,
+  "url": "/connect",
+  "pass": true
+ },
+ "menu/chromium/touch/390/dismiss": {
+  "escSubmenuCount": 0,
+  "escMenuOpen": false,
+  "outsideMenuOpen": false,
+  "outsideSubCount": 0,
+  "url": "/our-work/theatre"
+ },
+ "menu/chromium/touch/1024/nav-m-notes": {
+  "submenuOpen": true,
+  "url": "/field-notes",
+  "pass": true
+ },
+ "menu/chromium/touch/1024/nav-m-connect": {
+  "submenuOpen": true,
+  "url": "/connect",
+  "pass": true
+ },
+ "menu/chromium/touch/1024/dismiss": {
+  "escSubmenuCount": 0,
+  "escMenuOpen": false,
+  "outsideMenuOpen": false,
+  "outsideSubCount": 0,
+  "url": "/our-work/theatre"
+ },
+ "menu/webkit/mouse/390/nav-m-notes": {
+  "submenuOpen": true,
+  "url": "/field-notes",
+  "pass": true
+ },
+ "menu/webkit/mouse/390/nav-m-connect": {
+  "submenuOpen": true,
+  "url": "/connect",
+  "pass": true
+ },
+ "menu/webkit/mouse/390/dismiss": {
+  "escSubmenuCount": 0,
+  "escMenuOpen": false,
+  "outsideMenuOpen": false,
+  "outsideSubCount": 0,
+  "url": "/our-work/theatre"
+ },
+ "menu/webkit/mouse/1024/nav-m-notes": {
+  "submenuOpen": true,
+  "url": "/field-notes",
+  "pass": true
+ },
+ "menu/webkit/mouse/1024/nav-m-connect": {
+  "submenuOpen": true,
+  "url": "/connect",
+  "pass": true
+ },
+ "menu/webkit/mouse/1024/dismiss": {
+  "escSubmenuCount": 0,
+  "escMenuOpen": false,
+  "outsideMenuOpen": false,
+  "outsideSubCount": 0,
+  "url": "/our-work/theatre"
+ },
+ "menu/webkit/touch/390/nav-m-notes": {
+  "submenuOpen": true,
+  "url": "/field-notes",
+  "pass": true
+ },
+ "menu/webkit/touch/390/nav-m-connect": {
+  "submenuOpen": true,
+  "url": "/connect",
+  "pass": true
+ },
+ "menu/webkit/touch/390/dismiss": {
+  "escSubmenuCount": 0,
+  "escMenuOpen": false,
+  "outsideMenuOpen": false,
+  "outsideSubCount": 0,
+  "url": "/our-work/theatre"
+ },
+ "menu/webkit/touch/1024/nav-m-notes": {
+  "submenuOpen": true,
+  "url": "/field-notes",
+  "pass": true
+ },
+ "menu/webkit/touch/1024/nav-m-connect": {
+  "submenuOpen": true,
+  "url": "/connect",
+  "pass": true
+ },
+ "menu/webkit/touch/1024/dismiss": {
+  "escSubmenuCount": 0,
+  "escMenuOpen": false,
+  "outsideMenuOpen": false,
+  "outsideSubCount": 0,
+  "url": "/our-work/theatre"
+ },
+ "about/1024": {
+  "hero": [
+   41,
+   983
+  ],
+  "header": [
+   0,
+   1024
+  ],
+  "footer": null,
+  "bands": []
+ },
+ "about/1280": {
+  "hero": [
+   51,
+   1229
+  ],
+  "header": [
+   0,
+   1280
+  ],
+  "footer": null,
+  "bands": []
+ },
+ "about/1440": {
+  "hero": [
+   50,
+   1390
+  ],
+  "header": [
+   0,
+   1440
+  ],
+  "footer": null,
+  "bands": []
+ },
+ "inputs/390": [
+  "16px",
+  "16px",
+  "16px",
+  "16px",
+  "16px"
+ ],
+ "inputs/768": [
+  "16px",
+  "16px",
+  "16px",
+  "16px",
+  "16px"
+ ],
+ "inputs/1024": [
+  "16px",
+  "16px",
+  "16px",
+  "16px",
+  "16px"
+ ],
+ "inputs/1100": [
+  "16px",
+  "16px",
+  "16px",
+  "16px",
+  "16px"
+ ],
+ "inputs/1101": [
+  "15px",
+  "15px",
+  "15px",
+  "15px",
+  "15px"
+ ],
+ "inputs/1280": [
+  "15px",
+  "15px",
+  "15px",
+  "15px",
+  "15px"
+ ]
+}
