@@ -398,6 +398,13 @@ html body #public-site#public-site#public-site #craft-reference [data-sec][style
 html body #public-site#public-site#public-site #craft-reference [data-sec][style*="--ed-h"] .craft-reference-hero { display: flex !important; flex-direction: column !important; flex: 1 1 auto !important; min-height: 0 !important; height: auto !important; }
 html body #public-site#public-site#public-site #craft-reference [data-sec][style*="--ed-h"] .craft-hero-frame { flex: 1 1 auto !important; min-height: 240px !important; height: auto !important; }
 html body #public-site#public-site#public-site #craft-reference [data-sec][style*="--ed-h"] .craft-hero-intro { flex: 0 0 auto !important; }
+/* Sized image+text sections: text and image share one cell so resizing one never moves/resizes the other */
+html body.live-editing #public-site#public-site#public-site#public-site #craft-reference [data-sec][style*="--ed-h"] > section.split { display: grid !important; grid-template-columns: minmax(0, 1fr) !important; grid-template-rows: auto !important; align-items: start !important; justify-items: center !important; }
+html body.live-editing #public-site#public-site#public-site#public-site #craft-reference [data-sec][style*="--ed-h"] > section.split > * { grid-area: 1 / 1 !important; order: 0 !important; }
+@media (min-width: 961px) {
+  html body #public-site#public-site#public-site#public-site #craft-reference [data-sec][style*="--ed-h"] > section.split { display: grid !important; grid-template-columns: minmax(0, 1fr) !important; grid-template-rows: auto !important; align-items: start !important; justify-items: center !important; }
+  html body #public-site#public-site#public-site#public-site #craft-reference [data-sec][style*="--ed-h"] > section.split > * { grid-area: 1 / 1 !important; order: 0 !important; }
+}
 
 /* ===== Live editor: the hero wrapper IS the box, so its handles sit on the box and resizing works ===== */
 html body #public-site#public-site#public-site#public-site main :is(.hb.hb-hero, .hb.hb-contact_form) {

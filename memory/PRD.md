@@ -91,3 +91,7 @@ Follow-ups: Field Notes title same size as other homepage titles; Explore Field 
 - P2: Homepage placeholder "New heading / New paragraph" removal only with owner approval; email/external services only when credentials provided.
 - Existing draft/publish and Field Note editing do not have page-live version protection; outside current scope.
 - No general refactor requested.
+
+## 2026-06 — Craft Centre text/image decoupled
+- Root cause: craft page rule `[data-sec][style*=--ed-h] > section` forced flex-column, stacking image under text (image offset depended on text height).
+- Fix: boxed-layout.css — sized split sections use a single overlapping grid cell (desktop + live-editing). Live image translateY re-based -343px → 82.8px via live API (visual position identical). Deployed + verified on live.
