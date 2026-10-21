@@ -18,7 +18,7 @@ import { SplitHero, PlainHero, WorkRows, ConnectForm } from "./PageSections";
 import { HomeFieldNotes } from "./HomeFieldNotes";
 
 export const fontStack = (f) => `"${f}", system-ui, sans-serif`;
-const LAYOUT_PROPS = ["--ed-w", "--ed-h", "--ed-ar", "--ed-crop", "--ed-zoom", "aspectRatio", "overflow", "--ed-t", "position", "alignSelf", "justifySelf", "zIndex", "paddingTop", "paddingBottom", "paddingLeft", "paddingRight", "marginTop", "marginBottom", "marginLeft", "marginRight", "backgroundColor", "borderRadius"];
+const LAYOUT_PROPS = ["--ed-w", "--ed-h", "--ed-ar", "--ed-crop", "--ed-zoom", "aspectRatio", "overflow", "--ed-t", "--ed-y", "position", "alignSelf", "justifySelf", "zIndex", "paddingTop", "paddingBottom", "paddingLeft", "paddingRight", "marginTop", "marginBottom", "marginLeft", "marginRight", "backgroundColor", "borderRadius"];
 const toKebab = (p) => (p.startsWith("--") ? p : p.replace(/[A-Z]/g, (m) => "-" + m.toLowerCase()));
 function applyProps(node, obj, keys) {
   if (!node) return;
@@ -44,7 +44,7 @@ export function layoutStyle(raw, field) {
   if (raw.zoom && parseFloat(raw.zoom) > 1) o["--ed-zoom"] = raw.zoom;
   if (raw.backgroundColor) o.backgroundColor = raw.backgroundColor;
   if (raw.borderRadius) o.borderRadius = raw.borderRadius;
-  if (tx || ty) { o["--ed-t"] = `translate(${tx || "0px"}, ${ty || "0px"})`; o.zIndex = 5; }
+  if (tx || ty) { o["--ed-t"] = `translate(${tx || "0px"}, ${ty || "0px"})`; o["--ed-y"] = ty || "0px"; o.zIndex = 5; }
   if (raw.width || raw.height || tx || ty) { o.position = "relative"; o.alignSelf = "flex-start"; o.justifySelf = "start"; }
   ["paddingTop", "paddingBottom", "paddingLeft", "paddingRight", "marginTop", "marginBottom", "marginLeft", "marginRight"].forEach((k) => { if (raw[k]) o[k] = raw[k]; });
   return o;

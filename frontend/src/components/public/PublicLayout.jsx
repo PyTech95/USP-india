@@ -23,7 +23,7 @@ function Dropdown({ item, onNavigate }) {
   }, []);
   const active = loc.pathname.startsWith(item.href);
   const timer = useRef(null);
-  const desktop = (e) => e.pointerType === "mouse" && window.matchMedia("(min-width: 961px)").matches;
+  const desktop = (e) => e.pointerType === "mouse" && window.matchMedia("(min-width: 1101px) and (hover: hover) and (pointer: fine)").matches;
   const enter = (e) => { if (desktop(e)) { clearTimeout(timer.current); setOpen(true); } };
   const leave = (e) => { if (desktop(e)) timer.current = setTimeout(() => setOpen(false), 160); };
   useEffect(() => () => clearTimeout(timer.current), []);
@@ -58,6 +58,25 @@ function Header({ site: savedSite }) {
   const site = headerPreview || savedSite;
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
+  const menuRef = useRef(null);
+  const toggleRef = useRef(null);
+  const location = useLocation();
+  useEffect(() => setOpen(false), [location.pathname, location.hash]);
+  useEffect(() => {
+    if (!open) return undefined;
+    const dismiss = (event) => {
+      if (!menuRef.current?.contains(event.target)) setOpen(false);
+    };
+    const escape = (event) => {
+      if (event.key === "Escape") { setOpen(false); toggleRef.current?.focus(); }
+    };
+    document.addEventListener("pointerdown", dismiss);
+    document.addEventListener("keydown", escape);
+    return () => {
+      document.removeEventListener("pointerdown", dismiss);
+      document.removeEventListener("keydown", escape);
+    };
+  }, [open]);
   return (
     <SitePreviewProvider site={site}><header className="header" id="site-header" data-testid="site-header">
       <HeaderStyleTag styles={site?.header_styles} />
@@ -66,11 +85,11 @@ function Header({ site: savedSite }) {
           {site?.logo && <img src={media(site.logo.src)} alt="" width={site.logo.width} height={site.logo.height} style={{ height: 44, width: "auto" }} data-site-edit="logo_media_id" data-testid="header-logo" />}
           <span><SiteText path="brand_label" className="brand-name" data-testid="header-brand-name" fallback="USP" /><SiteText path="full_name" className="brand-sub" data-testid="header-brand-subtitle" /></span>
         </Link>
-        <nav aria-label="Main">
-          <button type="button" className="nav-link menu-toggle" aria-expanded={open} aria-controls="main-menu" onClick={() => setOpen(!open)} data-testid="mobile-menu-toggle">
+        <nav aria-label="Main" ref={menuRef} data-testid="main-navigation">
+          <button ref={toggleRef} type="button" className="nav-link menu-toggle" aria-expanded={open} aria-controls="main-menu" onClick={() => setOpen(!open)} data-testid="mobile-menu-toggle">
             {open ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />} <SiteText name="menu" />
           </button>
-          <ul id="main-menu" className={`nav-list ${open ? "open" : ""}`}>
+          <ul id="main-menu" data-testid="main-menu" className={`nav-list ${open ? "open" : ""}`}>
             {(site?.menus?.main || []).map((i, index) =>
               i.children?.length ? <Dropdown key={i.id} item={{ ...i, editPath: `menus.main.${index}.label` }} onNavigate={close} /> : (
                 <li key={i.id}><NavLink to={i.href} end={i.href === "/"} className="nav-link" onClick={close} data-testid={`nav-${i.id}`}><SiteText path={`menus.main.${index}.label`}>{i.label}</SiteText></NavLink></li>

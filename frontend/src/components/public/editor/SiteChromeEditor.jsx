@@ -12,13 +12,14 @@ import { ColorField, px } from "./ColorField";
 import { DISPLAY_FIELDS, textSelector } from "./TextStyleTag";
 
 export const SiteChromeEditor = () => {
-  const { on, scope, setScope, registerDirty, setTextStylePreview } = useLiveEditor();
+  const { on, enabled, scope, setScope, registerDirty, setTextStylePreview } = useLiveEditor();
   const { can } = useAuth();
   const site = useSite(), refresh = useRefreshSite();
   const [path, setPath] = useState("contact.email"), [area, setArea] = useState("footer"), [value, setValue] = useState("");
   const [styles, setStyles] = useState({}), [currentSize, setCurrentSize] = useState("");
   const [busy, setBusy] = useState(false), [picker, setPicker] = useState(false), [dirty, setDirty] = useState(false), [error, setError] = useState("");
-  const visible = on && scope === "site" && can("config");
+  const sessionVisible = enabled && scope === "site" && can("config");
+  const visible = on && sessionVisible;
   const chooseField = (next, location = area) => {
     if (next === path && location === area) return true;
     if (dirty && !window.confirm("Discard unsaved text and style changes?")) return false;
@@ -37,8 +38,8 @@ export const SiteChromeEditor = () => {
     setDirty(false); setError("");
     const element = document.querySelector(textSelector(path, area));
     setCurrentSize(element ? String(parseFloat(getComputedStyle(element).fontSize)) : "Default");
-  }, [path, area, site, visible]);
-  useEffect(() => { registerDirty(visible && dirty, "site"); return () => registerDirty(false, "site"); }, [dirty, visible, registerDirty]);
+  }, [path, area, site, sessionVisible]);
+  useEffect(() => { registerDirty(sessionVisible && dirty, "site"); return () => registerDirty(false, "site"); }, [dirty, sessionVisible, registerDirty]);
   useEffect(() => {
     if (visible) setTextStylePreview({ path, area, styles });
     return () => setTextStylePreview(null);

@@ -1,0 +1,170 @@
+/* Important layer overrides legacy page selectors without escalating specificity.
+   Saved typography/crop and CMS data stay intact; only the public layout reflows. */
+@layer responsive {
+  /* Coloured section boundaries share the header/hero/footer rails. */
+  body:not(.live-editing) #public-site main > div > .hb:is(.band, .hb-bg) {
+    width: min(var(--box-w), 100%) !important;
+    max-width: 100% !important;
+    margin-inline: auto !important;
+    transform: translateY(var(--ed-y, 0px)) !important;
+  }
+
+  /* The overlapping desktop Craft grid needs a bounded text column, otherwise
+     a saved offset is measured from a full-width column instead of its centre. */
+  @media (min-width: 1440px) {
+    #public-site #craft-reference #craft-centre[style*="--ed-h"] > .split > .split-text {
+      width: min(540px, 100%) !important;
+      justify-self: center !important;
+    }
+  }
+
+  /* Saved free-form positions were authored on a 1440px canvas. On smaller
+     laptops/tablets/phones, use each section's responsive grid, not pixel offsets.
+     Desktop editing still shows the original canvas geometry. */
+  @media (max-width: 1439px), (hover: none), (pointer: coarse) {
+    body:not(.live-editing) #public-site [style*="--ed-t"] { transform: none !important; }
+    body:not(.live-editing) #public-site [style*="--ed-w"] {
+      width: min(var(--ed-w), 100%) !important;
+      max-width: 100% !important;
+      box-sizing: border-box !important;
+    }
+    body:not(.live-editing) #public-site :is([style*="--ed-h"], [data-sec][style*="--ed-h"] > section) {
+      height: auto !important; min-height: 0 !important;
+    }
+    body:not(.live-editing) #public-site [data-sec][style*="--ed-h"] :is(.ps-plain-hero, .ps-plain-inner, .hero-plain, .rak-hero, .theatre-split, .ps-connect-page) {
+      height: auto !important; min-height: 0 !important;
+    }
+    body:not(.live-editing) #public-site main :is(.hb.hb-hero, .hb.hb-contact_form) {
+      width: min(var(--box-w), 100%) !important; margin-inline: auto !important;
+    }
+    body:not(.live-editing) #public-site main > div > .hb:is(.band, .hb-bg) {
+      width: min(var(--box-w), 100%) !important; transform: none !important;
+    }
+    body:not(.live-editing) #public-site main :is([data-edit], .prose, .split-text, .sec-head > *, .text-cols > *, .stacked > *, .hfn-head > *) {
+      min-width: 0; overflow-wrap: anywhere;
+    }
+    body:not(.live-editing) #public-site [data-edit-group="action"] {
+      min-width: 0 !important; max-width: 100% !important;
+      white-space: normal !important; min-height: 44px !important;
+    }
+    body:not(.live-editing) #public-site [data-edit-group="action"] > [data-edit-text] {
+      flex: 0 1 auto !important; min-width: 0 !important;
+    }
+    body:not(.live-editing) #public-site figure.photo[style*="--ed-h"] > .photo-frame { flex: none !important; height: auto !important; }
+    body:not(.live-editing) #public-site figure.photo[style*="--ed-h"] > .photo-frame > img {
+      height: auto !important; aspect-ratio: var(--ed-crop, var(--ed-ar, auto)) !important;
+    }
+    body:not(.live-editing) #public-site #craft-reference [data-sec][style*="--ed-h"] > section.split {
+      display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      gap: 36px !important; align-items: center !important; justify-items: stretch !important;
+    }
+    body:not(.live-editing) #public-site #craft-reference [data-sec][style*="--ed-h"] > section.split > * {
+      grid-area: auto !important; order: 0 !important;
+    }
+    body:not(.live-editing) #public-site #craft-reference [data-sec][style*="--ed-h"] > section.split.right > .split-text { order: -1 !important; }
+    body:not(.live-editing) #public-site #craft-reference .craft-hero-frame {
+      min-height: 0 !important; height: auto !important;
+    }
+    body:not(.live-editing) #public-site #craft-reference figure.craft-hero-photo.craft-hero-full,
+    body:not(.live-editing) #public-site #craft-reference figure.craft-hero-photo.craft-hero-full .photo-frame {
+      position: relative !important; inset: auto !important; height: auto !important;
+    }
+    body:not(.live-editing) #public-site #craft-reference figure.craft-hero-photo.craft-hero-full img {
+      width: 100% !important; height: auto !important; aspect-ratio: var(--ed-crop, 4 / 3) !important;
+    }
+    body:not(.live-editing) #public-site .pcc-card[style*="--ed-h"] { overflow: visible !important; }
+    body:not(.live-editing) #public-site [data-testid="page-field-notes"] .ps-plain-inner { grid-template-columns: minmax(0, 1fr) !important; gap: 24px !important; }
+    body:not(.live-editing) #public-site .hfn .hfn-head { grid-template-columns: minmax(0, 1fr) !important; }
+    body:not(.live-editing) #public-site .hfn .hfn-feature { margin: 0 !important; }
+    body:not(.live-editing) #public-site .hfn .hfn-feature-text { padding-top: 16px !important; }
+  }
+
+  /* Navigation collapses before laptop links crowd; touch tablets get the same menu. */
+  @media (max-width: 1100px), (hover: none), (pointer: coarse) {
+    #public-site #site-header .header-inner {
+      display: flex !important; align-items: center !important; justify-content: space-between !important;
+      min-height: 80px !important; gap: 16px !important;
+      padding-inline: max(24px, 3.5%) !important;
+    }
+    #public-site #site-header .brand { width: auto !important; flex: 1 1 auto !important; }
+    #public-site #site-header nav[aria-label="Main"] {
+      width: auto !important; margin: 0 !important; padding: 0 !important;
+      flex: 0 0 auto !important; align-self: center !important;
+    }
+    #public-site #site-header .menu-toggle { display: inline-flex !important; min-height: 44px !important; gap: 8px !important; }
+    #public-site #site-header .nav-list { display: none !important; }
+    #public-site #site-header .nav-list.open {
+      display: flex !important; flex-direction: column !important; align-items: stretch !important;
+      position: absolute !important; inset: 100% 0 auto !important; width: auto !important;
+      height: auto !important; max-height: calc(100dvh - 100px) !important; overflow-y: auto !important;
+      gap: 0 !important; padding: 12px max(24px, 3.5%) 24px !important;
+      background: var(--nav-peach, #ebe7eb) !important;
+    }
+    #public-site #site-header .nav-list > li {
+      display: block !important; height: auto !important; border-left: 0 !important; width: 100% !important;
+    }
+    #public-site #site-header .nav-list > li::before { display: none !important; }
+    #public-site #site-header .nav-list > li > span { display: flex !important; width: 100% !important; }
+    #public-site #site-header .nav-list .nav-link {
+      display: flex !important; align-items: center !important; min-height: 44px !important;
+      padding: 10px 0 !important; white-space: normal !important; text-align: left !important;
+    }
+    #public-site #site-header .nav-list > li > span > button:first-child { flex: 1 !important; }
+    #public-site #site-header .nav-list button[data-testid$="-toggle"] {
+      position: static !important; width: 44px !important; opacity: 1 !important; justify-content: center !important;
+    }
+    #public-site #site-header .nav-list .dropdown {
+      position: static !important; transform: none !important; width: 100% !important;
+      min-width: 0 !important; max-width: 100% !important; box-shadow: none !important;
+      border: 0 !important; padding: 0 0 8px 16px !important;
+    }
+    #public-site #site-header .dropdown a { display: block !important; min-height: 44px !important; overflow-wrap: anywhere; }
+    #public-site #site-header .dropdown.mega { grid-template-columns: minmax(0, 1fr) !important; }
+  }
+
+  @media (max-width: 1100px) {
+    body:not(.live-editing) #public-site #theatre-reference .theatre-split { height: auto !important; }
+    body:not(.live-editing) #public-site #theatre-reference .theatre-split-copy {
+      width: 100% !important; padding: 44px 24px 32px !important;
+    }
+    body:not(.live-editing) #public-site #theatre-reference .theatre-hero-line { white-space: normal !important; }
+    body:not(.live-editing) #public-site #theatre-reference .theatre-split-intro { max-width: 100% !important; }
+    body:not(.live-editing) #public-site #theatre-reference .theatre-split figure.theatre-split-art {
+      position: relative !important; inset: auto !important; width: 100% !important; height: auto !important;
+    }
+    body:not(.live-editing) #public-site #theatre-reference .theatre-split-art :is(.photo-frame, img) {
+      width: 100% !important; height: auto !important;
+    }
+    body:not(.live-editing) #public-site .pcc-grid { grid-template-columns: minmax(0, 1fr) !important; gap: 32px !important; }
+    body:not(.live-editing) #public-site #craft-reference [data-sec][style*="--ed-h"] > section.split { grid-template-columns: minmax(0, 1fr) !important; }
+    body:not(.live-editing) #public-site #craft-reference [data-sec][style*="--ed-h"] > section.split > .split-text { order: -1 !important; }
+    body:not(.live-editing) #public-site #craft-reference .craft-hero-copy { position: relative !important; padding: 28px 24px !important; background: #2b2b2b; }
+  }
+
+  @media (max-width: 760px) {
+    #public-site main { min-width: 0; }
+    #public-site :is(.usp-footer-row, .pcc-email, .fn-dialog-body, [data-testid="note-publication-info"]) { overflow-wrap: anywhere; }
+    #public-site [data-testid="note-publication-info"] { display: flex !important; flex-wrap: wrap !important; align-items: baseline; gap: 4px 6px; }
+    #public-site [data-testid="note-publication-info"] time { white-space: nowrap; }
+    #public-site #site-footer.usp-footer { padding: 48px 24px 32px !important; }
+    #public-site .usp-footer .footer-privacy { margin-left: 0 !important; text-align: left !important; }
+    #public-site .usp-footer-social a { width: 44px !important; height: 44px !important; align-items: center; justify-content: center; }
+    #public-site .cf-compact :is(input, textarea), #public-site form select { font-size: 16px !important; }
+    #public-site .cf-compact .cf-row { grid-template-columns: minmax(0, 1fr) !important; }
+    #public-site .pcc-grid { padding-top: 40px !important; }
+    #public-site .pcc-detail { margin-bottom: 32px !important; }
+    #public-site .pcc-card[style*="--ed-w"] { width: calc(100% - 24px) !important; max-width: calc(100% - 24px) !important; }
+    #public-site .hfn .hfn-feature { gap: 20px !important; }
+    #public-site .hfn .hfn-feature-text { flex: 1 1 0; min-width: 0; }
+    #public-site #craft-reference [data-sec="b7030ee2f943407bbe9f66f67c5618ff"] > section { padding-top: 56px !important; }
+    #public-site #craft-reference #dhurrie-weaving > section { padding-top: 56px !important; }
+    .fn-dialog { min-width: 0; }
+    .fn-dialog-body { overflow-wrap: anywhere; }
+    .fn-close { min-height: 44px; flex-shrink: 0; }
+    .fn-crumb { min-width: 0; }
+  }
+
+  @media (max-width: 1024px), (hover: none), (pointer: coarse) {
+    .live-ui { display: none !important; }
+  }
+}

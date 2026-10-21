@@ -91,6 +91,4 @@
     "Keep header background non-transparent across all pages to ensure legibility over page content and hero images.",
     "Preserve all data-testid attributes across existing components."
   ]
-},
-overwrite: true,
-path: "/app/design_guidelines.json"} Saveresponse:default_api:mcp_create_file_f0y0f5i1{text:
+}

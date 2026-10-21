@@ -86,7 +86,8 @@ export function LiveEditor(props) {
 }
 
 function Editor({ pageKey, content, setContent, original, remount, noteId }) {
-  const { on, setOn, scope, registerDirty } = useLiveEditor();
+  const { on, enabled, setOn, scope, registerDirty } = useLiveEditor();
+  const loadedSession = useRef(false);
   const [sel, setSel] = useState(null);
   const selRef = useRef(null);
   selRef.current = sel;
@@ -111,17 +112,18 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
   const [narrow, setNarrow] = useState(() => typeof window !== "undefined" && window.innerWidth < 961);
 
   useEffect(() => {
-    if (!on || noteId) return undefined;
+    if (!enabled) { loadedSession.current = false; return undefined; }
+    if (!on || noteId || loadedSession.current) return undefined;
     let current = true;
     setReady(false); setLoadError("");
     api.get(`/admin/pages/${pageKey}/live`).then((r) => {
       if (!current) return;
       const loaded = normalizeReferenceContent(r.data.content);
       setContent(loaded); setBase(loaded); setBaseVersion(r.data.version); setDirty(false);
-      setHist({ past: [], future: [] }); setReady(true);
+      setHist({ past: [], future: [] }); setReady(true); loadedSession.current = true;
     }).catch((e) => { if (current) setLoadError(errMsg(e)); });
     return () => { current = false; };
-  }, [on, noteId, pageKey, setContent, loadAttempt]);
+  }, [on, enabled, noteId, pageKey, setContent, loadAttempt]);
 
   const sections = content.sections;
   const sec = sel && sections.find((s) => s.id === sel.sec);
@@ -217,14 +219,23 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
   };
 
   useEffect(() => { registerDirty(dirty); return () => registerDirty(false); }, [dirty, registerDirty]);
-  // Closing the panel discards only unsaved local edits; the launcher stays mounted.
+  // Resizing to mobile suspends editing; only closing the session discards a draft.
   useEffect(() => {
-    if (!on) {
+    if (!enabled) {
       if (dirty) { setContent(base); setDirty(false); }
       setSel(null); setDevice("desktop"); inlineDraft.current = null;
     }
     remount();
-  }, [on]); // eslint-disable-line
+  }, [enabled]); // eslint-disable-line
+  useEffect(() => {
+    if (on || !enabled) return;
+    const draft = inlineDraft.current;
+    if (draft) {
+      inlineDraft.current = null;
+      patchSec(draft.sec, (s) => ({ ...s, data: setPath(s.data, draft.field, draft.value) }));
+    }
+    setDevice("desktop"); setPicker(false); setAddAt(null);
+  }, [on, enabled]); // eslint-disable-line
 
   useEffect(() => {
     document.body.classList.remove("live-dev-tablet", "live-dev-mobile");

@@ -8,11 +8,19 @@ import { errMsg } from "../../../lib/api";
 const Context = createContext({ on: false, scope: "page", setOn: () => {}, setScope: () => {}, registerDirty: () => {} });
 export const useLiveEditor = () => useContext(Context);
 const stored = () => { try { return sessionStorage.getItem("usp-live-edit") === "1"; } catch { return false; } };
+const DESKTOP_EDITOR = "(min-width: 1025px) and (hover: hover) and (pointer: fine)";
 
 export function LiveEditorProvider({ children, preview = false }) {
   const { user, can, logout } = useAuth();
   const location = useLocation();
   const [active, setActive] = useState(() => stored() || new URLSearchParams(location.search).has("edit"));
+  const [desktop, setDesktop] = useState(() => window.matchMedia(DESKTOP_EDITOR).matches);
+  useEffect(() => {
+    const query = window.matchMedia(DESKTOP_EDITOR);
+    const update = () => setDesktop(query.matches);
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
   const [scope, updateScope] = useState("page");
   const [headerPreview, setHeaderPreview] = useState(null);
   const [textStylePreview, setTextStylePreview] = useState(null);
@@ -25,7 +33,8 @@ export function LiveEditorProvider({ children, preview = false }) {
   const registerDirty = useCallback((value, target = "page") => setPending((p) => p[target] === value ? p : { ...p, [target]: value }), []);
   const readOnly = preview || new URLSearchParams(location.search).has("editor-preview");
   const allowed = can("content.publish") && !readOnly;
-  const on = allowed && active;
+  const enabled = allowed && active;
+  const on = enabled && desktop;
   const setOn = (next) => {
     if (!next && dirty && !window.confirm("Discard unsaved changes and close the editor?")) return;
     setActive(next); if (!next) setPending({ page: false, site: false, header: false });
@@ -40,10 +49,10 @@ export function LiveEditorProvider({ children, preview = false }) {
   }, [user]);
   useEffect(() => {
     if (user === null || readOnly) return;
-    try { if (on) sessionStorage.setItem("usp-live-edit", "1"); else sessionStorage.removeItem("usp-live-edit"); } catch { /* storage may be restricted */ }
+    try { if (enabled) sessionStorage.setItem("usp-live-edit", "1"); else sessionStorage.removeItem("usp-live-edit"); } catch { /* storage may be restricted */ }
     document.body.classList.toggle("live-editing", on);
     return () => document.body.classList.remove("live-editing");
-  }, [on, user, readOnly]);
+  }, [on, enabled, user, readOnly]);
   useEffect(() => { registerDirty(false); }, [location.pathname, registerDirty]);
   useEffect(() => {
     if (!dirty) return undefined;
@@ -69,9 +78,9 @@ export function LiveEditorProvider({ children, preview = false }) {
     if (dirty && !window.confirm("Discard unsaved changes and log out?")) return;
     try { await logout(); } catch (e) { toast.error(errMsg(e)); }
   };
-  return <Context.Provider value={{ on, setOn, scope, setScope, registerDirty, headerPreview: on && scope === "header" ? headerPreview : null, setHeaderPreview, textStylePreview: on && scope === "site" ? textStylePreview : null, setTextStylePreview }}>
+  return <Context.Provider value={{ on, enabled, setOn, scope, setScope, registerDirty, headerPreview: on && scope === "header" ? headerPreview : null, setHeaderPreview, textStylePreview: on && scope === "site" ? textStylePreview : null, setTextStylePreview }}>
     {children}
-    {allowed && <div className="live-ui live-dock" data-testid="live-editor-dock">
+    {allowed && desktop && <div className="live-ui live-dock" data-testid="live-editor-dock">
       <button type="button" onClick={() => setOn(!on)} aria-expanded={on} data-testid="live-editor-toggle">
         {on ? <X size={15} /> : <Pencil size={15} />} {on ? "Close editor" : "Live editor"}
       </button>

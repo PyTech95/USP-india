@@ -31,8 +31,8 @@ export function NoteArticle({ note, id, slug, published_at, updated_at, related 
           {data.standfirst && <p className="lede" data-testid="note-standfirst" {...sx(s, "standfirst")}>{data.standfirst}</p>}
           <p className="meta" data-testid="note-publication-info" data-site-style="display.note-dates">
             {data.author && <><SiteText name="note_by" /> <span data-testid="note-author" {...sx(s, "author")}>{data.author}</span> · </>}
-            {published_at && <><SiteText name="note_published" /> <time dateTime={published_at}>{fmtDate(published_at)}</time></>}
-            {updated_at && updated_at.slice(0, 10) !== (published_at || "").slice(0, 10) && <> · <SiteText name="note_updated" /> <time dateTime={updated_at}>{fmtDate(updated_at)}</time></>}
+            {published_at && <><SiteText name="note_published" /> <time data-testid="note-published-date" dateTime={published_at}>{fmtDate(published_at)}</time></>}
+            {updated_at && updated_at.slice(0, 10) !== (published_at || "").slice(0, 10) && <> · <SiteText name="note_updated" /> <time data-testid="note-updated-date" dateTime={updated_at}>{fmtDate(updated_at)}</time></>}
           </p>
         </header>
         <div className="wrap"><Photo ref_={data.cover} eager sizes="(min-width: 1240px) 1100px, 100vw" ed={sx(s, "cover")} testid="note-cover" captionSlot /></div>

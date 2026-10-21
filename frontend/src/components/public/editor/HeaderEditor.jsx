@@ -14,14 +14,14 @@ const fromSite = (site) => ({ ...site, brand_label: site.brand_label ?? "USP", f
   header_styles: { ...site.header_styles }, menus: structuredClone(site.menus || { main: [], footer: [] }) });
 
 export const HeaderEditor = () => {
-  const { on, scope } = useLiveEditor();
+  const { enabled, scope } = useLiveEditor();
   const { can } = useAuth();
   const site = useSite();
-  return on && scope === "header" && can("config") && site ? <HeaderEditorPanel site={site} /> : null;
+  return enabled && scope === "header" && can("config") && site ? <HeaderEditorPanel site={site} /> : null;
 };
 
 const HeaderEditorPanel = ({ site }) => {
-  const { setScope, setHeaderPreview, registerDirty } = useLiveEditor();
+  const { on, setScope, setHeaderPreview, registerDirty } = useLiveEditor();
   const refresh = useRefreshSite();
   const [draft, setDraft] = useState(() => fromSite(site));
   const [tab, setTab] = useState("content"), [dirty, setDirty] = useState(false);
@@ -42,6 +42,7 @@ const HeaderEditorPanel = ({ site }) => {
     return () => { observer.disconnect(); window.removeEventListener("resize", measure); window.removeEventListener("scroll", measure); };
   }, []);
   useEffect(() => {
+    if (!on) return undefined;
     const select = (event) => {
       if (event.target.closest("button")) return;
       const target = event.target.closest("#site-header [data-site-edit]");
@@ -59,7 +60,7 @@ const HeaderEditorPanel = ({ site }) => {
     };
     document.addEventListener("click", select, true);
     return () => document.removeEventListener("click", select, true);
-  }, [draft.menus]);
+  }, [draft.menus, on]);
   const changeMenu = (path, key, value) => {
     const menus = structuredClone(draft.menus);
     let item = { menus };
@@ -79,6 +80,7 @@ const HeaderEditorPanel = ({ site }) => {
       const saved = await refresh(); setDraft(fromSite(saved)); setDirty(false); registerDirty(false, "header"); toast.success("Header saved");
     } catch (e) { setError(errMsg(e)); } finally { setBusy(false); }
   };
+  if (!on) return null;
   return <aside className="live-ui live-panel live-header-panel" style={{ "--header-editor-top": `${top}px` }} data-testid="live-header-panel" data-live-panel-ready="true" aria-label="Edit Header">
     <div className="live-row live-top"><strong data-testid="header-editor-title">Edit Header</strong><button type="button" className="live-btn" disabled={busy} onClick={() => setScope("page")} aria-label="Close header editor" data-testid="header-editor-close"><X size={16} /></button></div>
     <div className="header-editor-tabs" role="tablist" aria-label="Header settings">{["content", "menu", "style"].map((key) => <button type="button" role="tab" key={key} id={`header-tab-${key}`} aria-controls={`header-tab-panel-${key}`} aria-selected={tab === key} onClick={() => setTab(key)} data-testid={`header-tab-${key}`}>{key === "style" ? "Style & spacing" : key === "menu" ? "Navigation" : "Brand & logo"}</button>)}</div>

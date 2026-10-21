@@ -108,3 +108,11 @@
 - First QA pass: READ-ONLY baseline to identify concrete overflow, clipped/overlapping fields, unusable menu/contact/notes layouts across all public pages at phone/tablet widths. Record desktop bounding/style baseline for later regression.
 - Planned: responsive render-only geometry, navigation, section/grid/image layouts; viewport/input-capability gate for Live Editor including ?edit=1 and stored preference. Keep desktop drag/save controls intact.
 - Existing credentials: /app/memory/test_credentials.md. Do not modify real pages or settings. Tests may use browser route interception / DOM-only responsive fixtures.
+
+
+## Responsive implementation ready for verification
+- Added styles/responsive.css using an important cascade layer: public free-form offsets/heights reflow below1440 or on touch devices; saved font sizes/crops stay intact. Desktop editor retains exact geometry.
+- Coloured top-level sections use common boxed edges (screenshot Craft band); desktop Craft Centre text column bounded to correct offset origin.
+- Responsive navigation <=1100/coarse input, Escape/outside/route close; touch targets, action wrapping, images, contact, notes dates and footer.
+- LiveEditorProvider gates editing and dock by min1025px + hover + fine pointer. Separate enabled session preserves unsaved page/header/site drafts while resizing; no changes to auth or DB.
+- QA: test prod fixture replay as well as preview; full phone/tablet/laptop sweeps + desktop baseline regression. No real data writes; use intercepted admin live data/save responses for editor tests, clearly mark test stubs. No deployment requested for this batch.
