@@ -25,7 +25,6 @@ html body #public-site#public-site#public-site :is(
   .page-craft-livelihood [data-testid="block-9"] .aside-statement,
   .page-workshops-learning #the-ambition .aside-statement,
   .page-rakhigarhi [data-testid="block-0"] .hero-text,
-  #rakhigarhi-reference .rak-hero-copy,
   #workshops-reference #ambition .aside-statement
 )::before,
 html body #public-site#public-site#public-site .ps-hero-copy .eyebrow::after { width: var(--accent-line-w) !important; height: var(--accent-line) !important; margin-bottom: var(--accent-line-gap) !important; margin-left: 0 !important; margin-right: auto !important; }

@@ -20,8 +20,7 @@
 .site #rakhigarhi-reference .prose p:last-child { margin-bottom: 0; }
 .site #rakhigarhi-reference .rak-hero { padding: 170px 6% 156px; background: #fff; }
 .site #rakhigarhi-reference .rak-hero-copy::before { content: none; display: none; }
-/* Reserve the original line space, but attach the line to its editable label. */
-html body #public-site#public-site#public-site #rakhigarhi-reference .rak-hero-copy { padding-top: calc(var(--accent-line) + var(--accent-line-gap)) !important; }
+/* The hero copy reserves line spacing in boxed-layout; the line moves with its editable label. */
 html body #public-site#public-site#public-site #rakhigarhi-reference .rak-hero-copy .eyebrow { position: relative; }
 html body #public-site#public-site#public-site #rakhigarhi-reference .rak-hero-accent { display: block; position: absolute; left: 0; bottom: calc(100% + var(--accent-line-gap)); width: var(--accent-line-w); height: var(--accent-line); background: var(--rak-ruby); pointer-events: auto; }
 .site #rakhigarhi-reference .rak-hero .eyebrow { color: var(--rak-ink) !important; }

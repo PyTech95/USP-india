@@ -41,7 +41,6 @@ html body #public-site #theatre-reference .theatre-intro-heading::after,
 html body #public-site #theatre-reference .theatre-production .h2::after,
 html body #public-site #theatre-reference #theatre-ambition .aside-statement::after,
 html body #public-site .ps-hero-copy .eyebrow::after,
-html body #public-site #rakhigarhi-reference .rak-hero-copy::before,
 html body #public-site #rakhigarhi-reference #the-ambition .eyebrow::after,
 html body #public-site #workshops-reference #ambition .aside-statement::before
 { width: var(--accent-line-w) !important; height: var(--accent-line) !important; margin-left: 0 !important; margin-right: auto !important; }

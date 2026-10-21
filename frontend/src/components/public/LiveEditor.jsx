@@ -254,6 +254,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
       if (e.button !== 0) return;
       const t = pick(e);
       if (!t?.secEl) return;
+      if (e.target.closest('[aria-hidden="true"]')) e.preventDefault();
       lastPoint.current = { x: e.clientX, y: e.clientY };
       selectField({ sec: t.secEl.dataset.sec, field: t.el ? t.el.dataset.edit : "_section" });
     };
@@ -283,7 +284,18 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
       if (range && el.contains(range.startContainer)) { const selection = window.getSelection(); selection.removeAllRanges(); selection.addRange(range); }
     }
     const record = () => {
-      inlineDraft.current = { ...sel, value: field.endsWith("_html") ? (el.innerText.trim() ? el.innerHTML : "") : el.innerText.replace(/\n{3,}/g, "\n\n").trim() };
+      let value;
+      if (field.endsWith("_html")) value = el.innerText.trim() ? el.innerHTML : "";
+      else {
+        // Read typed casing, not the visual uppercase/lowercase presentation.
+        const transform = el.style.getPropertyValue("text-transform");
+        const priority = el.style.getPropertyPriority("text-transform");
+        el.style.setProperty("text-transform", "none", "important");
+        value = el.innerText.replace(/\n{3,}/g, "\n\n").trim();
+        if (transform) el.style.setProperty("text-transform", transform, priority);
+        else el.style.removeProperty("text-transform");
+      }
+      inlineDraft.current = { ...sel, value };
       setDirty(true);
     };
     const commitText = () => {
