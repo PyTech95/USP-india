@@ -228,9 +228,21 @@ export function Block(props) {
   }} data-testid={`block-${props.i}-wrap`}>{el}</div>;
 }
 
+function AmbitionBody({ d, s, id }) {
+  const groupStyle = { ...sx(s, "body_html"), "data-edit": undefined };
+  const box = (number) => <HtmlDiv className="prose ambition-text" html={d[`body_${number}_html`]} data-testid={`${id}-ambition-text-${number}`} {...sx(s, `body_${number}_html`)} />;
+  return <div className="ambition-body" data-testid={`${id}-body`} {...groupStyle}>
+    <div className="ambition-left" data-testid={`${id}-ambition-left`}>{box(1)}{box(2)}</div>
+    <span className="ambition-divider" aria-hidden="true" data-testid={`${id}-ambition-divider`} />
+    <div className="ambition-right" data-testid={`${id}-ambition-right`}>{box(3)}</div>
+  </div>;
+}
+
 function TextBlock({ d, s, first, id }) {
   const head = <><Eyebrow text={d.eyebrow} ed={sx(s, "eyebrow")} />{d.heading && <H first={first} testid={`${id}-heading`} ed={sx(s, "heading")}>{d.heading}</H>}{d.subheading && <p className="subhead" {...sx(s, "subheading")}>{d.subheading}</p>}</>;
-  const html = <Html html={d.body_html} testid={`${id}-body`} ed={sx(s, "body_html")} />;
+  const html = d.layout === "rakhigarhi-ambition-aligned"
+    ? <AmbitionBody d={d} s={s} id={id} />
+    : <Html html={d.body_html} testid={`${id}-body`} ed={sx(s, "body_html")} />;
   const body = d.link_label ? <div className="text-block-copy">{html}<div className="text-block-link">
     {d.link_href ? <Btn href={d.link_href} label={d.link_label} testid={`${id}-link`} ed={sx(s, "link_label")} /> : <><button type="button" className="more-link" disabled aria-describedby={`${id}-link-status`} data-testid={`${id}-link-pending`}><span {...sx(s, "link_label")}>{d.link_label}</span> <ArrowRight size={16} aria-hidden="true" {...arrowEd(s, "link_label")} /></button><SiteText name="film_pending" id={`${id}-link-status`} className="link-pending-note" data-testid={`${id}-link-status`} /></>}
   </div></div> : html;

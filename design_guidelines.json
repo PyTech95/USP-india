@@ -1,0 +1,41 @@
+{
+  "project_type": "portfolio CMS - Rakhigarhi Ambition Layout Update",
+  "tech_stack": {
+    "framework": "React.js",
+    "styling": "Tailwind CSS + Plain CSS (/app/frontend/src/styles/rakhigarhi-reference.css)",
+    "file_type": ".js"
+  },
+  "summary_of_changes": "Implementation guidance for Rakhigarhi 'The Ambition' section: split body into 3 independently editable text boxes (2 on the left column, 1 on the right column), vertically center the right-hand text box, and set the vertical divider (pipe line) height to 70% vertically centered.",
+  "component_path": "/app/frontend/src/components/public/Blocks.jsx",
+  "stylesheet_path": "/app/frontend/src/styles/rakhigarhi-reference.css",
+  "typography": {
+    "font_family": "Helvetica Neue, Helvetica, Arial, sans-serif",
+    "heading_h2": "font-weight: 300, font-size: 80px (60px on tablet, 40px on mobile), line-height: 1.1",
+    "eyebrow": "font-size: 18px, font-weight: 500, color: #6d7b72",
+    "body_text": "font-size: 25px (20px desktop small, 18px mobile), font-weight: 300, line-height: 1.5, color: #272e33"
+  },
+  "colors": {
+    "background": "#f5efe8",
+    "ink": "#272e33",
+    "ruby_accent": "#b31944",
+    "divider_pipe": "#ddd6cf"
+  },
+  "layout_and_css_specifications": {
+    "grid_structure": "2-column grid layout on desktop (`grid-template-columns: minmax(0, 1fr) minmax(0, 1fr)`). Left column contains 2 stacked text boxes (`paragraph_1`, `paragraph_2`), right column contains 1 text box (`paragraph_3`).",
+    "vertical_centering": "The right column text box (`paragraph_3`) is vertically centered relative to the left column using `align-self: center` or `display: flex; align-items: center;`.",
+    "divider_70_percent_pipe": "Vertical divider pipe line height is set to 70% of the container height and vertically centered (`height: 70%`, `top: 15%`). CSS implementation detail:\nhtml body #public-site #rakhigarhi-reference #the-ambition .prose-col-right::before {\n  content: '';\n  position: absolute;\n  left: 0;\n  top: 15%;\n  height: 70%;\n  width: 1px;\n  background-color: #ddd6cf;\n}",
+    "mobile_responsive": "On screens <= 700px, collapse grid to 1 column. Vertical line changes to horizontal top border (`border-top: 1px solid #ddd6cf; padding-top: 28px; width: 100%;`)."
+  },
+  "instructions_to_main_agent": [
+    "Ensure all 3 text boxes (`body_1`, `body_2`, `body_3` or `paragraph_1`, `paragraph_2`, `paragraph_3`) are standard independently editable LiveEditor fields with unique data-testid attributes (e.g. data-testid='editable-ambition-body-1', data-testid='editable-ambition-body-2', data-testid='editable-ambition-body-3').",
+    "Do not modify files or break existing site styling in /app/frontend/src/styles/rakhigarhi-reference.css.",
+    "Preserve responsive breakpoint behavior for tablets (<1200px) and mobile (<700px).",
+    "All interactive and key text components MUST include kebab-case role-based data-testid attributes."
+  ],
+  "UNIVERSAL GUIDELINES FOR MAIN AGENT": {
+    "testing_attributes": "All interactive and key informational elements MUST include a data-testid attribute.",
+    "file_extension": "Use .js extensions (not .tsx).",
+    "contrast_and_backgrounds": "DO NOT use complete transparent background in header, overlays, or any surface that has content under it.",
+    "no_ai_emojis": "NEVER use AI assistant Emoji characters (e.g. 🤖, 🧠, 💭, 💡) for icons or text."
+  }
+}

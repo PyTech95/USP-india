@@ -59,6 +59,9 @@ def _block(s, d, t, h, head):
             intro = f'<p>{E(d["intro_heading"])}</p>' + intro
         return f'<section><p>{E(a(d, "eyebrow"))}</p>{head}{intro}{buttons(d.get("buttons"))}{figure(d.get("image"), eager=True)}</section>'
     if t == "text":
+        if d.get("layout") == "rakhigarhi-ambition-aligned" and "body_1_html" in d:
+            boxes = "".join(f'<div>{a(d, f"body_{i}_html")}</div>' for i in range(1, 4))
+            return f'<section>{head}{boxes}</section>'
         if d.get("layout") == "about-approach":
             values = "".join(f'<li>{E(a(value, "text"))}</li>' for value in d.get("values", []))
             return f'<section>{head}{a(d, "body_html")}<aside aria-label="Our principles"><ul>{values}</ul></aside></section>'

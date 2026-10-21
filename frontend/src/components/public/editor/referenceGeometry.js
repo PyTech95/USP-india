@@ -24,6 +24,25 @@ export const normalizeReferenceContent = (content) => {
         if (styles[field]?.[key] === original) delete styles[field][key];
       });
     });
+    if (section.data?.layout === "rakhigarhi-ambition-aligned" && typeof section.data.body_html === "string") {
+      // Derive the three boxes from the current site content, never from a snapshot.
+      const source = document.createElement("div");
+      source.innerHTML = section.data.body_html;
+      const boxes = [0, 1, 2].map(() => document.createElement("div"));
+      [...source.childNodes].filter((node) => node.nodeType !== 3 || node.textContent.trim()).forEach((node, index) => {
+        boxes[Math.min(index, 2)].appendChild(node);
+      });
+      const data = { ...section.data };
+      delete data.body_html;
+      const typography = Object.fromEntries(Object.entries(styles.body_html || {}).filter(([key]) =>
+        ["fontFamily", "fontSize", "fontWeight", "fontStyle", "color", "textAlign", "textTransform", "lineHeight", "letterSpacing"].includes(key)));
+      boxes.forEach((box, index) => {
+        const field = `body_${index + 1}_html`;
+        data[field] = box.innerHTML;
+        styles[field] = { ...typography, ...styles[field] };
+      });
+      return { ...section, data, styles };
+    }
     return { ...section, styles };
   }) };
 };

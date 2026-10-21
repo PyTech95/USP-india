@@ -6,6 +6,7 @@ import { Button } from "../../components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../components/ui/dialog";
 import { api, errMsg } from "../../lib/api";
 import { useAuth } from "../../lib/auth";
+import { normalizeReferenceContent } from "../../components/public/editor/referenceGeometry";
 import { PageHead, TextIn, FieldsFor, SeoFields, ReviewPanel, Tag } from "../../components/admin/Kit";
 
 const BOX = [["band", "bool", "Grey background band"], ["anchor", "text", "Section link name (for menu links like /page#name)"]];
@@ -28,7 +29,10 @@ const newId = () => Math.random().toString(36).slice(2, 12);
 
 function SectionCard({ s, i, total, ops, readOnly, dragProps }) {
   const [open, setOpen] = useState(false);
-  const [label, schema] = SCHEMAS[s.type];
+  const [label, defaultSchema] = SCHEMAS[s.type];
+  const schema = s.data.layout === "rakhigarhi-ambition-aligned"
+    ? defaultSchema.flatMap((field) => field[0] === "body_html" ? [1, 2, 3].map((n) => [`body_${n}_html`, "rich", `Text box ${n}`]) : [field])
+    : defaultSchema;
   return (
     <li className={`border bg-white mb-2 ${s.hidden ? "opacity-60" : ""}`} data-testid={`section-${i}`} {...dragProps}>
       <div className="flex items-center gap-1 p-2 bg-[#FCFAF6] border-b admin-card-bar">
@@ -99,7 +103,7 @@ export default function PageEditor() {
   const [rk, setRk] = useState(0);
   const readOnly = !can("content.edit");
 
-  const load = () => api.get(`/admin/pages/${key}`).then((r) => { setPage(r.data); setDraft(r.data.draft); setDirty(false); setRk((x) => x + 1); });
+  const load = () => api.get(`/admin/pages/${key}`).then((r) => { setPage(r.data); setDraft(normalizeReferenceContent(r.data.draft)); setDirty(false); setRk((x) => x + 1); });
   useEffect(() => { load(); }, [key]); // eslint-disable-line
   useEffect(() => {
     const h = (e) => { if (dirty) { e.preventDefault(); e.returnValue = ""; } };

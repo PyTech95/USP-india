@@ -16,7 +16,8 @@ import { normalizeReferenceContent } from "./editor/referenceGeometry";
 import { CropControls, parsePos } from "./editor/CropControls";
 
 const LABELS = { eyebrow: "Small label", heading: "Heading", subheading: "Sub-heading", intro: "Intro text",
-  body_html: "Body text", aside: "Side statement", text: "Text", image: "Image", _section: "Whole section" };
+  body_html: "Body text", body_1_html: "Text box 1", body_2_html: "Text box 2", body_3_html: "Text box 3",
+  aside: "Side statement", text: "Text", image: "Image", _section: "Whole section" };
 function labelFor(field) {
   if (!field) return "";
   if (LABELS[field]) return LABELS[field];
