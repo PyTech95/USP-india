@@ -92,6 +92,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
   const [dirty, setDirty] = useState(false);
   const lastPoint = useRef(null);
   const [base, setBase] = useState(original);
+  const [baseVersion, setBaseVersion] = useState(null);
   const [busy, setBusy] = useState(false);
   const [ready, setReady] = useState(!!noteId), [loadError, setLoadError] = useState("");
   const [loadAttempt, setLoadAttempt] = useState(0);
@@ -115,7 +116,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
     api.get(`/admin/pages/${pageKey}/live`).then((r) => {
       if (!current) return;
       const loaded = normalizeReferenceContent(r.data.content);
-      setContent(loaded); setBase(loaded); setDirty(false);
+      setContent(loaded); setBase(loaded); setBaseVersion(r.data.version); setDirty(false);
       setHist({ past: [], future: [] }); setReady(true);
     }).catch((e) => { if (current) setLoadError(errMsg(e)); });
     return () => { current = false; };
@@ -260,7 +261,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
       if (range && el.contains(range.startContainer)) { const selection = window.getSelection(); selection.removeAllRanges(); selection.addRange(range); }
     }
     const record = () => {
-      inlineDraft.current = { ...sel, value: field.endsWith("_html") ? el.innerHTML : el.innerText.replace(/\n{3,}/g, "\n\n").trim() };
+      inlineDraft.current = { ...sel, value: field.endsWith("_html") ? (el.innerText.trim() ? el.innerHTML : "") : el.innerText.replace(/\n{3,}/g, "\n\n").trim() };
       setDirty(true);
     };
     const commitText = () => {
@@ -313,10 +314,10 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
       setContent((c) => ({ ...c, sections: secs }));
     }
     try {
-      const payload = { title: content.title, sections: secs.map((s) => ({ id: s.id, type: s.type, hidden: !!s.hidden, data: stripMedia(s.data), styles: s.styles || {} })) };
+      const payload = { title: content.title, base_version: baseVersion, sections: secs.map((s) => ({ id: s.id, type: s.type, hidden: !!s.hidden, data: stripMedia(s.data), styles: s.styles || {} })) };
       const r = noteId ? await api.put(`/admin/notes/${noteId}/live`, { ...stripMedia(secs[0].data), styles: secs[0].styles || {} }) : await api.put(`/admin/pages/${pageKey}/live`, payload);
       const saved = noteId ? { ...content, sections: [{ ...secs[0], data: r.data.note, styles: r.data.note.styles || {} }] } : r.data.content;
-      setContent(saved); setBase(saved); setDirty(false); setHist({ past: [], future: [] }); remount();
+      setContent(saved); setBase(saved); setBaseVersion(r.data.version); setDirty(false); setHist({ past: [], future: [] }); remount();
       toast.success("Saved on this site");
     } catch (e) { toast.error(errMsg(e)); } finally { setBusy(false); }
   };

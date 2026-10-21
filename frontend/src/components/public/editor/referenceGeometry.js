@@ -41,6 +41,8 @@ export const normalizeReferenceContent = (content) => {
         data[field] = box.innerHTML;
         styles[field] = { ...typography, ...styles[field] };
       });
+      Object.keys(typography).forEach((key) => delete styles.body_html[key]);
+      if (styles.body_html && !Object.keys(styles.body_html).length) delete styles.body_html;
       return { ...section, data, styles };
     }
     return { ...section, styles };

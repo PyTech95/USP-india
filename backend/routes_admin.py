@@ -1,4 +1,5 @@
 import csv
+import hashlib
 import io
 import os
 import re
@@ -109,10 +110,18 @@ def strip_resolved(obj):
     return obj
 
 
+def live_page_version(content):
+    import json
+    return hashlib.sha256(json.dumps(content, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
+
+
 @router.put("/pages/{key}/live")
 async def live_save(key: str, body: dict, user=Depends(require("content.publish"))):
     """Advanced live editor: accepts the full ordered section list and publishes it immediately."""
     p = await get_page(key)
+    conflict = "This page changed in another editor. Your changes were not saved. Close and reopen the editor to load the latest version before editing again."
+    if body.get("base_version") is not None and body["base_version"] != live_page_version(p["published"]):
+        raise HTTPException(409, conflict)
     sections = body.get("sections")
     if not isinstance(sections, list):
         raise HTTPException(400, "No sections provided")
@@ -138,7 +147,9 @@ async def live_save(key: str, body: dict, user=Depends(require("content.publish"
     if body.get("title"):
         pub["title"] = str(body["title"]).strip()[:200] or pub.get("title", "Untitled")
     pub = sanitize_tree(pub)
-    await db.pages.update_one({"key": key}, {"$set": {"published": pub, "draft": pub, "published_at": now(), "updated_at": now(), "has_unpublished_changes": False}})
+    result = await db.pages.update_one({"key": key, "published": p["published"]}, {"$set": {"published": pub, "draft": pub, "published_at": now(), "updated_at": now(), "has_unpublished_changes": False}})
+    if not result.matched_count:
+        raise HTTPException(409, conflict)
     await snapshot("page", key, pub, "live edit published", user)
     return await live_page_content(key, user)
 
@@ -152,7 +163,7 @@ async def live_page_content(key: str, user=Depends(require("content.publish"))):
     for section in content["sections"]:
         if section["type"] == "notes_feed":
             section["notes"] = (await list_notes(category=section["data"].get("category", ""), per=int(section["data"].get("count") or 3)))["items"]
-    return {"key": key, "content": content}
+    return {"key": key, "content": content, "version": live_page_version(page["published"])}
 
 
 @router.post("/pages/{key}/discard")
