@@ -86,10 +86,10 @@
 /* ---- "Explore Field Notes" ---- */
 #public-site #home-reference .hfn .hfn-more { display: flex; justify-content: flex-end; margin: calc(clamp(10px, .83vw, 12px) + 10px) 0 0 0; }
 #public-site #home-reference .hfn .hfn-more-link {
-  display: inline-flex !important; align-items: center; gap: 9px; margin-right: calc(-1 * clamp(0px, .75vw, 11px));
+  display: inline-flex !important; align-items: center; gap: 9px; margin-right: 0;
   font-family: inherit !important; font-weight: 400 !important; font-size: clamp(14px, 1.04vw, 15px) !important;
   color: var(--hfn-ink) !important; padding-bottom: 3px;
-  border-bottom: 2px solid var(--hfn-accent); letter-spacing: 0 !important;
+  border-bottom: 0 !important; background: none !important; letter-spacing: 0 !important;
 }
 #public-site #home-reference .hfn .hfn-more-link svg { flex: 0 0 auto; transition: transform .25s ease; }
 #public-site #home-reference .hfn .hfn-more-link:hover svg { transform: translateX(3px); }

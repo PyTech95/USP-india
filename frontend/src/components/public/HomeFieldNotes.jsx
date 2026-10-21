@@ -33,9 +33,9 @@ export function HomeFieldNotes({ s, id, ed }) {
               {f.title && <h3 className="hfn-feature-title" {...ed("feature.title")}><Link to={hrefFor(f)}>{f.title}</Link></h3>}
               {f.text && <p className="hfn-feature-desc" {...ed("feature.text")}>{f.text}</p>}
             </div>
-            <Link to={hrefFor(f)} className="hfn-feature-media" tabIndex={-1} aria-hidden="true">
+            <div className="hfn-feature-media">
               <Photo ref_={f.image} sizes="200px" testid={`${id}-feature-image`} ed={ed("feature.image")} />
-            </Link>
+            </div>
           </div>
         )}
       </div>
@@ -44,9 +44,9 @@ export function HomeFieldNotes({ s, id, ed }) {
         <div className={`hfn-cards hfn-cards-${cards.length}`}>
           {cards.map((c, k) => (
             <article className="hfn-card" key={k} data-testid={`${id}-card-${k}`}>
-              <Link to={hrefFor(c)} className="hfn-card-media" tabIndex={-1} aria-hidden="true">
+              <div className="hfn-card-media">
                 <Photo ref_={c.image} crop={ratio(k)} cropMobile="4 / 3" sizes="(min-width: 860px) 32vw, 100vw" testid={`${id}-card-${k}-image`} ed={ed(`cards.${k}.image`)} />
-              </Link>
+              </div>
               {c.title && <h3 className="hfn-card-title" data-testid={`${id}-card-${k}-title`} {...ed(`cards.${k}.title`)}><Link to={hrefFor(c)}>{c.title}</Link></h3>}
               {c.text && <p className="hfn-card-text" data-testid={`${id}-card-${k}-description`} {...ed(`cards.${k}.text`)}>{c.text}</p>}
             </article>

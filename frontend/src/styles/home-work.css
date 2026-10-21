@@ -21,3 +21,11 @@ html body #public-site#public-site#public-site #home-reference .hb-related_work 
   html body #public-site#public-site#public-site #home-reference .hb-related_work .work-card-body p { margin-bottom: 28px !important; }
 }
 html body #public-site#public-site#public-site #home-reference .hb-related_work .work-card .h3 [data-edit] { display: inline-block; }
+/* Our Work: one 40px inset for eyebrow, heading, intro and cards; heading and intro use the card columns */
+html body #public-site#public-site#public-site #home-reference .hb-related_work > section > .wrap { padding-inline: calc((100% - var(--box-w)) / 2 + 40px) !important; }
+html body #public-site#public-site#public-site #home-reference .hb-related_work .sec-head { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; column-gap: 6% !important; }
+html body #public-site#public-site#public-site #home-reference .hb-related_work .sec-head .lede { max-width: 27em; }
+@media (max-width: 700px) {
+  html body #public-site#public-site#public-site #home-reference .hb-related_work > section > .wrap { padding-inline: calc((100% - var(--box-w)) / 2 + 16px) !important; }
+  html body #public-site#public-site#public-site #home-reference .hb-related_work .sec-head { grid-template-columns: minmax(0, 1fr) !important; row-gap: 24px !important; }
+}
