@@ -4,7 +4,10 @@ import { Photo } from "./Photo";
 export const RakhigarhiHero = ({ data, id, editable }) => (
   <div className="rak-hero" data-testid="rakhigarhi-hero">
     <div className="rak-hero-copy">
-      <p className="eyebrow" data-testid={`${id}-eyebrow`} {...editable("eyebrow")}>{data.eyebrow}</p>
+      <p className="eyebrow" data-testid={`${id}-eyebrow`} {...editable("eyebrow")}>
+        <span className="rak-hero-accent" aria-hidden="true" data-testid={`${id}-accent-line`} />
+        <span data-edit-text>{data.eyebrow}</span>
+      </p>
       <h1 className="h1" data-testid={`${id}-heading`} {...editable("heading")}>{data.heading}</h1>
     </div>
     {(data.image?.media_id || data.image2?.media_id) && <div className="rak-hero-photos" data-testid={`${id}-photos`}>

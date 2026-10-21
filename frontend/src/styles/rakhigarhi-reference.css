@@ -19,7 +19,11 @@
 .site #rakhigarhi-reference .prose p { margin: 0 0 24px; }
 .site #rakhigarhi-reference .prose p:last-child { margin-bottom: 0; }
 .site #rakhigarhi-reference .rak-hero { padding: 170px 6% 156px; background: #fff; }
-.site #rakhigarhi-reference .rak-hero-copy::before { content: ""; display: block; width: 58px; height: 4px; background: var(--rak-ruby); margin-bottom: 30px; }
+.site #rakhigarhi-reference .rak-hero-copy::before { content: none; display: none; }
+/* Reserve the original line space, but attach the line to its editable label. */
+html body #public-site#public-site#public-site #rakhigarhi-reference .rak-hero-copy { padding-top: calc(var(--accent-line) + var(--accent-line-gap)) !important; }
+html body #public-site#public-site#public-site #rakhigarhi-reference .rak-hero-copy .eyebrow { position: relative; }
+html body #public-site#public-site#public-site #rakhigarhi-reference .rak-hero-accent { display: block; position: absolute; left: 0; bottom: calc(100% + var(--accent-line-gap)); width: var(--accent-line-w); height: var(--accent-line); background: var(--rak-ruby); pointer-events: auto; }
 .site #rakhigarhi-reference .rak-hero .eyebrow { color: var(--rak-ink) !important; }
 .site #rakhigarhi-reference #archaeology { background: #ece7e9; }
 .site #rakhigarhi-reference #archaeology .stacked.has-aside { display: grid; grid-template-columns: minmax(0, 38fr) minmax(0, 62fr); gap: 0; align-items: stretch; padding-block: 80px 84px !important; }
