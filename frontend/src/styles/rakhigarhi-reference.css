@@ -162,3 +162,12 @@
   .site #rakhigarhi-reference #haveli-chaupal .rak-restoration-aligned .rak-detail-photos { max-width: 500px; margin-inline: auto; }
   .site #rakhigarhi-reference #haveli-chaupal .rak-restoration-aligned { padding-bottom: 40px; }
 }
+/* The Ambition: first two paragraphs stacked on the left, a light centre line, last paragraph on the right */
+html body #public-site #rakhigarhi-reference #the-ambition .prose { display: grid !important; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important; grid-template-rows: auto 1fr; column-gap: 0 !important; row-gap: 28px !important; }
+html body #public-site #rakhigarhi-reference #the-ambition .prose > p { grid-column: 1; padding: 0 clamp(28px, 3.5vw, 56px) 0 0 !important; border: 0 !important; }
+html body #public-site #rakhigarhi-reference #the-ambition .prose > p:last-child:not(:first-child) { grid-column: 2; grid-row: 1 / -1; padding: 0 0 0 clamp(28px, 3.5vw, 56px) !important; border-left: 1px solid #ddd6cf !important; }
+@media (max-width: 700px) {
+  html body #public-site #rakhigarhi-reference #the-ambition .prose { grid-template-columns: minmax(0, 1fr) !important; }
+  html body #public-site #rakhigarhi-reference #the-ambition .prose > p { padding: 0 !important; }
+  html body #public-site #rakhigarhi-reference #the-ambition .prose > p:last-child:not(:first-child) { grid-column: 1; grid-row: auto; border-left: 0 !important; border-top: 1px solid #ddd6cf !important; padding: 28px 0 0 !important; }
+}
