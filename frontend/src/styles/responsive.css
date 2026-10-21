@@ -21,10 +21,9 @@
     }
   }
 
-  /* Saved free-form positions were authored on a 1440px canvas. On smaller
-     laptops/tablets/phones, use each section's responsive grid, not pixel offsets.
-     Desktop editing still shows the original canvas geometry. */
-  @media (max-width: 1439px), (hover: none), (pointer: coarse) {
+  /* Reflow only on narrow or touch-first screens. Laptop/desktop viewports
+     keep the original columns, spacing and saved geometry from 961px upward. */
+  @media (max-width: 960px), (hover: none), (pointer: coarse) {
     body:not(.live-editing) #public-site [style*="--ed-t"] { transform: none !important; }
     body:not(.live-editing) #public-site [style*="--ed-w"] {
       width: min(var(--ed-w), 100%) !important;
@@ -87,8 +86,8 @@
     body:not(.live-editing) #public-site .hfn .hfn-feature-text { padding-top: 16px !important; }
   }
 
-  /* Navigation collapses before laptop links crowd; touch tablets get the same menu. */
-  @media (max-width: 1100px), (hover: none), (pointer: coarse) {
+  /* Keep the original horizontal menu on laptops, including narrow preview panes. */
+  @media (max-width: 960px), (hover: none), (pointer: coarse) {
     #public-site .cf-compact :is(input, textarea), #public-site form select { font-size: 16px !important; }
     #public-site #site-header .header-inner {
       display: flex !important; align-items: center !important; justify-content: space-between !important;
@@ -131,7 +130,7 @@
     #public-site #site-header .dropdown.mega { grid-template-columns: minmax(0, 1fr) !important; }
   }
 
-  @media (max-width: 1100px) {
+  @media (max-width: 960px), (hover: none), (pointer: coarse) {
     body:not(.live-editing) #public-site #theatre-reference .theatre-split { height: auto !important; }
     body:not(.live-editing) #public-site #theatre-reference .theatre-split-copy {
       width: 100% !important; padding: 44px 24px 32px !important;

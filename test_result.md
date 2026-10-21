@@ -123,3 +123,10 @@
 - Main browser retest PASS at1024,1280,1440: About hero exactly aligns to footer rails. /app/test_reports/iteration_30.json.
 - No open responsive product failures; no publishing performed for this batch. User requested completion without unrelated modifications.
 
+
+## Laptop layout regression — user reported in preview
+- User says laptop layout changed to mobile-like, menu strange, Field Notes arrangement different. Confirmed Preview (a). No redesign requested.
+- Reproduced BEFORE fix:1280px fine pointer .hfn-head one1190px column + margin0;1080px fine pointer menu-toggle flex + one1004px notes column. Cause responsive.css max1439 layout reset + max1100 mobile menu.
+- Fix scope: narrow responsive stacking/menu to <=960px OR primary coarse/no-hover; preserve existing laptop columns, geometry, spacing >=961px fine/hover. Editor remains desktop-only with existing min1025 capability gate (not part of bug change). No data writes or deployment.
+- Test responsive sheet disabled IN BROWSER as old-layout reference for current preview data at laptop widths, versus fixed version; allow existing colored-band alignment/Craft Centre safeguards only. Do not equate no overflow with design fidelity. All8pages, particularly header/HomeFieldNotes/FieldNotes hero.
+

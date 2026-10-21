@@ -23,7 +23,7 @@ function Dropdown({ item, onNavigate }) {
   }, []);
   const active = loc.pathname.startsWith(item.href);
   const timer = useRef(null);
-  const desktop = (e) => e.pointerType === "mouse" && window.matchMedia("(min-width: 1101px) and (hover: hover) and (pointer: fine)").matches;
+  const desktop = (e) => e.pointerType === "mouse" && window.matchMedia("(min-width: 961px) and (hover: hover) and (pointer: fine)").matches;
   const enter = (e) => { if (desktop(e)) { clearTimeout(timer.current); setOpen(true); } };
   const leave = (e) => { if (desktop(e)) timer.current = setTimeout(() => setOpen(false), 160); };
   useEffect(() => () => clearTimeout(timer.current), []);
