@@ -1,0 +1,36 @@
+{
+  "summary": "Final targeted retest passes. Contact fixed-height overflow now stays inside the white card with a reachable Send button, and layout controls open automatically. Public-component hot reload is confirmed working after narrowing the webpack ignore rule.",
+  "case_type": "bug_fix_and_editor_enhancement",
+  "previous_report": "/app/test_reports/iteration_16.json",
+  "testing_method": "Main agent reran the testing agent's existing isolated Contact Playwright script after implementing the reported overflow fix; prior unaffected Theatre/Craft/home and backend tests retained.",
+  "results": {
+    "contact_browser": "40/40 PASS",
+    "theatre_craft_home_browser": "43/43 PASS in iteration 16",
+    "contact_settings_backend": "6/6 PASS in iteration 16",
+    "total_feature_checks": "89/89 PASS",
+    "hot_reload": "PASS: touching src/components/public/Blocks.jsx triggered Compiling / Compiled successfully without frontend restart",
+    "react_page_errors": [],
+    "unexpected_requests": []
+  },
+  "fixes_verified": [
+    "Blocks.layoutStyle no longer sets inline overflow:visible!important on _contact_card; CSS determines desktop auto scroll and mobile natural height",
+    "At 1920px viewport, saved card is exactly 1000x700 both in editor and public view; scrollHeight 941, clientHeight 700, overflow auto",
+    "Send message button is inside card and reachable after inner scrolling; it is not covered by footer",
+    "At 768 and 390px viewports, card uses auto height and has no horizontal overflow or inner scrolling",
+    "Size & position opens automatically for the white card",
+    "Shared email/address/phone and compact form labels persist via real backend patch logic against disposable settings collections",
+    "Real connect page and settings unchanged; original phone remains empty"
+  ],
+  "frontend_issues": [],
+  "backend_issues": [],
+  "test_report_links": [
+    "/app/tests/iter16_contact_card_site_text.py",
+    "/tmp/contact_retest_17.log",
+    "/app/tests/iter16_theatre_craft_delete_move.py",
+    "/app/backend/tests/test_contact_site_live.py"
+  ],
+  "safety": "All test writes used disposable page/settings/revision clones, which were removed. Real page and settings fingerprints matched before and after. Only intentional customer content change was earlier scoped removal of Theatre archive link labels/targets from published and draft content; image preserved.",
+  "mocked_production_apis": false,
+  "retest_needed": false,
+  "deployment": "No deployment requested or performed in this task. Changes verified in current preview."
+}

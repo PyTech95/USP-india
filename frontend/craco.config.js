@@ -67,7 +67,7 @@ module.exports = {
           "**/build/**",
           "**/dist/**",
           "**/coverage/**",
-          "**/public/**",
+          `${path.resolve(__dirname, "public")}/**`,
         ],
       };
       return webpackConfig;

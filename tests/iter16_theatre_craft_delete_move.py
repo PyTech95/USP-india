@@ -187,8 +187,9 @@ async def craft(page):
         grip = await page.locator('[data-testid="live-move-grip"]').bounding_box(); cx, cy = grip["x"] + grip["width"] / 2, grip["y"] + grip["height"] / 2
         await page.mouse.move(cx, cy); await page.mouse.down(); await page.mouse.move(cx + dx / 2, cy + dy / 2, steps=5); await page.mouse.move(cx + dx, cy + dy, steps=5); await page.mouse.up(); await page.wait_for_timeout(400)
         await page.keyboard.press("Escape")
-    a = await page.evaluate(GEO, {"sel": S, "fields": F})
-    await drag("heading", 37, 23); b = await page.evaluate(GEO, {"sel": S, "fields": F})
+    await page.wait_for_timeout(1200); a = await page.evaluate(GEO, {"sel": S, "fields": F})
+    await drag("heading", 37, 23); await page.wait_for_timeout(800); b = await page.evaluate(GEO, {"sel": S, "fields": F})
+    print("CR drag diag img a/b", a["image"], b["image"], "heading", a["heading"], b["heading"])
     ok("CR drag heading: image unmoved", b["image"]["y"] == a["image"]["y"] and b["image"]["x"] == a["image"]["x"] and b["heading"]["x"] != a["heading"]["x"], (b["heading"]["x"] - a["heading"]["x"], b["image"]["x"] - a["image"]["x"]))
     await drag("image", -31, 17); c = await page.evaluate(GEO, {"sel": S, "fields": F})
     ok("CR drag image: text unmoved", all(c[k]["y"] == b[k]["y"] and c[k]["x"] == b[k]["x"] for k in ["eyebrow", "heading", "body_html"]) and c["image"]["x"] != b["image"]["x"])
@@ -196,7 +197,9 @@ async def craft(page):
     sty = [s for s in db.pages.find_one({"key": KEYS["craft-livelihood"]})["published"]["sections"] if s["data"].get("anchor") == "craft-centre"][0].get("styles", {})
     ok("CR saved styles field-level only (no _section translate)", "heading" in sty and "image" in sty and not (sty.get("_section") or {}).get("translateX"), json.dumps(sty)[:300])
     await page.click('[data-testid="live-exit-btn"]'); await page.wait_for_timeout(300)
-    await page.goto(BASE + "/our-work/craft-livelihood"); await page.wait_for_selector(S); await page.wait_for_timeout(2000)
+    await page.goto(BASE + "/our-work/craft-livelihood"); await page.wait_for_selector(S); await page.wait_for_timeout(1000)
+    # scroll-reveal transforms only settle once the section is in view (test-flaw fix)
+    await page.locator(S).scroll_into_view_if_needed(); await page.wait_for_timeout(2500)
     pub = await page.evaluate(GEO, {"sel": S, "fields": F})
     rel = lambda g, k: (g[k]["x"] - g["image"]["x"], g[k]["y"] - g["secY"]) if k != "image" else (g["image"]["x"], g["image"]["y"] - g["secY"])
     diffs = {k: (rel(pub, k), rel(c, k)) for k in ["heading", "image", "body_html"]}

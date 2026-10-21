@@ -35,8 +35,8 @@ export function layoutStyle(raw, field) {
   if (raw.width) o["--ed-w"] = raw.width;
   if (raw.height) {
     o["--ed-h"] = raw.height;
-    if (!isImageField(field)) o.overflow = "visible";
-    else if (/px$/.test(raw.width || "") && /px$/.test(raw.height)) o["--ed-ar"] = `${parseFloat(raw.width)} / ${parseFloat(raw.height)}`;
+    if (!isImageField(field) && field !== "_contact_card") o.overflow = "visible";
+    else if (isImageField(field) && /px$/.test(raw.width || "") && /px$/.test(raw.height)) o["--ed-ar"] = `${parseFloat(raw.width)} / ${parseFloat(raw.height)}`;
   }
   if (raw.objectPosition) o.objectPosition = raw.objectPosition;
   // Image crop from the live editor: frame shape + zoom (position = objectPosition).

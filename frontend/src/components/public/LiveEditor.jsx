@@ -620,7 +620,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
             </>) : <p className="live-hint" data-testid="live-container-hint">Resize the white contact card using its handles or Size &amp; position below.</p>}
 
             {(isImage || isText || isLayout) && (
-              <Group title="Size & position" testid="live-group-layout">
+              <Group title="Size & position" open={isLayout} testid="live-group-layout">
                 <p className="live-hint live-hint-small">{isText ? "Tip: drag the grip or red handles on the page." : "Tip: drag the grip or red handles on the page, or use the arrow keys (Shift = 10px)."}</p>
                 <div className="live-row">
                   <label className="live-field">Width (px)<input type="number" value={px(st.width)} placeholder="auto" onChange={(e) => setStyles({ width: e.target.value ? `${e.target.value}px` : "" })} data-testid="live-width" /></label>
