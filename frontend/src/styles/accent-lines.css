@@ -1,9 +1,15 @@
 /* Red accent lines: one length, thickness and text gap for the whole site (editable in Edit Header > Red lines) */
 :root { --accent-line: 2px; --accent-line-w: 42px; --accent-line-gap: 30px; }
 
+/* Actual line elements use the same dimensions as the pseudo-element accents below. */
+html body #public-site#public-site#public-site :is(.theatre-split-rule, .theatre-label-accent, .rak-hero-accent),
+html body .fn-overlay .fn-rule { width: var(--accent-line-w) !important; height: var(--accent-line) !important; flex-shrink: 0; }
+
+
 /* Horizontal lines below text */
 html body #public-site#public-site#public-site :is(
   .page-craft-livelihood [data-testid="block-1"] .text-cols-head .h2,
+  #craft-reference .hb-hero + .hb-text .h2,
   .page-workshops-learning #restoration-skills .prose,
   .page-home [data-testid="block-0"] .lede,
   .page-home #our-work .sec-head .h2,

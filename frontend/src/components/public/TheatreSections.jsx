@@ -31,7 +31,7 @@ export const TheatreSplitHero = ({ data, first, id, editable }) => {
       <div className="theatre-split-intro" data-testid={`${id}-intro`} {...editable("intro")}>
         {(data.intro || "").split(/\n\s*\n/).map((text, i) => <p key={i}>{text}</p>)}
       </div>
-      <span className="theatre-split-rule" aria-hidden="true" />
+      <span className="theatre-split-rule" aria-hidden="true" data-testid={`${id}-accent-line`} />
     </div>
     <Photo ref_={data.image} eager className="theatre-split-art" sizes="(min-width: 961px) 60vw, 100vw" testid={`${id}-image`} ed={editable("image")} />
   </div>;

@@ -25,6 +25,6 @@ export const HeaderStyleTag = ({ styles = {} }) => {
   rule([" .nav-link[aria-current=page]", " .nav-link:hover", " .dropdown a:hover"], { color: styles.activeColor });
   const lines = Object.entries({ "--accent-line-w": styles.accentLineWidth, "--accent-line": styles.accentLineThickness, "--accent-line-gap": styles.accentLineGap })
     .filter(([, v]) => /^\d+(\.\d+)?px$/.test(v || "")).map(([k, v]) => `${k}: ${v} !important`).join("; ");
-  if (lines) rules.push(`html body #public-site { ${lines}; }`);
+  if (lines) rules.push(`html body #public-site, html body .fn-overlay { ${lines}; }`);
   return rules.length ? <style data-testid="header-style-overrides">{rules.join("\n")}</style> : null;
 };

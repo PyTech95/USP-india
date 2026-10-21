@@ -111,7 +111,7 @@ export function NoteReader({ slug, onClose }) {
             {data.category && <p className="fn-cat" data-testid="note-reader-category">{data.category}</p>}
             <h2 id="fn-reader-title" className="fn-reader-title" data-testid="note-reader-title">{data.title.replace(/\.$/, "")}</h2>
             {data.standfirst && <p className="fn-standfirst" data-testid="note-reader-standfirst">{data.standfirst}</p>}
-            <span className="fn-rule" aria-hidden="true" />
+            <span className="fn-rule" aria-hidden="true" data-testid="note-reader-accent-line" />
             <div className="fn-body" data-testid="note-reader-body" dangerouslySetInnerHTML={{ __html: data.body_html }} />
           </>}
         </div>
