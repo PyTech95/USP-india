@@ -1,0 +1,22 @@
+{
+  "summary": "Final targeted retest with no production writes (all non-GET /api calls blocked in the browser; the contact tests used an isolated settings clone). The panel stacking fix works: the smoke test without INJECT passes 43/43, checked with real elementFromPoint on all 10 pages at 1920, 768 and 390px, plus the header editor, site text panel, add menu and media picker. New panel side and handle checks pass 20/21. Selecting the home 'Explore Field Notes' moves the panel LEFT and it stays at top 12, with no side-switch loop. The east handle is reachable and a real mouse drag works: width 169 to 219, text and arrow stay together (gap 9, vc 0, 1 line). Real mouse clicks on Undo and on the side toggle work. The toggle switches right/left and the top stays 12. At 768 and 390 the panel stays right/top and the side button is hidden. Ambition placeholders show the computed padding (72/64 at 1920, 40/40 at 390), and setting bottom 20 sets the actual inner padding. One LOW bug: the placeholder can show an old value after a field is cleared. Contact tests run serially: 6/6 pass and the real phone '+9100000' is unchanged. Final capture: 0 leftover TEST pages, 10 pages, valid checksum, no TEST_ in the bundle. No publish blockers.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "LiveEditor SectionStyle (Ambition Space top/bottom)", "issue": "The placeholder is one render behind. At 390px: set bottom 20, then clear it. The placeholder stays '20' while the actual padding is back to 40. It corrects itself on the next re-render, e.g. after editing another field. At 1920 it happened to be correct. Root cause: getComputedStyle(inner) is read during render, before React applies the new style to the DOM. Fix: compute the placeholders in useLayoutEffect/useEffect after commit, or re-read via requestAnimationFrame and store in state.", "selector": "[data-testid=live-sec-pad-bottom], [data-testid=live-sec-pad-top]", "priority": "LOW"},
+      {"component": "Resize east handle on right-aligned actions", "issue": "UX note, not a blocker. On the right-aligned 'Explore Field Notes', dragging the east handle +50px grows the width by 50, but the right edge stays at x=1630 and the item grows to the left. The handle does not follow the cursor. Text and arrow stay together.", "selector": "[data-testid=live-resize-e]", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": ["/app/tests/iter19_editor_panel_stacking_smoke.py", "/app/tests/iter20_panel_side_and_placeholders.py", "/app/backend/tests/test_contact_site_live.py", "/app/tests/iter19_final_capture_check.py", "/app/test_reports/pytest/iter20_contact.xml"],
+  "action_items": ["Optional LOW: compute the SectionStyle padding placeholders after DOM commit so they are not stale after clearing a field"],
+  "critical_code_review_comments": ["revealSelection only changes the side when the element is fully on one half; elements that span the centre keep the current side. There is no loop and this is fine.", "Inside the 960px media query, the .live-panel-side display:none rule has no body/!important prefix. It works today, but it may break if more specific button styles are added later."],
+  "updated_files": ["/app/tests/iter20_panel_side_and_placeholders.py (new)"],
+  "success_rate": {"backend": "100% (6/6 contact serial)", "frontend": "63/64 (43/43 stacking smoke, 20/21 side/handle/placeholder)"},
+  "seed_data_creation": "None. No clones were needed: the browser tests were read-only with writes blocked, and the local resize was undone and never saved.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Run the browser scripts with PYTHONPATH=/root/.venv/lib/python3.11/site-packages /usr/local/bin/python3. The iter20 script blocks all non-GET requests. At 390px the 48dvh panel covers the upper viewport, so scroll targets to block:'end' before clicking, or a force click can land on the header and open the header editor. The public settings endpoint is /api/public/site. Always run iter19_final_capture_check.py last.",
+  "rca of the issue": "Placeholder staleness: SectionStyle calls window.getComputedStyle during render. When the style changes, the render runs before the DOM is updated, so it reads the previous padding."
+}

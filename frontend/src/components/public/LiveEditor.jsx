@@ -396,6 +396,17 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
       if (dir.includes("w")) { const nw = Math.max(40, Math.round(w0 - dx)); patch.width = `${nw}px`; patch.translateX = `${tx0 + (w0 - nw)}px`; }
       if (dir.includes("s")) patch.height = `${Math.max(20, Math.round(h0 + dy))}px`;
       if (dir.includes("n")) { const nh = Math.max(20, Math.round(h0 - dy)); patch.height = `${nh}px`; patch.translateY = `${ty0 + (h0 - nh)}px`; }
+      // Keep the opposite edge fixed when flex alignment repositions a resized action.
+      if (el?.dataset.editGroup === "action") {
+        for (const [size, variable] of [["width", "--ed-w"], ["height", "--ed-h"]]) {
+          if (patch[size]) { el.style.setProperty(size, patch[size], "important"); el.style.setProperty(variable, patch[size]); }
+        }
+        el.style.setProperty("--ed-t", `translate(${tx0}px, ${ty0}px)`);
+        el.style.setProperty("transform", "var(--ed-t)", "important");
+        const resized = el.getBoundingClientRect();
+        if (patch.width) patch.translateX = `${tx0 + (dir.includes("w") ? r0.right - resized.width : r0.left) - resized.left}px`;
+        if (patch.height) patch.translateY = `${ty0 + (dir.includes("n") ? r0.bottom - resized.height : r0.top) - resized.top}px`;
+      }
       setStyles(patch); setGuides(gls);
     };
     const up = () => { endDrag(); setGuides([]); window.removeEventListener("pointermove", mv); window.removeEventListener("pointerup", up); };
@@ -695,10 +706,22 @@ function Group({ title, open = false, testid, children }) {
 
 function SectionStyle({ sec, onChange }) {
   const s = (sec.styles || {})._section || {};
-  const root = document.querySelector(`[data-sec="${CSS.escape(sec.id)}"]`);
-  const inner = sec.data?.layout === "rakhigarhi-ambition-aligned" ? root?.querySelector(":scope > section") : root;
-  const padding = inner ? window.getComputedStyle(inner) : null;
-  const placeholder = (key) => String(Math.round(parseFloat(padding?.[key]) || 0));
+  const [placeholders, setPlaceholders] = useState({});
+  useEffect(() => {
+    const root = document.querySelector(`[data-sec="${CSS.escape(sec.id)}"]`);
+    const inner = sec.data?.layout === "rakhigarhi-ambition-aligned" ? root?.querySelector(":scope > section") : root;
+    if (!inner) return undefined;
+    const measure = () => {
+      const computed = window.getComputedStyle(inner);
+      setPlaceholders({ paddingTop: String(Math.round(parseFloat(computed.paddingTop) || 0)), paddingBottom: String(Math.round(parseFloat(computed.paddingBottom) || 0)) });
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(inner);
+    window.addEventListener("resize", measure);
+    return () => { observer.disconnect(); window.removeEventListener("resize", measure); };
+  }, [sec]);
+  const placeholder = (key) => placeholders[key] || "0";
   return (
     <>
       <div className="live-row">
