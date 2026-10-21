@@ -137,3 +137,10 @@
 - Narrow-laptop FieldNotes saved widths370px exceeded columns298..323; added max-width100% only to card text/title. Columns/spacing/font/images unchanged, no stacking.
 - Retest ONLY contact base fixture (no candidate CSS injection) + narrow FieldNotes wrapping. Laptop fidelity/nav already passed iteration31 for9routes x5widths. No publishing.
 
+
+
+## Final status — laptop and Contact fixes PASS
+- iteration31: desktop fidelity restored; no menu/column redesign at961..1366 finepointer, touch-only adaptive layouts intact.
+- iteration33: delivered CSS (no injected candidate) PASS9/9 cases+validation. Saved-size Contact card has no PUBLIC inner scroll; full Send accessible via normal page scroll, footer protected. Active editor unchanged.
+- FieldNotes narrow-card text overlap0 at1024/1080,3cards+2column heading retained;1280unchanged.
+- No DB writes, auth changes, enquiry submissions, or deployment. Do not repeat suites unless user reports a new issue.
