@@ -34,7 +34,7 @@ function Featured({ n, onOpen }) {
     <div className="fn-strip">
       {pics.map((m, i) => <button key={m.id || i} type="button" className="fn-strip-item" onClick={() => onOpen(n.slug)} aria-label={`Read ${clean(n.title)}`} data-testid={`note-strip-${i}`}><Pic media={m} /></button>)}
     </div>
-    {n.caption && <p className="fn-caption">{n.caption}</p>}
+    {n.caption && <p className="fn-caption" data-testid={`note-caption-${n.slug}`}>{n.caption}</p>}
     <EditLink n={n} />
   </article>;
 }

@@ -131,3 +131,7 @@
   .site #craft-reference .craft-hero-copy .h1 { font-size: 23px !important; }
   .site:has(#craft-reference) .brand-sub { font-size: 9px !important; }
 }
+
+/* These two craft labels share the site's editable accent dimensions. */
+html body #public-site#public-site#public-site #craft-reference :is([data-sec="b7030ee2f943407bbe9f66f67c5618ff"], #dhurrie-weaving) .eyebrow { position: relative; }
+html body #public-site#public-site#public-site #craft-reference :is([data-sec="b7030ee2f943407bbe9f66f67c5618ff"], #dhurrie-weaving) .eyebrow::before { content: ""; display: block !important; position: absolute; left: 0; bottom: calc(100% + var(--accent-line-gap)); width: var(--accent-line-w) !important; height: var(--accent-line) !important; margin: 0 !important; border: 0 !important; background: #d41445; }
