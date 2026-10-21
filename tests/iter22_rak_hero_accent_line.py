@@ -110,6 +110,10 @@ async def main():
             # inline rename
             foc = await page.evaluate("()=>document.activeElement.hasAttribute('data-edit-text')")
             ok("ED (low) after clicking line, label text has focus for typing", foc, foc)
+            await page.keyboard.press("End"); await page.keyboard.type("Q"); await page.wait_for_timeout(200)
+            tq = await page.evaluate("()=>document.querySelector('[data-testid=block-0-eyebrow] [data-edit-text]').textContent")
+            ok("ED first-click typing works after clicking line", tq.strip().endswith("Q"), tq)
+            await page.keyboard.press("Backspace"); await page.wait_for_timeout(200)
             # rename by clicking the label text itself
             await page.locator('[data-testid=block-0-eyebrow] [data-edit-text]').click(); await page.wait_for_timeout(500)
             await page.keyboard.press("End"); await page.keyboard.type(" X"); await page.wait_for_timeout(200)

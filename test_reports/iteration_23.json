@@ -1,0 +1,27 @@
+{
+  "summary": "Targeted retest of the Rakhigarhi hero red-line fixes. /app/tests/iter22_rak_hero_accent_line.py: 88/88 PASS. I added one check: typing right after the first click on the line. All 3 issues from iter22 are fixed. (1) PADDING: .rak-hero-copy padding-top computes to 32px at 1920, 1280, 768 and 390 (17px with vars 80/5/12). Eyebrow, heading, photos and both images match the legacy ::before CSS exactly (1920: eyebrow top 205, line top 173; 1280: 192.19/160.19; 768 and 390: 155/123). Eyebrow and heading fonts are unchanged and there is no horizontal overflow. The line is still left-aligned with the eyebrow: default 290.41, production-style offsets 350.41, at all viewports. Haveli and Ambition lines are unchanged. (2) FOCUS: clicking the decorative line selects SMALL LABEL, focuses the inner [data-edit-text], and typing works on the first click ('RakhigarhiQ'). (3) CASING: renaming to 'Rakhigarhi X' saves exactly 'Rakhigarhi X' to the clone DB and shows it on a fresh public reload, while computed text-transform is still uppercase. Drag, Move X, undo, redo, save 200, and a fresh reload matching the editor geometry all pass. No React errors or pageerrors, 0 blocked writes, and the real rakhigarhi page and settings fingerprints are unchanged. Grouped-actions regression (iter19_grouped_actions_home.py): 35/37. Arrow click selects the whole action, only the text is contenteditable, Move X, resize, undo/redo, inline rename, save, reload and delete all pass. The 2 failures happen with and without the new pointerdown preventDefault (tested by disabling line 257 temporarily, then restoring it, cmp verified), so they are not caused by this change. Final capture after cleanup: ready, 10 pages, no TEST_, checksum OK. No deploy was done.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "LiveEditor grouped action arrow hover (pre-existing, unrelated to the red-line fix)", "issue": "In edit mode, the public hover rules (site-overrides.css:54 '.more-link.more-link-icon:hover svg { transform: translateX(3px) }', and the same pattern in home-field-notes.css:95) still apply while the mouse rests on the selected action's arrow. The arrow shifts 3px (svgT matrix(1,0,0,1,3,0)). This fails the iter19 'font 26 aligned' check (svgT must be 'none') and makes the grip-drag delta differ by 3px between text and arrow (-33 vs -36). Reproduced with the new aria-hidden pointerdown preventDefault disabled, so it is not caused by this change. Visual impact is minimal.", "selector": "[data-testid$=-more] svg", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": ["/app/tests/iter22_rak_hero_accent_line.py", "/app/tests/iter19_grouped_actions_home.py", "/app/tests/iter19_final_capture_check.py"],
+  "action_items": [
+    "OPTIONAL LOW: turn off public arrow hover transforms while editing, for example '.live-site-editing ... :hover svg { transform: none !important }'. Or relax the iter19 aligned()/drag checks to allow the 3px hover shift.",
+    "Deploy the batch when the user wants it live. Do not claim it is live until then."
+  ],
+  "critical_code_review_comments": [
+    "LiveEditor record(): neutralising and restoring inline text-transform works; the inline style is left as style=\"\" afterwards, which is harmless.",
+    "The pointerdown preventDefault applies to every aria-hidden descendant inside a section, including grouped action arrows. Arrow selection and inline editing still pass, so no regression was observed."
+  ],
+  "updated_files": ["/app/tests/iter22_rak_hero_accent_line.py (added 'ED first-click typing works after clicking line' check)"],
+  "success_rate": {"backend": "N/A (skipped)", "frontend": "Rakhigarhi 88/88 (100%); grouped-actions regression 35/37 (2 failures pre-existing, not caused by this change); final capture OK"},
+  "seed_data_creation": "Temporary TEST_rak_* and TEST_home_* clones, deleted in finally. 0 TEST pages before capture. No real page or settings writes.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Run: cd /app && PYTHONPATH=/root/.venv/lib/python3.11/site-packages /usr/local/bin/python3 tests/iter22_rak_hero_accent_line.py (expect 88/88). Then tests/iter19_grouped_actions_home.py (expect 35/37; the 2 failures are the arrow :hover translateX(3px) artifact). Then from /app/backend run /app/tests/iter19_final_capture_check.py.",
+  "rca of the issue": "The iter19 regression failures come from public :hover svg translate rules that are not suppressed in edit mode. After the test clicks the arrow, the mouse stays over it, so svg computes translateX(3px). A/B with LiveEditor.jsx line 257 commented out gave identical results, which confirms they are unrelated to the new decorative pointerdown handler."
+}

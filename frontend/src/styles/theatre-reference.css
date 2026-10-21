@@ -85,3 +85,8 @@ html body #public-site #theatre-reference :is(.text-cols, .theatre-archive, .hb.
   #theatre-reference .theatre-archive-photo { max-width: 100%; }
   #theatre-reference .theatre-hero-copy .h1 { overflow-wrap: anywhere; }
 }
+
+
+/* Archive label and its red rule form one editable unit. */
+html body #public-site #theatre-reference .theatre-accent-label { position: relative; }
+html body #public-site #theatre-reference .theatre-label-accent { position: absolute; display: block; left: 0; bottom: calc(100% + var(--accent-line-gap)); width: var(--accent-line-w); height: var(--accent-line); background: var(--t-ruby); }

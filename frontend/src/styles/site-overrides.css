@@ -98,6 +98,7 @@ body.live-editing .live-add-menu { z-index: 100070; }
 body.live-editing [data-slot="dialog-overlay"] { z-index: 100079; }
 body.live-editing [role="dialog"] { z-index: 100080; }
 body.live-editing #public-site.site > main { z-index: auto !important; }
+body.live-editing #public-site#public-site [data-edit-group="action"] > svg { transform: none !important; transition: none !important; }
 body .live-panel[data-panel-side="left"] { left: 12px; right: auto; }
 @media (max-width: 960px) { body .live-panel[data-panel-side="left"] { left: auto; right: 12px; } .live-panel-side { display: none; } }
 

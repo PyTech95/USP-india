@@ -11,8 +11,11 @@ const TheatreLink = ({ data, id, editable }) => {
     : <a href={data.link_href} className="theatre-link" data-testid={`${id}-link`} data-edit-group="action" {...editable("link_label")}>{content}</a>;
 };
 
-const TheatreHeading = ({ data, id, editable }) => <>
-  {data.eyebrow && <p className="eyebrow" data-testid={`${id}-eyebrow`} {...editable("eyebrow")}>{data.eyebrow}</p>}
+const TheatreHeading = ({ data, id, editable, accent = false }) => <>
+  {data.eyebrow && <p className={`eyebrow${accent ? " theatre-accent-label" : ""}`} data-testid={`${id}-eyebrow`} {...editable("eyebrow")}>
+    {accent && <span className="theatre-label-accent" aria-hidden="true" data-testid={`${id}-accent-line`} />}
+    <span data-edit-text>{data.eyebrow}</span>
+  </p>}
   <h2 className="h2" data-testid={`${id}-heading`} {...editable("heading")}>{data.heading}</h2>
 </>;
 
@@ -57,7 +60,7 @@ export const TheatreHero = ({ data, first, id, editable }) => {
 };
 
 export const TheatreArchive = ({ data, id, editable }) => <section className="wrap section theatre-archive" data-testid={id}>
-  <TheatreHeading data={data} id={id} editable={editable} />
+  <TheatreHeading data={data} id={id} editable={editable} accent />
   <HtmlDiv className="prose" data-testid={`${id}-body`} {...editable("body_html")} html={data.body_html || ""} />
   <Photo ref_={data.image} crop="3/2" cropMobile="3/2" sizes="(min-width: 1440px) 1104px, 80vw" className="theatre-archive-photo reveal" testid={`${id}-image`} ed={editable("image")} />
   <TheatreLink data={data} id={id} editable={editable} />

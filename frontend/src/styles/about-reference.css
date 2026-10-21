@@ -1,5 +1,5 @@
 /* Owner-supplied Who We Are layout. Everything is scoped to the page, not shared chrome. */
-#about-reference { --about-paper: #fff; --about-hero: #ebeae6; --about-core: #f7f7f6; --about-panel: #f2f2f1; --about-portrait: #e9e7e7; --about-ink: #3c3c3b; --about-accent: #a72a50; width: min(92%, 1440px); margin: 0 auto; background: var(--about-paper); color: var(--about-ink); font-family: var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif) ; padding-bottom: 84px; }
+#about-reference { --about-paper: #fff; --about-hero: #ebeae6; --about-core: #f7f7f6; --about-panel: #f2f2f1; --about-portrait: #e9e7e7; --about-ink: #3c3c3b; --about-accent: #a72a50; width: min(92%, 1440px); margin: 0 auto; background: var(--about-paper); color: var(--about-ink); font-family: var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif) ; padding-bottom: 48px; }
 #about-reference .crumbs { display: none; }
 #about-reference .hb { background: transparent; border: 0; margin: 0; }
 #about-reference .hb > section { background: transparent; }
@@ -54,7 +54,7 @@
   #about-reference .about-approach-copy { padding: 0; }
 }
 @media (max-width: 700px) {
-  #about-reference { width: calc(100% - 24px); padding-bottom: 40px; }
+  #about-reference { width: calc(100% - 24px); padding-bottom: 24px; }
   #about-reference .h1 { font-size: 34px; }
   #about-reference .h2 { font-size: 16px !important; }
   #about-reference :is(.prose, .prose p) { font-size: 14px !important; }
@@ -72,3 +72,6 @@
   #about-reference .about-team-grid { grid-template-columns: minmax(0, 1fr); }
   #about-reference .about-team-member:last-child:nth-child(odd) { width: 100%; grid-column: auto; }
 }
+
+/* No full-width grey rule below the final About panel. */
+html body #public-site #about-reference #our-approach > .about-approach { border-block: 0 !important; }

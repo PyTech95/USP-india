@@ -1,38 +1,94 @@
 {
-  "project_name": "Rakhigarhi Portfolio CMS",
-  "app_type": "portfolio CMS",
-  "design_mode": "minimal scoped adjustment",
+  "project_type": "Portfolio CMS - Architecture, Heritage & Theatre (USP India)",
+  "context": "Architectural heritage restoration portfolio & theatre research CMS app",
+  "theme": "Light theme (Organic & Earthy / Swiss Heritage Hybrid with warm stone base and deep maroon/red accent lines)",
   "typography": {
-    "heading_font": "System / Project Default display sans",
-    "body_font": "System / Project Default body sans",
-    "rules": "No typography changes. Preserve all saved font sizes, line heights, and text alignments upon save and republish. Maintain separation between text content DOM nodes and icon DOM nodes."
+    "heading_font": "Playfair Display / Cormorant Garamond / Custom Heritage Serif",
+    "body_font": "IBM Plex Sans / Inter",
+    "monospace_font": "Source Code Pro",
+    "hierarchy": {
+      "h1": "text-4xl sm:text-5xl lg:text-6xl tracking-tight leading-tight font-serif",
+      "h2": "text-2xl sm:text-3xl lg:text-4xl tracking-tight font-serif font-semibold",
+      "h3": "text-xl sm:text-2xl font-serif font-medium",
+      "h4": "text-lg sm:text-xl font-sans font-medium",
+      "body": "text-base sm:text-lg leading-relaxed font-sans text-neutral-800",
+      "caption_labels": "text-xs sm:text-sm uppercase tracking-[0.2em] font-sans font-semibold text-neutral-600"
+    },
+    "font_preservation": "Strictly preserve existing live web fonts. Do not override global fonts for content blocks."
   },
   "colors": {
-    "rules": "No color changes. Retain all original palette definitions and CSS variables."
-  },
-  "layout_and_spacing": {
-    "the_ambition_section": "Reduce excessive whitespace following 'The Ambition' block and preceding the page footer. Section margins and padding must align cleanly with adjacent grid containers.",
-    "footer_alignment": "Align footer edges with main content boundaries. Ensure adjustable section height and spacing via live CSS variable or configurable block parameters.",
-    "contact_section_cta": "The 'Get in touch' link/button and arrow icon must be wrapped in a single unified component container so text and arrow translate/move together as one unit."
-  },
-  "component_guidelines": {
-    "button_arrow_grouping": {
-      "behavior": "Unified editable link/button. Arrow icon and label text must be housed within a shared parent wrapper element.",
-      "dom_structure": "Outer interactive container holds text node and SVG icon node together. Text edits target the text child without stripping or duplicating the icon node."
+    "archetype": "Organic & Earthy / Swiss Heritage",
+    "palette": {
+      "base_bg": "#FAFAFA",
+      "surface_card": "#FFFFFF",
+      "text_primary": "#1A1A1A",
+      "text_secondary": "#4A4A4A",
+      "text_muted": "#737373",
+      "accent_red": "#B91C1C",
+      "accent_red_line": "#C5221F",
+      "border_subtle": "#E5E7EB",
+      "border_dark": "#262626"
     },
-    "republish_state_preservation": {
-      "rule": "Ensure typography classes, inline styles (fontSize, textAlign, letterSpacing), and inline positions are retained through republish actions without default resets."
+    "rules": {
+      "tinted_greys": "Never use pure #000000 or plain gray. Base neutrals carry warm stone/sand undertones.",
+      "contrast_ratio": "APCA & WCAG AA compliant. All body text at least 4.5:1 ratio against background."
     }
   },
-  "testing_and_accessibility": {
-    "data_testid_requirement": "All interactive elements, buttons, editable text inputs, block adjustment controls, and footer links must include unambiguous data-testid attributes in kebab-case format.",
-    "data_testid_examples": [
-      "data-testid=\"contact-cta-button\"",
-      "data-testid=\"contact-cta-arrow\"",
-      "data-testid=\"the-ambition-section\"",
-      "data-testid=\"footer-container\"",
-      "data-testid=\"republish-trigger-button\""
+  "visual_enhancers": {
+    "accent_lines": "Red accent bar (#C5221F or #B91C1C) placed above section headers (e.g. above 'Theatre Over Time') matching site accent style. Section headers and accent lines are glued so text and line move together.",
+    "borders": "1px solid crisp subtle borders. Remove outdated grey horizontal rules (#about block4 border or unnecessary footer dividers).",
+    "spacing_fixes": "Eliminate stale fixed heights (e.g. _section.height765 leaving 134px empty outer block + 84px padding) before About footer. Reduce desktop bottom spacing to ~48px and mobile to ~24px."
+  },
+  "grids": {
+    "type": "Flexible Responsive Grid & Fluid CMS Sections",
+    "base": "grid-cols-1 md:grid-cols-12 gap-6 lg:gap-12",
+    "rules": "Mobile-first layout (`grid-cols-1`). Direct grid children for proper alignment and smooth editor interactions."
+  },
+  "layouts": {
+    "who_we_are_footer": "Clean, tight transition to footer without orphaned horizontal rules or empty ~134px gaps.",
+    "haveli_section": "Dedicated new section titled 'A HAVELI BROUGHT BACK INTO USE' added directly following 'Its architecture, materials...' paragraph section, reusing existing CSS #haveli-in-use block styles while keeping existing paragraphs unaltered.",
+    "theatre_section": "Red accent line positioned directly ABOVE 'Theatre Over Time' heading, coupled tightly so heading and line transform/move together."
+  },
+  "motion": {
+    "micro_interactions": "Smooth transition (0.2s ease) on buttons, editor selection toolbars, hover effects.",
+    "accessibility": "Respect prefers-reduced-motion for all ambient effects."
+  },
+  "accessibility": {
+    "testing_ids": "All interactive elements and content controls MUST include data-testid attributes (e.g., data-testid='haveli-section-title', data-testid='theatre-over-time-heading').",
+    "contrast": "Strict minimum 4.5:1 WCAG AA compliance."
+  },
+  "component_path": {
+    "rakhigarhi_sections": "/app/frontend/src/components/public/RakhigarhiSections.jsx",
+    "about_sections": "/app/frontend/src/components/public/AboutSections.jsx",
+    "theatre_sections": "/app/frontend/src/components/public/TheatreSections.jsx",
+    "styles_about": "/app/frontend/src/styles/about-reference.css",
+    "styles_theatre": "/app/frontend/src/styles/theatre-reference.css",
+    "styles_accent": "/app/frontend/src/styles/accent-lines.css"
+  },
+  "image_urls": {
+    "hero_and_gallery": [
+      {
+        "category": "heritage_architecture",
+        "description": "Restored heritage haveli architecture exterior and masonry",
+        "url": "/backend/storage/uspindia/originals/2c6d78a257b3461a825f2fe8dee02574/v1.jpg"
+      },
+      {
+        "category": "theatre_performance",
+        "description": "Theatre performance stage and archival work",
+        "url": "/backend/storage/uspindia/originals/07f3512b576f4ea19497a610d33a9fc9/v1.webp"
+      }
     ]
   },
-  "instructions_to_main_agent": "Maintain strict scope. Do not alter existing branding, font families, or color tokens. Ensure the button label and arrow icon in 'Get in touch' move together seamlessly, retain font size and alignment choices upon republishing, reduce excess padding after 'The Ambition' before footer, and add data-testid attributes to key elements."
+  "instructions_to_main_agent": [
+    "1. In Who We Are / About bottom section, remove unwanted grey horizontal rule and remove obsolete fixed height (_section.height765) to fix excessive spacing before footer.",
+    "2. Add a new section for 'A HAVELI BROUGHT BACK INTO USE' immediately after the 'Its architecture, materials...' section, keeping all original text intact and utilizing #haveli-in-use styling.",
+    "3. Add a red accent line directly ABOVE 'Theatre Over Time' heading in the Theatre section matching existing site accent styling. Ensure text and line move together dynamically.",
+    "4. Preserve live site fonts, existing color schemes, and ensure all key elements carry role-based data-testid attributes."
+  ],
+  "UNIVERSAL GUIDELINES FOR MAIN AGENT": [
+    "Never use generic centered layouts or unstyled default gradients.",
+    "Ensure 2-3x generous spacing in content blocks without leaving orphaned dead-space containers.",
+    "All interactive and key text components must have explicit data-testid attributes.",
+    "Do not break live font references or overwrite key heritage brand styling."
+  ]
 }
