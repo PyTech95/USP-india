@@ -103,3 +103,4 @@ body .live-panel[data-panel-side="left"] { left: 12px; right: auto; }
 @media (max-width: 960px) { body .live-panel[data-panel-side="left"] { left: auto; right: 12px; } .live-panel-side { display: none; } }
 
 
+@media (min-width: 761px) { body .live-panel[data-moved] { top: var(--lp-top) !important; left: var(--lp-left) !important; right: auto !important; max-height: calc(100dvh - var(--lp-top) - 12px) !important; } }

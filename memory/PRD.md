@@ -95,3 +95,4 @@ Follow-ups: Field Notes title same size as other homepage titles; Explore Field 
 ## 2026-06 — Craft Centre text/image decoupled
 - Root cause: craft page rule `[data-sec][style*=--ed-h] > section` forced flex-column, stacking image under text (image offset depended on text height).
 - Fix: boxed-layout.css — sized split sections use a single overlapping grid cell (desktop + live-editing). Live image translateY re-based -343px → 82.8px via live API (visual position identical). Deployed + verified on live.
+- 2026-06: Restored drag-to-move for Live editor panel (grip on "Live editor" title; desktop >760px; "Panel left/right" resets). Deployed + verified on live.
