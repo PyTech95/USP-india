@@ -84,10 +84,10 @@
   .site:has(#craft-reference) .nav-list { padding-inline: 20px !important; }
   .site:has(#craft-reference) .nav-list > li::before { border-left-color: #b5b5b5; top: 34%; height: 32%; }
 }
-@media (min-width: 961px) {
+@media (min-width: 961px) and (max-width: 1440px) {
   .site:has(#craft-reference) .header-inner { min-height: 120px; }
-  .site #craft-reference .craft-hero-copy .h1 { font-size: 42px !important; }
-  .site #craft-reference .hb-hero + .hb-text .h2 { font-size: 36px !important; }
+  :where(html.ed-fluid) .site #craft-reference .craft-hero-copy .h1 { font-size: 42px !important; }
+  :where(html.ed-fluid) .site #craft-reference .hb-hero + .hb-text .h2 { font-size: 36px !important; }
 }
 @media (max-width: 1200px) {
   .site #craft-reference .craft-hero-copy { padding: 0 44px 40px; }

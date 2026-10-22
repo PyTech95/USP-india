@@ -10,8 +10,10 @@ const GROUPS = [
     ["hoverBackgroundColor", "Hover background", "#ffffff"], ["activeLineColor", "Current page underline", "#d41445"], ["separatorColor", "Lines between menu items", "#7a7a7a"]]],
   ["Dropdown & mobile menu", [["dropdownBackgroundColor", "Dropdown background", "#ffffff"], ["dropdownColor", "Dropdown text", "#606060"],
     ["dropdownHoverBackgroundColor", "Dropdown hover background", "#f5f3f1"], ["mobileMenuBackgroundColor", "Mobile menu background", "#fdf2ee"]]],
+  ["Footer", [["footerBackgroundColor", "Footer background", "#E4CDAE"], ["footerStripColor", "Strip along the bottom (© and Privacy Policy)", "#e5dad4"]]],
 ];
-const COLOUR_KEYS = GROUPS.flatMap(([, fields]) => fields.map(([key]) => key));
+// Presets recolour the header only (the footer keeps its own colours)
+const COLOUR_KEYS = GROUPS.filter(([group]) => group !== "Footer").flatMap(([, fields]) => fields.map(([key]) => key));
 // One-click colour schemes; they change colours only (sizes and fonts stay).
 const PRESETS = [
   ["Original", {}],
@@ -52,7 +54,7 @@ export const HeaderStyleFields = ({ styles, change, changeMany, reset }) => {
       ))}
     </div>
     <details open className="header-editor-group"><summary data-testid="header-colours-toggle">Colours</summary>
-      {GROUPS.map(([title, fields]) => <div key={title} className="header-colour-group"><p className="live-label" style={{ margin: "10px 0 4px" }}>{title}</p>
+      {GROUPS.map(([title, fields]) => <div key={title} className="header-colour-group" data-testid={`header-colour-group-${title.toLowerCase().replace(/[^a-z]+/g, "-")}`}><p className="live-label" style={{ margin: "10px 0 4px" }}>{title}</p>
         {fields.map(([key, label, fallback]) => <ColorField key={key} label={label} value={styles[key]} fallback={fallback} onChange={(v) => change(key, v)} testid={`header-style-${slug(key)}`} />)}
       </div>)}
       {select("headerShadow", "Shadow under the header", [["none", "None"], ["soft", "Soft"], ["strong", "Strong"]])}

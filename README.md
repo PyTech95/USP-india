@@ -56,7 +56,7 @@ cd /var/www/uspindia/backend
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 cp .env.example .env && nano .env      # real SITE_URL, CORS_ORIGINS, JWT_SECRET, admin login
 
-cd ../frontend && yarn install && yarn build   # optional: frontend/build is already included
+cd ../frontend && yarn install && yarn build   # required when the code comes from GitHub (the zip already contains frontend/build)
 
 # Service + web server
 sudo chown -R www-data /var/www/uspindia/backend/storage
@@ -71,6 +71,11 @@ HTTPS is required in production (login cookies are marked secure).
 **Before going live:** in Admin → Settings, turn on search-engine indexing. Until then every page sends `noindex` and `robots.txt` blocks crawlers.
 
 **Updating the site:** copy the new code, `yarn build` in `frontend/`, then `sudo systemctl restart uspindia`.
+The page shell is never cached and the built CSS/JS files have new names on every build, so visitors get the new design straight away (no old CSS left in browsers).
+
+**Fresh install vs. moving the old database:** a new, empty MongoDB gets exactly the content in `backend/content_release.json` (this version's pages, fonts, colours and photos).
+If you restore the database of the old site instead, its saved edits (texts, font sizes, colours, photos) are kept, and the positions/sizes that the old live editor saved
+are cleared once on the first start (they were measured on another layout and made text and photos overlap). A full backup is taken first (restorable under Admin → Import / Export → Content backups).
 
 **Backups:** back up the MongoDB database (`mongodump --db uspindia`) and the `backend/storage/` folder — together they are the whole site.
 
@@ -82,11 +87,9 @@ On desktop, each page follows the owner's approved page designs section by secti
 
 ## Responsive layout (how sizes and positions work)
 
-Sizes and positions set in the live editor (dragging, resizing, "Move X/Y") are saved for a **1440px-wide desktop design**:
-
-- **Screens wider than 1200px** show that design exactly. Between 1200 and 1440px the page content is scaled down to fit, so nothing overlaps or runs off the screen; wider screens show it at full size, centred. The header and footer stay full width.
-- Large text sizes typed in the editor shrink smoothly on tablets and phones; body-size text stays as typed.
-- **Tablets and phones (1200px and narrower)** ignore saved positions and sizes: every section uses its own responsive layout (columns stack, photos fill the width). Text styles, colours, backgrounds and photo crops still apply.
+- **Text is never scaled.** A font size typed in the live editor (or set in the stylesheet) is the size shown on every desktop and laptop screen — exactly as on the original site.
+- Sizes and positions set in the live editor (dragging, resizing, "Move X/Y") are saved for a **1440px-wide desktop design**. Screens wider than 1200px show that design: below 1440px the spacing, column widths and saved positions shrink with the page (so nothing overlaps or runs off the screen); wider screens show it at full size, centred. The header and footer stay full width.
+- **Tablets and phones (1200px and narrower)** ignore saved positions and sizes: every section uses its own responsive layout (columns stack, photos fill the width). Text styles, colours, backgrounds and photo crops still apply. Only large headings (24px and up) get a little smaller on narrow phones so they fit; body text stays as typed.
 - Check tablet/phone views with the tablet and phone buttons in the editor panel.
 - If items end up on top of each other, the editor warns straight after the move (with Undo). Click any section → **Tidy this section** to put its texts and photos back in their standard places.
 
@@ -98,6 +101,7 @@ Sizes and positions set in the live editor (dragging, resizing, "Move X/Y") are 
 - Drag the dark grip to move an element, the red handles to resize it; arrow keys nudge (Shift = 10px).
 - **Lines:** select any text, photo or section. The toolbar has *add line above* and *add line below*; the **Lines** panel chooses a short red line or a thin line across, and sets its length, thickness, space from the text and colour (or deletes it). The red lines that are part of the design can be made longer, shorter, thicker, recoloured or removed for one text or a whole section, and a section's thin grey dividers can be hidden. Site-wide red-line defaults are in Edit Header → *Red lines*.
 - **Logo:** Edit Header → *Brand & logo* — replace the logo, set its height, and choose whether the name shows next to it (hidden automatically when a logo is set). The official 2026 logo files (horizontal, stacked, and the USP mark used as the browser-tab icon) are in Media.
+- **Footer colours:** point at the footer and click *Edit footer colours* (or Edit Header → *Style & spacing* → Colours → Footer): the footer background (default `#E4CDAE`) and the strip along its bottom with © and Privacy Policy (default `#e5dad4`).
 - `Ctrl/⌘+S` saves and publishes, `Ctrl/⌘+Z` undoes, `Esc` deselects.
 
 ## Enquiry form and email

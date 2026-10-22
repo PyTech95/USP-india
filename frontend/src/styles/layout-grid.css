@@ -11,7 +11,7 @@
    ===================================================================== */
 #public-site main#main {
   --gutter: calc((100cqw - var(--box-w)) / 2);
-  --inset: 100px;
+  --inset: calc(100px * var(--dz, 1));
   --band-pad: var(--inset);
   --content-l: calc(var(--gutter) + var(--inset));
 }

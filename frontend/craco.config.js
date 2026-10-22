@@ -59,6 +59,21 @@ module.exports = {
       "@": path.resolve(__dirname, "src"),
     },
     configure: (webpackConfig) => {
+      // The CSS minifier must not rewrite calc() expressions that use CSS variables
+      // (e.g. calc(108px * var(--dz, 1)) — the page-width scale of the desktop design).
+      try {
+        const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+        const min = webpackConfig.optimization && webpackConfig.optimization.minimizer;
+        if (Array.isArray(min)) {
+          webpackConfig.optimization.minimizer = min.map((plugin) =>
+            plugin instanceof CssMinimizerPlugin
+              ? new CssMinimizerPlugin({ minimizerOptions: { preset: ["default", { calc: false }] } })
+              : plugin
+          );
+        }
+      } catch (e) {
+        // minifier not installed (dev server): nothing to adjust
+      }
       webpackConfig.watchOptions = {
         ...webpackConfig.watchOptions,
         ignored: [

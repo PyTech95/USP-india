@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 
 // How the live editor's sizes and positions are shown.
 //
-// The desktop design is 1440px wide (the approved page designs are drawn at this width).
+// The desktop design is 1440px wide (the page designs are drawn at this width).
 //  - "design" mode (screens wider than 1200px, and always while editing): the page content
-//    (main) is that 1440px design; below 1440px it is scaled down to fit with CSS zoom, and on
-//    wider screens it stays 1440px wide, centred. Every desktop screen therefore shows exactly
-//    the same layout. Header and footer are full width and responsive on their own.
+//    (main) follows the 1440px design: full width up to 1440px, centred on wider screens.
+//    Saved positions and sizes are design pixels and shrink with the page below 1440px
+//    (--dz = page width / 1440), so a block stays in the same place on every desktop.
+//    Text is never scaled: a font size typed in the editor is the size shown on every screen.
+//    Header and footer are full width and responsive on their own.
 //  - "fluid" mode (tablets, phones and small laptops up to 1200px): saved positions/sizes are ignored
 //    and every section uses its own responsive layout. Colours, fonts, crops stay.
 export const DESIGN_WIDTH = 1440;
@@ -27,6 +29,9 @@ let current = typeof document === "undefined" ? { design: true, k: 1 } : compute
 export const isDesignMode = () => current.design;
 export const designZoom = () => current.k;
 
+// Saved offsets are design (1440px) pixels; below 1440px they shrink with the page (--dz).
+export const designTranslate = (tx, ty) => `translate(calc(${tx || "0px"} * var(--dz, 1)), calc(${ty || "0px"} * var(--dz, 1)))`;
+
 export function applyMode(mode) {
   current = mode;
   if (typeof document === "undefined") return;
@@ -37,8 +42,8 @@ export function applyMode(mode) {
   root.style.setProperty("--dz", String(mode.k));
 }
 
-// Keeps the html classes and zoom in step with the window; returns the mode so the
-// page can re-render when it switches between design and fluid layouts.
+// Keeps the html classes and the design scale in step with the window; returns the mode so
+// the page can re-render when it switches between design and fluid layouts.
 export function useDesignMode(editing) {
   const [mode, setMode] = useState(() => { const m = computeMode(editing); applyMode(m); return m; });
   useEffect(() => {
@@ -60,6 +65,6 @@ export function useDesignMode(editing) {
   return mode;
 }
 
-// Zoom actually applied to an element (1 when not scaled). Screen distances divided by
-// this give the design-pixel values the editor saves.
-export const zoomOf = (el) => (el && typeof el.currentCSSZoom === "number" && el.currentCSSZoom > 0 ? el.currentCSSZoom : current.design ? current.k : 1);
+// Scale between design pixels and screen pixels for saved geometry (1 when not scaled).
+// Screen distances divided by this give the design-pixel values the editor saves.
+export const zoomOf = () => (current.design ? current.k : 1);

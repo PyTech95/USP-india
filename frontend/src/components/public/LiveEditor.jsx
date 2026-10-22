@@ -14,7 +14,7 @@ import { isImageField, isLayoutField } from "./editor/editorFields";
 import { SelectionToolbar } from "./editor/SelectionToolbar";
 import { ColorField, px } from "./editor/ColorField";
 import { normalizeReferenceContent } from "./editor/referenceGeometry";
-import { zoomOf } from "../../lib/designMode";
+import { zoomOf, designTranslate } from "../../lib/designMode";
 import { SliderField } from "./editor/ColorField";
 import { LineControls } from "./editor/LineControls";
 import { CropControls, parsePos } from "./editor/CropControls";
@@ -493,7 +493,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
         for (const [size, variable] of [["width", "--ed-w"], ["height", "--ed-h"]]) {
           if (patch[size]) { el.style.setProperty(size, patch[size], "important"); el.style.setProperty(variable, patch[size]); }
         }
-        el.style.setProperty("--ed-t", `translate(${tx0}px, ${ty0}px)`);
+        el.style.setProperty("--ed-t", designTranslate(`${tx0}px`, `${ty0}px`));
         el.style.setProperty("transform", "var(--ed-t)", "important");
         const resized = el.getBoundingClientRect();
         if (patch.width) patch.translateX = `${tx0 + d((dir.includes("w") ? r0.right - resized.width : r0.left) - resized.left)}px`;

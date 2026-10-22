@@ -27,6 +27,16 @@ const HeaderEditorPanel = ({ site }) => {
   const refresh = useRefreshSite();
   const [draft, setDraft] = useState(() => fromSite(site));
   const [tab, setTab] = useState("content"), [dirty, setDirty] = useState(false);
+  // "Edit footer colours" (chip on the footer) opens this panel at the footer colours
+  useEffect(() => {
+    const focus = (event) => {
+      if (event.detail !== "footer") return;
+      setTab("style");
+      setTimeout(() => document.querySelector('[data-testid="header-colour-group-footer"]')?.scrollIntoView({ block: "center", behavior: "smooth" }), 120);
+    };
+    window.addEventListener("live-header-focus", focus);
+    return () => window.removeEventListener("live-header-focus", focus);
+  }, []);
   const [busy, setBusy] = useState(false), [picker, setPicker] = useState(false), [error, setError] = useState("");
   // Open just below the header (measured once) so the menu being edited stays visible; no jumping while scrolling.
   const [top] = useState(() => { const h = document.getElementById("site-header"); return Math.round(Math.min(Math.max((h?.getBoundingClientRect().bottom || 120) + 12, 12), window.innerHeight * .35)); });
