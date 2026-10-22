@@ -123,9 +123,9 @@ function Footer({ site }) {
         </div>
       </div>
       <div className="usp-footer-row usp-footer-meta">
-        <span data-site-style="display.copyright" data-testid="footer-copyright">© {new Date().getFullYear()} {site?.full_name || "Urban Suburban Perspectives"}</span>
+        <span data-site-style="display.copyright" data-testid="footer-copyright">© {new Date().getFullYear()} <SiteText path="full_name" fallback="Urban Suburban Perspectives" data-testid="footer-copyright-name" /></span>
         <details data-testid="footer-privacy" className="footer-privacy">
-          <summary data-testid="footer-privacy-toggle">Privacy Policy</summary>
+          <summary data-testid="footer-privacy-toggle"><SiteText name="privacy_policy" /></summary>
           <HtmlDiv data-site-edit="privacy_html" data-testid="footer-privacy-body" html={site?.privacy_html || ""} />
         </details>
       </div>

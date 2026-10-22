@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { X, Pencil } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLiveEditor } from "./editor/LiveEditorProvider";
+import { SiteText } from "./editor/SiteText";
 import { api } from "../../lib/api";
 import { Photo } from "./Photo";
 
@@ -26,7 +27,7 @@ function Featured({ n, onOpen }) {
   return <article className="fn-featured reveal" data-testid={`note-item-${n.slug}`}>
     <div className="fn-featured-head">
       <div>
-        <p className="fn-eyebrow">Latest field note</p>
+        <SiteText as="p" className="fn-eyebrow" name="latest_note" />
         <h2 className="fn-featured-title"><button type="button" className="fn-open" onClick={() => onOpen(n.slug)} data-testid={`note-link-${n.slug}`}>{clean(n.title)}</button></h2>
       </div>
       {n.summary && <p className="fn-summary fn-featured-summary" data-testid={`note-summary-${n.slug}`}>{n.summary}</p>}

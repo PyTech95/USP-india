@@ -74,6 +74,10 @@ HTTPS is required in production (login cookies are marked secure).
 
 **Backups:** back up the MongoDB database (`mongodump --db uspindia`) and the `backend/storage/` folder — together they are the whole site.
 
+## Page grid
+
+Every page uses one grid (`frontend/src/styles/layout-grid.css`): all sections start and end on the same two lines — 100px inside the boxed layout on the 1440px design, less on tablets and phones — so text, photos and divider lines stay lined up and centred on any screen. Two-column sections share one column line, so right-hand columns start at the same place down the page. Coloured bands still fill the box; their text uses the same edges.
+
 ## Responsive layout (how sizes and positions work)
 
 Sizes and positions set in the live editor (dragging, resizing, "Move X/Y") are saved for a **1440px-wide desktop design**:

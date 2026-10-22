@@ -18,6 +18,7 @@ import "@/styles/home-field-notes.css";
 import "@/styles/home-work.css";
 import "@/styles/accent-lines.css";
 import "@/styles/responsive.css";
+import "@/styles/layout-grid.css";
 import App from "@/App";
 
 const queryClient = new QueryClient({
