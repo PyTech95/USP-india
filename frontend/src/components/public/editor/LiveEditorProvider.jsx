@@ -8,7 +8,7 @@ import { errMsg } from "../../../lib/api";
 const Context = createContext({ on: false, scope: "page", setOn: () => {}, setScope: () => {}, registerDirty: () => {} });
 export const useLiveEditor = () => useContext(Context);
 const stored = () => { try { return sessionStorage.getItem("usp-live-edit") === "1"; } catch { return false; } };
-const DESKTOP_EDITOR = "(min-width: 1025px) and (hover: hover) and (pointer: fine)";
+const DESKTOP_EDITOR = "(min-width: 1025px)"; // any laptop/desktop screen, touch screen or not
 
 export function LiveEditorProvider({ children, preview = false }) {
   const { user, can, logout } = useAuth();

@@ -1587,10 +1587,7 @@ body.live-editing .header { z-index: 1; }
   .site .page-home .hb-notes_feed .sec-head .lede{ grid-column:1; grid-row:auto; }
 }
 
-/* Touch screens at desktop width: keep the submenu toggle tappable */
-@media (min-width: 961px) and (hover: none) {
-  .site .nav-list button[data-testid$="-toggle"] { position: static; opacity: 1; width: auto; padding: 0 .25rem !important; }
-}
+/* (Touch-screen laptops get exactly the same header as any other laptop: tapping "Our Work" opens its submenu.) */
 
 /* === FINAL: one identical header on every page + a tiny white sliver before the hero === */
 #public-site.site #site-header {

@@ -14,7 +14,7 @@
   body:not(.live-editing) #public-site .pcc-card[style*="--ed-h"] {
     height: auto !important; overflow: visible !important;
   }
-  @media (min-width: 961px) and (hover: hover) and (pointer: fine) {
+  @media (min-width: 961px) {
     body:not(.live-editing) #public-site .pcc-card[style*="--ed-h"] {
       min-height: var(--ed-h) !important;
       margin-bottom: max(0px, var(--ed-y, 0px)) !important;
@@ -36,9 +36,10 @@
     }
   }
 
-  /* Reflow only on narrow or touch-first screens. Laptop/desktop viewports
-     keep the original columns, spacing and saved geometry from 961px upward. */
-  @media (max-width: 960px), (hover: none), (pointer: coarse) {
+  /* Reflow only on narrow screens (960px and below). Every laptop/desktop screen keeps the desktop
+     columns and menu from 961px upward — touch-screen laptops too (Chrome reports many of them as
+     touch-first, which used to switch them to the phone menu and layout). */
+  @media (max-width: 960px) {
     body:not(.live-editing) #public-site [style*="--ed-t"] { transform: none !important; }
     body:not(.live-editing) #public-site [style*="--ed-w"] {
       width: min(var(--ed-w), 100%) !important;
@@ -101,8 +102,8 @@
     body:not(.live-editing) #public-site .hfn .hfn-feature-text { padding-top: 16px !important; }
   }
 
-  /* Keep the original horizontal menu on laptops, including narrow preview panes. */
-  @media (max-width: 960px), (hover: none), (pointer: coarse) {
+  /* Phone/tablet menu (☰ Menu) only on narrow screens; laptops — with or without a touch screen — keep the horizontal menu. */
+  @media (max-width: 960px) {
     #public-site .cf-compact :is(input, textarea), #public-site form select { font-size: 16px !important; }
     #public-site #site-header .header-inner {
       display: flex !important; align-items: center !important; justify-content: space-between !important;
@@ -145,7 +146,7 @@
     #public-site #site-header .dropdown.mega { grid-template-columns: minmax(0, 1fr) !important; }
   }
 
-  @media (max-width: 960px), (hover: none), (pointer: coarse) {
+  @media (max-width: 960px) {
     body:not(.live-editing) #public-site #theatre-reference .theatre-split { height: auto !important; }
     body:not(.live-editing) #public-site #theatre-reference .theatre-split-copy {
       width: 100% !important; padding: 44px 24px 32px !important;
@@ -187,7 +188,7 @@
     .fn-crumb { min-width: 0; }
   }
 
-  @media (max-width: 1024px), (hover: none), (pointer: coarse) {
+  @media (max-width: 1024px) {
     .live-ui { display: none !important; }
   }
 }
