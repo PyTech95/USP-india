@@ -30,6 +30,10 @@ export const HeaderStyleTag = ({ styles = {} }) => {
   rule([" .dropdown"], { background: styles.dropdownBackgroundColor });
   if (styles.mobileMenuBackgroundColor) rules.push(`@media (max-width: 960px) { html body #public-site#public-site#public-site.site #site-header#site-header .nav-list.open { background: ${styles.mobileMenuBackgroundColor} !important; } }`);
   rule([" .nav-link[aria-current=page]", " .nav-link:hover", " .dropdown a:hover"], { color: styles.activeColor });
+  rule([" .nav-list > li > .nav-link:hover", " .nav-list > li > span > .nav-link:hover"], { background: styles.hoverBackgroundColor });
+  rule([" .nav-list > li > .nav-link[aria-current=page]"], { "box-shadow": styles.activeLineColor ? `inset 0 -2px 0 ${styles.activeLineColor}` : "" });
+  rule([" .dropdown a:hover"], { background: styles.dropdownHoverBackgroundColor });
+  rule([""], { "box-shadow": { none: "none", soft: "0 2px 12px rgba(0, 0, 0, 0.06)", strong: "0 6px 24px rgba(0, 0, 0, 0.14)" }[styles.headerShadow] || "" });
   const lines = Object.entries({ "--accent-line-w": styles.accentLineWidth, "--accent-line": styles.accentLineThickness, "--accent-line-gap": styles.accentLineGap })
     .filter(([, v]) => /^\d+(\.\d+)?px$/.test(v || "")).map(([k, v]) => `${k}: ${v} !important`).join("; ");
   if (lines) rules.push(`html body #public-site, html body .fn-overlay { ${lines}; }`);

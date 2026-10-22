@@ -86,7 +86,7 @@ const HeaderEditorPanel = ({ site }) => {
     <div className="header-editor-scroll"><fieldset className="header-editor-body" disabled={busy} role="tabpanel" id={`header-tab-panel-${tab}`} aria-labelledby={`header-tab-${tab}`} data-testid={`header-tab-panel-${tab}`}>
       {tab === "content" && <HeaderContentFields draft={draft} change={change} chooseLogo={() => setPicker(true)} />}
       {tab === "menu" && <HeaderMenuFields menus={draft.menus} changeMenu={changeMenu} />}
-      {tab === "style" && <HeaderStyleFields styles={draft.header_styles} change={(key, value) => change({ header_styles: { ...draft.header_styles, [key]: value } })} reset={() => change({ header_styles: {} })} />}
+      {tab === "style" && <HeaderStyleFields styles={draft.header_styles} change={(key, value) => change({ header_styles: { ...draft.header_styles, [key]: value } })} changeMany={(next) => change({ header_styles: next })} reset={() => change({ header_styles: {} })} />}
     </fieldset></div>
     <div className="header-editor-actions"><span data-testid="header-save-status" role="status">{busy ? "Saving…" : dirty ? "Unsaved changes" : "All changes saved"}</span><div className="live-row">
       <button type="button" className="live-btn live-primary" disabled={busy || !dirty} onClick={save} data-testid="header-editor-save"><Save size={15} /> Save header</button>
