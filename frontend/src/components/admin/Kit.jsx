@@ -222,22 +222,48 @@ export function Repeater({ label, items, onChange, fields, testid }) {
 
 REG.Repeater = Repeater;
 
-export function SeoFields({ seo, onChange, path, fallbackTitle }) {
+export function SeoFields({ seo, onChange, path, fallbackTitle, fallbackDescription = "" }) {
   const s = seo || {};
   const set = (k) => (v) => onChange({ ...s, [k]: v });
   const title = s.title || fallbackTitle;
+  const desc = s.description || fallbackDescription;
+  const faq = Array.isArray(s.faq) ? s.faq : [];
+  const len = (desc || "").length;
   return (
     <div>
-      <TextIn label="Search & social title" value={s.title} onChange={set("title")} hint={`Leave blank to use “${fallbackTitle}”. ${title.length} characters (results often shorten above ~60).`} testid="seo-title" />
-      <AreaIn label="Search description" value={s.description} onChange={set("description")} hint={`${(s.description || "").length} characters (aim for 50–160).`} testid="seo-description" />
-      <TextIn label="Canonical URL override" value={s.canonical} onChange={set("canonical")} hint="Optional. Must start with https://www.uspindia.org/" testid="seo-canonical" />
-      <CheckIn label="Hide from search engines (noindex, excluded from sitemap)" checked={s.noindex} onChange={set("noindex")} testid="seo-noindex" />
-      <ImageField label="Sharing image (blank = main photograph)" value={{ media_id: s.share_media_id }} onChange={(v) => set("share_media_id")(v.media_id || "")} />
-      <div className="border p-3 bg-white" aria-label="Approximate search result preview">
-        <p className="text-xs text-muted-foreground mb-1">Approximate search preview — actual appearance is decided by search engines.</p>
+      <h3 className="font-semibold text-sm mb-2">Search engines (SEO)</h3>
+      <TextIn label="Search & social title" value={s.title} onChange={set("title")} hint={`Leave blank to use “${fallbackTitle}”. ${title.length} characters (Google shows about 60).`} testid="seo-title" />
+      <AreaIn label="Search description" value={s.description} onChange={set("description")} hint={`${(s.description || "").length} characters — aim for 120–160. One or two plain sentences saying what the reader will find.`} testid="seo-description" />
+      <TextIn label="Keywords / topics (comma separated)" value={s.keywords} onChange={set("keywords")} hint="e.g. Rakhigarhi, haveli restoration, heritage conservation, Haryana" testid="seo-keywords" />
+      <div className="border p-3 bg-white mb-4" aria-label="Approximate search result preview">
+        <p className="text-xs text-muted-foreground mb-1">Approximate Google preview</p>
         <p className="text-xs text-[#344C40]">www.uspindia.org{path}</p>
-        <p className="text-lg text-[#1a0dab] leading-tight">{title}</p>
-        <p className="text-sm">{s.description || <em>No description yet.</em>}</p>
+        <p className="text-lg text-[#1a0dab] leading-tight">{title.length > 62 ? title.slice(0, 60) + "…" : title}</p>
+        <p className="text-sm">{desc ? (len > 165 ? desc.slice(0, 160) + "…" : desc) : <em>No description yet.</em>}</p>
+      </div>
+      <ImageField label="Sharing image for WhatsApp, Facebook, LinkedIn (blank = main photograph)" value={{ media_id: s.share_media_id }} onChange={(v) => set("share_media_id")(v.media_id || "")} />
+      <details className="mb-4"><summary className="text-sm cursor-pointer">Advanced</summary>
+        <div className="mt-3">
+          <TextIn label="Canonical URL override" value={s.canonical} onChange={set("canonical")} hint="Optional. Must start with https://www.uspindia.org/" testid="seo-canonical" />
+          <CheckIn label="Hide from search engines (noindex, excluded from sitemap and llms.txt)" checked={s.noindex} onChange={set("noindex")} testid="seo-noindex" />
+        </div>
+      </details>
+      <h3 className="font-semibold text-sm mb-1 mt-6">AI answer engines (GEO)</h3>
+      <p className="text-xs text-muted-foreground mb-3">ChatGPT, Google AI Overviews, Perplexity and Claude quote pages that state facts plainly. These fields are added to the page's structured data and to /llms.txt.</p>
+      <AreaIn label="Summary in plain words" rows={4} value={s.summary} onChange={set("summary")} hint={`${(s.summary || "").length} characters. 2–4 factual sentences: who, what, where, when. Example: “USP is restoring a 19th-century haveli in Rakhigarhi, Haryana, with local workers learning conservation skills.”`} testid="geo-summary" />
+      <TextIn label="Place this is about" value={s.place} onChange={set("place")} hint="e.g. Rakhigarhi, Hisar, Haryana, India" testid="geo-place" />
+      <div className="mb-2">
+        <span className="block text-sm font-semibold mb-1">Questions & answers</span>
+        <p className="text-xs text-muted-foreground mb-2">Questions people actually ask, answered in one or two sentences. Shown on Field Notes and used as FAQ structured data.</p>
+        {faq.map((f, i) => (
+          <div key={i} className="border p-3 mb-2 bg-[#FCFAF6]" data-testid={`geo-faq-${i}`}>
+            <div className="flex justify-between items-center mb-1"><span className="text-xs font-semibold">Question {i + 1}</span>
+              <Button type="button" size="icon" variant="ghost" aria-label="Remove question" onClick={() => set("faq")(faq.filter((_, j) => j !== i))}><Trash2 size={14} /></Button></div>
+            <TextIn label="Question" value={f.q} onChange={(v) => set("faq")(faq.map((x, j) => (j === i ? { ...x, q: v } : x)))} testid={`geo-faq-${i}-q`} />
+            <AreaIn label="Answer" value={f.a} onChange={(v) => set("faq")(faq.map((x, j) => (j === i ? { ...x, a: v } : x)))} testid={`geo-faq-${i}-a`} />
+          </div>
+        ))}
+        <Button type="button" size="sm" variant="outline" onClick={() => set("faq")([...faq, { q: "", a: "" }])} disabled={faq.length >= 12} data-testid="geo-faq-add"><Plus size={14} /> Add a question</Button>
       </div>
     </div>
   );

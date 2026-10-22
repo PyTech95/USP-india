@@ -26,6 +26,11 @@ export default function Dashboard() {
   return (
     <div>
       <PageHead title="Dashboard" desc="Live figures from the database. Nothing here is sample data." />
+      {d.traffic_7d && <Link to="/admin/traffic" className="flex flex-wrap items-center gap-x-8 gap-y-2 border bg-white p-4 mb-3 hover:border-[#344C40] transition-colors" data-testid="dashboard-traffic">
+        <span><span className="text-3xl font-semibold" data-testid="dashboard-visitors-7d">{d.traffic_7d.visitors}</span> <span className="text-sm">visitors in the last 7 days</span></span>
+        <span><span className="text-3xl font-semibold">{d.traffic_7d.pageviews}</span> <span className="text-sm">page views</span></span>
+        <span className="text-sm underline ml-auto">Open traffic report →</span>
+      </Link>}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-8">
         <Stat label="Pages with unpublished changes" value={d.pages_with_changes} to="/admin/pages" testid="stat-pages-changes" />
         <Stat label="Published Field Notes" value={d.notes_published} to="/admin/field-notes" testid="stat-notes-published" />
@@ -51,8 +56,9 @@ export default function Dashboard() {
         <section className="space-y-6">
           <div className="border bg-white p-4" data-testid="email-status">
             <h2 className="font-semibold mb-1">Enquiry email notifications</h2>
-            <Tag tone="warn">Not configured</Tag>
+            <Tag tone={d.email_notifications.status === "configured" ? "ok" : "warn"} testid="dashboard-email-tag">{d.email_notifications.status === "configured" ? "On" : "Off"}</Tag>
             <p className="text-sm mt-2">{d.email_notifications.detail}</p>
+            {can("config") && <Link to="/admin/enquiries/settings" className="text-sm underline" data-testid="dashboard-email-settings">Enquiry form settings →</Link>}
           </div>
           <div className="border bg-white p-4">
             <h2 className="font-semibold mb-2">Recent review comments</h2>

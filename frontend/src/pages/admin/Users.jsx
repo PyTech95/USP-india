@@ -13,11 +13,12 @@ export default function Users() {
   const [users, setUsers] = useState([]);
   const [f, setF] = useState({ email: "", name: "", role: "editor" });
   const [link, setLink] = useState("");
+  const [sent, setSent] = useState("");
   const load = () => api.get("/admin/users").then((r) => setUsers(r.data));
   useEffect(() => { load(); }, []);
   const invite = async (e) => {
     e.preventDefault();
-    try { const r = await api.post("/admin/users/invite", f); setLink(r.data.invite_url); setF({ email: "", name: "", role: "editor" }); load(); }
+    try { const r = await api.post("/admin/users/invite", f); setLink(r.data.invite_url); setSent(r.data.email_status); setF({ email: "", name: "", role: "editor" }); load(); }
     catch (x) { toast.error(errMsg(x)); }
   };
   const upd = async (id, patch) => { try { await api.put(`/admin/users/${id}`, patch); load(); toast.success("User updated"); } catch (x) { toast.error(errMsg(x)); } };
@@ -35,7 +36,7 @@ export default function Users() {
       </form>
       {link && (
         <div className="border-l-4 border-[#344C40] bg-white p-3 mb-6 text-sm" data-testid="invite-link-box">
-          <p className="font-semibold">Share this one-time link privately (email delivery is not configured). It expires automatically.</p>
+          <p className="font-semibold">{sent === "sent" ? "Invitation emailed. You can also share this one-time link privately — it expires automatically." : "Share this one-time link privately (the invitation email could not be sent — set up the mailbox in Enquiries → Form settings). It expires automatically."}</p>
           <code className="break-all block my-2" data-testid="invite-link">{link}</code>
           <Button size="sm" variant="outline" onClick={() => navigator.clipboard.writeText(link).then(() => toast.success("Copied"))}>Copy link</Button>
         </div>

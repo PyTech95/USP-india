@@ -1,6 +1,6 @@
 import re
 from datetime import datetime, timezone, timedelta
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request, BackgroundTasks
 from fastapi.responses import Response, HTMLResponse
 from pydantic import BaseModel, EmailStr, Field
 from core import db, now, new_id, resolve_media_tree, media_public_ok, media_public_view, ip_hash, PAGE_PATHS, SITE_URL
@@ -126,8 +126,8 @@ class EnquiryIn(BaseModel):
 
 
 @router.post("/public/enquiries")
-async def submit_enquiry(body: EnquiryIn, request: Request):
-    if body.website or body.elapsed_ms < 2500:
+async def submit_enquiry(body: EnquiryIn, request: Request, background: BackgroundTasks):
+    if body.website or body.elapsed_ms < 1500:
         raise HTTPException(400, "Your message could not be accepted. Please wait a moment and try again.")
     if body.topic not in TOPICS:
         raise HTTPException(400, "Please choose an enquiry topic")
@@ -137,10 +137,13 @@ async def submit_enquiry(body: EnquiryIn, request: Request):
     since = (datetime.now(timezone.utc) - timedelta(hours=1)).isoformat()
     if await db.enquiries.count_documents({"ip_hash": ih, "created_at": {"$gte": since}}) >= 5:
         raise HTTPException(429, "Too many messages from this connection. Please try again later.")
-    s = await db.settings.find_one({"key": "site"}, {"email_notifications": 1})
+    import mailer
+    email_on = mailer.ready(await mailer.load())
     doc = {"id": new_id(), **body.model_dump(exclude={"website", "elapsed_ms"}), "name": body.name.strip(), "status": "new", "private_notes": "",
-           "email_status": s["email_notifications"]["status"], "ip_hash": ih, "created_at": now()}
+           "email_status": "sending" if email_on else "not_configured", "ip_hash": ih, "created_at": now()}
     await db.enquiries.insert_one(doc)
+    if email_on:
+        background.add_task(mailer.deliver, {k: v for k, v in doc.items() if k != "_id"})
     return {"ok": True, "id": doc["id"], "email_status": doc["email_status"]}
 
 
@@ -159,12 +162,74 @@ async def sitemap():
     return Response(f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{body}</urlset>', media_type="application/xml")
 
 
+AI_CRAWLERS = ["GPTBot", "OAI-SearchBot", "ChatGPT-User", "ClaudeBot", "Claude-SearchBot", "Claude-User", "anthropic-ai", "PerplexityBot",
+               "Perplexity-User", "Google-Extended", "Applebot-Extended", "CCBot", "meta-externalagent", "Bytespider", "Amazonbot", "DuckAssistBot", "cohere-ai", "MistralAI-User"]
+
+
 @router.get("/robots.txt")
 async def robots():
-    s = await db.settings.find_one({"key": "site"}, {"indexing_enabled": 1})
+    s = await db.settings.find_one({"key": "site"}, {"indexing_enabled": 1, "geo": 1})
     if not s.get("indexing_enabled"):
         return Response("# Private preview: indexing disabled\nUser-agent: *\nDisallow: /\n", media_type="text/plain")
-    return Response(f"User-agent: *\nDisallow: /admin\nDisallow: /api/\nAllow: /api/media/\n\nSitemap: {SITE_URL}/sitemap.xml\n", media_type="text/plain")
+    rules = "Disallow: /admin\nDisallow: /api/\nAllow: /api/media/\n"
+    ai = (s.get("geo") or {}).get("ai_crawlers", "allow")
+    out = f"User-agent: *\n{rules}\n"
+    out += "# AI search and answer engines (GEO)\n" + "".join(f"User-agent: {b}\n" for b in AI_CRAWLERS)
+    out += (rules if ai != "block" else "Disallow: /\n") + "\n"
+    out += f"Sitemap: {SITE_URL}/sitemap.xml\n# Plain-language summary for AI assistants: {SITE_URL}/llms.txt\n"
+    return Response(out, media_type="text/plain")
+
+
+def _plain(html_text, limit=300):
+    t = re.sub(r"<[^>]+>", " ", html_text or "")
+    t = re.sub(r"&nbsp;", " ", t)
+    t = re.sub(r"\s+", " ", t).strip()
+    return t[:limit].rsplit(" ", 1)[0] + "…" if len(t) > limit else t
+
+
+@router.get("/llms.txt")
+async def llms_txt():
+    """llms.txt — a short, plain-language map of the site for AI assistants (llmstxt.org)."""
+    s = await db.settings.find_one({"key": "site"}, {"_id": 0})
+    if not s.get("indexing_enabled"):
+        return Response("# This website is not public yet.\n", media_type="text/plain")
+    geo = s.get("geo") or {}
+    name = f"{s.get('site_name') or 'USP'} — {s.get('full_name') or ''}".strip(" —")
+    lines = [f"# {name}", ""]
+    about = geo.get("org_description") or s.get("tagline") or ""
+    if about:
+        lines += [f"> {about}", ""]
+    facts = [f"- Website: {SITE_URL}/"]
+    if geo.get("area_served"):
+        facts.append(f"- Works in: {geo['area_served']}")
+    if geo.get("founded"):
+        facts.append(f"- Founded: {geo['founded']}")
+    contact = s.get("contact") or {}
+    if contact.get("email"):
+        facts.append(f"- Contact: {contact['email']} or {SITE_URL}/connect")
+    if contact.get("address"):
+        facts.append("- Address: " + contact["address"].replace("\n", ", "))
+    for sm in s.get("social") or []:
+        facts.append(f"- {sm.get('label') or 'Profile'}: {sm.get('url')}")
+    lines += facts + ["", "## Pages", ""]
+    async for p in db.pages.find({"status": "published"}, {"_id": 0}).sort("path", 1):
+        if p["path"] in ("/our-work", "/blog") or p["published"]["seo"].get("noindex"):
+            continue
+        seo = p["published"]["seo"]
+        desc = seo.get("summary") or seo.get("description") or ""
+        lines.append(f"- [{p['published']['title']}]({SITE_URL}{p['path'] if p['path'] != '/' else '/'})" + (f": {desc}" if desc else ""))
+    notes = await db.notes.find({"status": "published"}, {"_id": 0}).sort("published_at", -1).to_list(200)
+    if notes:
+        lines += ["", "## Field Notes (stories from the work)", ""]
+        for n in notes:
+            pub = n["published"]
+            if pub["seo"].get("noindex"):
+                continue
+            desc = pub["seo"].get("summary") or pub["seo"].get("description") or pub.get("standfirst") or _plain(pub.get("body_html"), 200)
+            lines.append(f"- [{pub['title']}]({SITE_URL}/field-notes/{n['slug']}): {desc}")
+    if geo.get("llms_extra"):
+        lines += ["", "## More about us", "", geo["llms_extra"]]
+    return Response("\n".join(lines) + "\n", media_type="text/plain; charset=utf-8")
 
 
 @router.get("/ssr")

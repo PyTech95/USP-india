@@ -15,6 +15,7 @@ import { SelectionToolbar } from "./editor/SelectionToolbar";
 import { ColorField, px } from "./editor/ColorField";
 import { normalizeReferenceContent } from "./editor/referenceGeometry";
 import { CropControls, parsePos } from "./editor/CropControls";
+import { useFloatingPanel } from "./editor/useFloatingPanel";
 
 const LABELS = { eyebrow: "Small label", heading: "Heading", subheading: "Sub-heading", intro: "Intro text",
   body_html: "Body text", body_1_html: "Text box 1", body_2_html: "Text box 2", body_3_html: "Text box 3",
@@ -104,7 +105,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
   const [device, setDevice] = useState("desktop");
   const [hist, setHist] = useState({ past: [], future: [] });
   const [panelSide, setPanelSide] = useState("right");
-  const [panelPos, setPanelPos] = useState(null);
+  const fp = useFloatingPanel("page");
   const [guides, setGuides] = useState([]);
   const fileRef = useRef(null);
   const inlineDraft = useRef(null);
@@ -398,18 +399,6 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
     return best;
   };
   const endDrag = () => { dragging.current = null; };
-  const dragPanel = (e) => {
-    if (e.target.closest("button") || window.innerWidth <= 760) return;
-    e.preventDefault();
-    const r = e.currentTarget.closest(".live-panel").getBoundingClientRect();
-    const off = { x: e.clientX - r.left, y: e.clientY - r.top };
-    const mv = (ev) => setPanelPos({
-      left: Math.max(4, Math.min(window.innerWidth - 80, ev.clientX - off.x)),
-      top: Math.max(4, Math.min(window.innerHeight - 44, ev.clientY - off.y)),
-    });
-    const up = () => { window.removeEventListener("pointermove", mv); window.removeEventListener("pointerup", up); };
-    window.addEventListener("pointermove", mv); window.addEventListener("pointerup", up);
-  };
   const resize = (dir) => (e) => {
     e.preventDefault(); e.stopPropagation();
     dragging.current = "start";
@@ -555,9 +544,11 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
         </div>
       )}
 
-      <aside className="live-ui live-panel" data-panel-side={panelSide} data-moved={panelPos ? "true" : undefined} style={panelPos ? { "--lp-top": `${panelPos.top}px`, "--lp-left": `${panelPos.left}px` } : undefined} data-testid="live-editor-panel" data-live-panel-ready="true">
+      <aside className="live-ui live-panel live-floating" data-panel-side={panelSide} {...fp.panelProps} data-testid="live-editor-panel" data-live-panel-ready="true">
+        {fp.handles()}
+<div className="live-scroll">
         <div className="live-row live-top">
-          <strong className="live-drag" onPointerDown={dragPanel} title="Drag to move" data-testid="live-panel-drag"><GripVertical size={14} /> Live editor</strong>
+          <strong className="live-drag" {...fp.dragProps} data-testid="live-panel-drag"><GripVertical size={14} /> Live editor</strong>
           <button type="button" className="live-btn" disabled={!hist.past.length} onClick={undo} title="Undo (Ctrl/⌘+Z)" data-testid="live-undo"><Undo2 size={14} /></button>
           <button type="button" className="live-btn" disabled={!hist.future.length} onClick={redo} title="Redo (Ctrl/⌘+Shift+Z)" data-testid="live-redo"><Redo2 size={14} /></button>
           <button type="button" className="live-btn live-primary" disabled={busy || !dirty} onClick={save} title="Save and publish (Ctrl/⌘+S)" data-testid="live-save-btn"><Save size={14} /> {busy ? "Saving…" : "Save"}</button>
@@ -566,7 +557,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
         <p className={`live-status ${dirty ? "is-dirty" : ""}`} data-testid="live-status">{dirty ? "Unsaved changes — press Save to publish" : "Everything is saved"}</p>
 
         <div className="live-devs" role="group" aria-label="Preview device">
-          <button className="live-btn live-panel-side" onClick={() => { setPanelPos(null); setPanelSide(panelSide === "right" ? "left" : "right"); }} type="button" data-testid="live-panel-side" title="Move the inspector aside without changing its top position">Panel {panelSide === "right" ? "left" : "right"}</button>
+          <button className="live-btn live-panel-side" onClick={() => { fp.reset(); setPanelSide(panelSide === "right" ? "left" : "right"); }} type="button" data-testid="live-panel-side" title="Move the inspector aside without changing its top position">Panel {panelSide === "right" ? "left" : "right"}</button>
           {[["desktop", Monitor], ["tablet", Tablet], ["mobile", Smartphone]].map(([d, I]) => (
             <button key={d} type="button" className={`live-btn ${device === d ? "live-on" : ""}`} onClick={() => setDevice(d)} aria-label={d} data-testid={`live-device-${d}`}><I size={14} /></button>
           ))}
@@ -696,7 +687,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
         {!noteId && <div className="live-add-block">
           <button type="button" className="live-btn live-add-btn" onClick={() => setAddAt(sections.length)} data-testid="live-add-section"><Plus size={14} /> Add a new section</button>
         </div>}
-      </aside>
+      </div></aside>
 
       {addAt !== null && (
         <div className="live-ui live-add-menu" data-testid="live-add-menu" role="dialog" aria-label="Add a section">

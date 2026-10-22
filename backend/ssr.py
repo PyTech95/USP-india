@@ -120,7 +120,7 @@ def menu_html(menu):
     return out
 
 
-def doc(site, title, desc, canonical, body, jsonld, noindex=False, og_image=None, og_type="website"):
+def doc(site, title, desc, canonical, body, jsonld, noindex=False, og_image=None, og_type="website", keywords="", extra_head=""):
     th = site["theme"]
     c = th["colors"]
     robots = "noindex, nofollow" if noindex or not site.get("indexing_enabled") else "index, follow"
@@ -132,7 +132,7 @@ def doc(site, title, desc, canonical, body, jsonld, noindex=False, og_image=None
     return f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{E(title)}</title><meta name="description" content="{E(desc)}"><link rel="canonical" href="{E(canonical)}"><meta name="robots" content="{robots}">
 <meta property="og:title" content="{E(title)}"><meta property="og:description" content="{E(desc)}"><meta property="og:url" content="{E(canonical)}"><meta property="og:type" content="{og_type}"><meta property="og:site_name" content="{E(site["site_name"])}">{og_img}
-<meta name="twitter:card" content="{'summary_large_image' if og_image else 'summary'}">{fav}
+<meta property="og:locale" content="en_IN"><meta name="twitter:card" content="{'summary_large_image' if og_image else 'summary'}"><meta name="twitter:title" content="{E(title)}"><meta name="twitter:description" content="{E(desc)}">{('<meta name="twitter:image" content="' + SITE_URL + og_image["src"] + '">') if og_image else ""}{('<meta name="keywords" content="' + E(keywords) + '">') if keywords else ""}{extra_head}{fav}
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@100;200;300;400;500;600;700&family=Cormorant:ital,wght@0,400;0,500;0,600;1,400&family=Literata:ital,opsz,wght@0,7..72,300;0,7..72,400;0,7..72,500;0,7..72,600;1,7..72,400&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>:root{{{css}}}body{{background:var(--c-background);color:var(--c-text);margin:0}}.ssr{{font-family:'Public Sans',sans-serif;font-weight:300;font-size:18px;line-height:1.6;max-width:1240px;margin:0 auto;padding:0 24px}}.ssr h1,.ssr h2,.ssr h3{{font-weight:300}}.ssr img{{max-width:100%;height:auto}}.ssr a{{color:var(--c-green)}}</style>
@@ -141,14 +141,46 @@ def doc(site, title, desc, canonical, body, jsonld, noindex=False, og_image=None
 <main id="main">{body}</main>{footer}</div></div>{scripts}</body></html>"""
 
 
-def org_ld(site):
+def org_ld(site, geo=None):
+    geo = geo or {}
     o = {"@type": "Organization", "@id": f"{SITE_URL}/#org", "name": site["site_name"], "alternateName": site.get("full_name"), "url": SITE_URL + "/"}
+    if geo.get("org_description"):
+        o["description"] = geo["org_description"]
+    if geo.get("area_served"):
+        o["areaServed"] = geo["area_served"]
+    if geo.get("founded"):
+        o["foundingDate"] = geo["founded"]
+    contact = site.get("contact") or {}
+    if contact.get("email"):
+        o["email"] = contact["email"]
+    if contact.get("phone"):
+        o["telephone"] = contact["phone"]
+    if contact.get("address"):
+        o["address"] = {"@type": "PostalAddress", "streetAddress": contact["address"].replace("\n", ", "), "addressCountry": "IN"}
     if site.get("logo"):
         o["logo"] = SITE_URL + site["logo"]["src"]
     links = [s["url"] for s in site.get("social") or []]
     if links:
         o["sameAs"] = links
     return o
+
+
+def faq_ld(faq):
+    return {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": f["q"], "acceptedAnswer": {"@type": "Answer", "text": f["a"]}} for f in faq]} if faq else None
+
+
+def geo_html(seo):
+    """Plain-language summary and Q&A — what AI answer engines read first."""
+    out = ""
+    if seo.get("summary"):
+        out += f'<section aria-label="Summary"><h2>In brief</h2><p>{E(seo["summary"])}</p></section>'
+    if seo.get("faq"):
+        out += "<section><h2>Questions and answers</h2>" + "".join(f"<h3>{E(f['q'])}</h3><p>{E(f['a'])}</p>" for f in seo["faq"]) + "</section>"
+    return out
+
+
+def place_ld(seo):
+    return {"@type": "Place", "name": seo["place"]} if seo.get("place") else None
 
 
 def crumbs(items):
@@ -189,6 +221,7 @@ async def render(raw_path):
     path = parts.path.rstrip("/") or "/"
     qs = {k: v[0] for k, v in parse_qs(parts.query).items()}
     site = await get_site()
+    geo = ((await db.settings.find_one({"key": "site"}, {"_id": 0, "geo": 1})) or {}).get("geo") or {}
     r = await db.redirects.find_one({"from_path": path}, {"_id": 0})
     if r:
         return 301, "", {"Location": r["to_path"]}
@@ -204,13 +237,22 @@ async def render(raw_path):
         title = seo.get("title") or (f"{c['title']} — {site['site_name']}" if key != "home" else f"{site['site_name']} — {site.get('full_name')}")
         canonical = seo.get("canonical") or (SITE_URL + (path if path != "/" else "/"))
         trail = crumb_trail(path, c["title"])
-        body = "".join(block(s, i == 0) for i, s in enumerate(c["sections"]))
+        body = "".join(block(s, i == 0) for i, s in enumerate(c["sections"])) + geo_html(seo)
         hero_img = next((s["data"]["image"]["media"] for s in c["sections"] if s["type"] == "hero" and (s["data"].get("image") or {}).get("media")), None)
-        graph = [org_ld(site)]
-        if key == "home":
-            graph.append({"@type": "WebSite", "@id": f"{SITE_URL}/#website", "url": SITE_URL + "/", "name": site["site_name"], "publisher": {"@id": f"{SITE_URL}/#org"}})
+        graph = [org_ld(site, geo), {"@type": "WebSite", "@id": f"{SITE_URL}/#website", "url": SITE_URL + "/", "name": site["site_name"],
+                                     "alternateName": site.get("full_name"), "inLanguage": "en-IN", "publisher": {"@id": f"{SITE_URL}/#org"}}]
         ptype = {"about": "AboutPage", "connect": "ContactPage", "field-notes": "CollectionPage"}.get(key, "WebPage")
-        graph.append({"@type": ptype, "url": canonical, "name": title, "description": seo.get("description", ""), "dateModified": p["updated_at"], "isPartOf": {"@id": f"{SITE_URL}/#website"}})
+        webpage = {"@type": ptype, "@id": canonical + "#webpage", "url": canonical, "name": title, "description": seo.get("description", ""), "inLanguage": "en-IN",
+                   "dateModified": p["updated_at"], "isPartOf": {"@id": f"{SITE_URL}/#website"}, "about": {"@id": f"{SITE_URL}/#org"}}
+        if seo.get("summary"):
+            webpage["abstract"] = seo["summary"]
+        if seo.get("keywords"):
+            webpage["keywords"] = seo["keywords"]
+        if place_ld(seo):
+            webpage["contentLocation"] = place_ld(seo)
+        graph.append(webpage)
+        if faq_ld(seo.get("faq")):
+            graph.append(faq_ld(seo["faq"]))
         if len(trail) > 1:
             graph.append(crumbs(trail))
         if key == "field-notes":
@@ -224,7 +266,7 @@ async def render(raw_path):
             if qs.get("q") or qs.get("category") or qs.get("tag"):
                 seo = {**seo, "noindex": True}
         og = await share_image(seo, site, hero_img or site.get("default_share"))
-        return 200, doc(site, title, seo.get("description", ""), canonical, body, {"@context": "https://schema.org", "@graph": graph}, seo.get("noindex"), og), {}
+        return 200, doc(site, title, seo.get("description", ""), canonical, body, {"@context": "https://schema.org", "@graph": graph}, seo.get("noindex"), og, keywords=seo.get("keywords", "")), {}
     if path.startswith("/field-notes/") and path.count("/") == 2:
         slug = path.split("/")[2]
         n = await public_note(slug)
@@ -242,14 +284,25 @@ async def render(raw_path):
                 f'<p>{E(note.get("standfirst") or "")}</p><p>By {E(note.get("author") or "")} · Published <time datetime="{n["published_at"][:10]}">{n["published_at"][:10]}</time>'
                 f' · Updated <time datetime="{n["updated_at"][:10]}">{n["updated_at"][:10]}</time></p></header>{figure(note.get("cover"), eager=True)}'
                 f'{note.get("body_html", "")}{("<p>Credits: " + E(note["credits"]) + "</p>") if note.get("credits") else ""}'
-                f'{("<section><h2>References</h2><ol>" + refs + "</ol></section>") if refs else ""}{("<section><h2>Downloads</h2><ul>" + dls + "</ul></section>") if dls else ""}</article>'
+                f'{("<section><h2>References</h2><ol>" + refs + "</ol></section>") if refs else ""}{("<section><h2>Downloads</h2><ul>" + dls + "</ul></section>") if dls else ""}{geo_html(seo)}</article>'
                 f'<section><h2>Related Field Notes</h2>{note_list(n["related"])}</section>')
         art = {"@type": "BlogPosting", "headline": note["title"], "description": seo.get("description") or note.get("standfirst", ""), "datePublished": n["published_at"],
                "dateModified": n["updated_at"], "author": {"@type": "Person" if "team" not in (note.get("author") or "").lower() else "Organization", "name": note.get("author")},
-               "publisher": {"@id": f"{SITE_URL}/#org"}, "mainEntityOfPage": canonical}
+               "publisher": {"@id": f"{SITE_URL}/#org"}, "mainEntityOfPage": canonical, "inLanguage": "en-IN", "isPartOf": {"@id": f"{SITE_URL}/#website"}}
+        if note.get("category"):
+            art["articleSection"] = note["category"]
+        kw = seo.get("keywords") or ", ".join(note.get("tags") or [])
+        if kw:
+            art["keywords"] = kw
+        if seo.get("summary"):
+            art["abstract"] = seo["summary"]
+        if place_ld(seo):
+            art["contentLocation"] = place_ld(seo)
         if cover:
             art["image"] = {"@type": "ImageObject", "url": SITE_URL + cover["src"], "width": cover["width"], "height": cover["height"], "caption": cover.get("caption")}
         og = await share_image(seo, site, cover or site.get("default_share"))
+        graph = [org_ld(site, geo), art, crumbs(trail)] + ([faq_ld(seo["faq"])] if seo.get("faq") else [])
+        times = f'<meta property="article:published_time" content="{E(n["published_at"])}"><meta property="article:modified_time" content="{E(n["updated_at"])}">'
         return 200, doc(site, title, seo.get("description") or note.get("standfirst", ""), canonical, body,
-                        {"@context": "https://schema.org", "@graph": [org_ld(site), art, crumbs(trail)]}, seo.get("noindex"), og, "article"), {}
+                        {"@context": "https://schema.org", "@graph": graph}, seo.get("noindex"), og, "article", keywords=kw, extra_head=times), {}
     return await not_found(site)

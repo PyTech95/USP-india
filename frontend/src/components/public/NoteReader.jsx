@@ -113,6 +113,8 @@ export function NoteReader({ slug, onClose }) {
             {data.standfirst && <p className="fn-standfirst" data-testid="note-reader-standfirst">{data.standfirst}</p>}
             <span className="fn-rule" aria-hidden="true" data-testid="note-reader-accent-line" />
             <div className="fn-body" data-testid="note-reader-body" dangerouslySetInnerHTML={{ __html: data.body_html }} />
+            {data.seo?.faq?.length > 0 && <section className="fn-faq" data-testid="note-reader-faq"><h3>Questions &amp; answers</h3>
+              {data.seo.faq.map((f, i) => <details key={i}><summary>{f.q}</summary><p>{f.a}</p></details>)}</section>}
           </>}
         </div>
       </div>

@@ -1,9 +1,10 @@
 import { NavLink, Outlet, Link } from "react-router-dom";
-import { LayoutDashboard, FileText, NotebookPen, Images, Menu as MenuIcon, Palette, Inbox, Search, Users, Settings, LogOut, ExternalLink, Wand2, DatabaseBackup } from "lucide-react";
+import { LayoutDashboard, FileText, NotebookPen, Images, Menu as MenuIcon, Palette, Inbox, Search, Users, Settings, LogOut, ExternalLink, Wand2, DatabaseBackup, BarChart3 } from "lucide-react";
 import { useAuth } from "../../lib/auth";
 
 const NAV = [
   ["/admin", "Dashboard", LayoutDashboard, null],
+  ["/admin/traffic", "Traffic", BarChart3, null],
   ["/admin/pages", "Pages", FileText, null],
   ["/admin/field-notes", "Field Notes", NotebookPen, null],
   ["/admin/media", "Media Library", Images, null],

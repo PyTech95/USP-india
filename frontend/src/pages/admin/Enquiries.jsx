@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { Settings2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "../../components/ui/button";
 import { Textarea } from "../../components/ui/textarea";
@@ -13,6 +15,8 @@ export default function Enquiries() {
   const [items, setItems] = useState([]);
   const [filter, setFilter] = useState("");
   const [sel, setSel] = useState(null);
+  const [mail, setMail] = useState(null);
+  useEffect(() => { if (can("config")) api.get("/admin/enquiry-settings").then((r) => setMail(r.data)).catch(() => {}); }, []); // eslint-disable-line
   const load = () => api.get("/admin/enquiries", { params: { status: filter } }).then((r) => setItems(r.data));
   useEffect(() => { load(); }, [filter]); // eslint-disable-line
   const update = async (patch) => {
@@ -25,7 +29,8 @@ export default function Enquiries() {
   const open = (e) => { setSel(e); if (e.status === "new") api.put(`/admin/enquiries/${e.id}`, { status: "read" }).then(load); };
   return (
     <div>
-      <PageHead title="Enquiries" desc="Messages sent through Connect. Stored privately; email notifications are not configured, so check here.">
+      <PageHead title="Enquiries" desc={`Messages sent through the Connect form, stored privately here. ${mail?.ready ? `Each new enquiry is also emailed to ${mail.recipients.join(", ")}.` : "Email notifications are off, so check this page — or turn them on in Form settings."}`}>
+        {can("config") && <Link to="/admin/enquiries/settings" className="inline-flex items-center gap-1.5 px-4 h-10 border text-sm bg-white" data-testid="enquiries-settings-link"><Settings2 size={15} /> Form settings</Link>}
         {can("config") && <a href={`${BACKEND}/api/admin/enquiries-export.csv`} className="inline-flex items-center px-4 h-10 border text-sm" data-testid="enquiries-export">Export CSV</a>}
       </PageHead>
       <div className="flex gap-2 mb-4" role="group" aria-label="Filter by status">
@@ -48,7 +53,7 @@ export default function Enquiries() {
           <div className="bg-white border p-4" data-testid="enquiry-detail">
             <h2 className="font-semibold text-lg">{sel.name}</h2>
             <p className="text-sm"><a className="underline" href={`mailto:${sel.email}`}>{sel.email}</a>{sel.phone && ` · ${sel.phone}`}{sel.organisation && ` · ${sel.organisation}`}</p>
-            <p className="text-xs mb-3">{sel.topic} · received {fmtDateTime(sel.created_at)} · email notification: {sel.email_status === "not_configured" ? "not configured (not sent)" : sel.email_status}</p>
+            <p className="text-xs mb-3">{sel.topic} · received {fmtDateTime(sel.created_at)} · email: {{ not_configured: "notifications off (not emailed)", sending: "sending…", sent: "emailed to the team", failed: `failed — ${sel.email_error || "see Form settings"}` }[sel.email_status] || sel.email_status || "—"}</p>
             <p className="whitespace-pre-wrap border-l-2 pl-3 mb-4">{sel.message}</p>
             <label className="text-sm font-semibold" htmlFor="enq-status">Status</label>
             <select id="enq-status" className="block h-10 border px-2 mb-3" value={sel.status} onChange={(e) => update({ status: e.target.value })} data-testid="enquiry-status-select">{STATUS.map((s) => <option key={s}>{s}</option>)}</select>

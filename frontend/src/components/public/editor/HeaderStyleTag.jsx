@@ -4,24 +4,31 @@ import { loadFont } from "../../../lib/site";
 // Two stable IDs outrank reference selectors containing :has(#page-reference).
 export const HeaderStyleTag = ({ styles = {} }) => {
   useEffect(() => { if (styles.fontFamily) loadFont(styles.fontFamily); }, [styles.fontFamily]);
+  useEffect(() => { if (styles.brandFontFamily) loadFont(styles.brandFontFamily); }, [styles.brandFontFamily]);
+  const font = (f) => (f ? `'${f}', Helvetica, Arial, sans-serif` : "");
+  const border = styles.borderWidth && styles.borderWidth !== "0px" ? `${styles.borderWidth} solid ${styles.borderColor || "#e6e1dc"}` : styles.borderWidth === "0px" ? "0" : (styles.borderColor ? `1px solid ${styles.borderColor}` : "");
   const rules = [];
   const rule = (selectors, declarations) => {
     const css = Object.entries(declarations).filter(([, v]) => v && /^[#0-9a-zA-Z .,%()\-'\"]{1,100}$/.test(v))
       .map(([k, v]) => `${k}: ${v} !important`).join("; ");
     if (css) rules.push(`${selectors.map((s) => `html body #public-site#public-site#public-site.site #site-header#site-header${s}`).join(", ")} { ${css}; }`);
   };
-  rule([""], { background: styles.backgroundColor, "padding-top": styles.paddingTop, "padding-bottom": styles.paddingBottom, position: styles.position });
+  rule([""], { background: styles.backgroundColor, "padding-top": styles.paddingTop, "padding-bottom": styles.paddingBottom, position: styles.position,
+    top: styles.position === "sticky" ? "0" : "", "z-index": styles.position === "sticky" ? "40" : "", "border-bottom": border, "margin-bottom": styles.marginBottom });
   rule([" .header-inner"], { background: styles.backgroundColor, "padding-left": styles.paddingLeft, "padding-right": styles.paddingRight, "min-height": styles.minHeight });
-  rule([" .brand-name", " .brand-sub", " .nav-link", " .dropdown a"], {
-    color: styles.color,
-  });
-  rule([" .brand-name"], { "font-size": styles.brandFontSize });
-  rule([" .brand-sub"], { "font-size": styles.subtitleFontSize });
-  rule([" .nav-link", " .dropdown a"], { "font-size": styles.fontSize, "font-weight": styles.fontWeight });
+  rule([" .nav-link", " .dropdown a", " .menu-toggle"], { color: styles.color }); // menu text only — the brand has its own colours
+  rule([" .brand-name"], { "font-size": styles.brandFontSize, color: styles.brandColor, "font-family": font(styles.brandFontFamily) });
+  rule([" .brand-sub"], { "font-size": styles.subtitleFontSize, color: styles.subtitleColor, "font-family": font(styles.brandFontFamily) });
+  rule([" .nav-link", " .dropdown a"], { "font-size": styles.fontSize, "font-weight": styles.fontWeight, "font-family": font(styles.fontFamily),
+    "letter-spacing": styles.letterSpacing, "text-transform": styles.textTransform });
+  rule([" .nav-list > li::before"], { "border-left-color": styles.separatorColor });
+  rule([" .dropdown a"], { color: styles.dropdownColor });
+  rule([" nav[aria-label=Main]"], { "padding-left": styles.navPaddingX, "padding-right": styles.navPaddingX });
   rule([" .brand img"], { height: styles.logoHeight });
   rule([" nav[aria-label=Main]", " .nav-list"], { background: styles.navBackgroundColor });
   rule([" .nav-list"], { gap: styles.navGap });
   rule([" .dropdown"], { background: styles.dropdownBackgroundColor });
+  if (styles.mobileMenuBackgroundColor) rules.push(`@media (max-width: 960px) { html body #public-site#public-site#public-site.site #site-header#site-header .nav-list.open { background: ${styles.mobileMenuBackgroundColor} !important; } }`);
   rule([" .nav-link[aria-current=page]", " .nav-link:hover", " .dropdown a:hover"], { color: styles.activeColor });
   const lines = Object.entries({ "--accent-line-w": styles.accentLineWidth, "--accent-line": styles.accentLineThickness, "--accent-line-gap": styles.accentLineGap })
     .filter(([, v]) => /^\d+(\.\d+)?px$/.test(v || "")).map(([k, v]) => `${k}: ${v} !important`).join("; ");

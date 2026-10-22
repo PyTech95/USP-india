@@ -9,7 +9,7 @@ module.exports = function (app) {
   app.use((req, res, next) => {
     if (req.method !== "GET" && req.method !== "HEAD") return next();
     const p = req.path;
-    const meta = p === "/sitemap.xml" || p === "/robots.txt";
+    const meta = p === "/sitemap.xml" || p === "/robots.txt" || p === "/llms.txt";
     if (!meta) {
       if (SKIP.test(p) || /\.[a-z0-9]+$/i.test(p) || p.includes("hot-update")) return next();
       if (!(req.headers.accept || "").includes("text/html")) return next();

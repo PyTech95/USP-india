@@ -10,6 +10,7 @@ import { HeaderEditor } from "./editor/HeaderEditor";
 import { HeaderStyleTag } from "./editor/HeaderStyleTag";
 import { SiteTextStyles } from "./editor/TextStyleTag";
 import { SiteText } from "./editor/SiteText";
+import { usePageTracking } from "../../lib/track";
 
 function Dropdown({ item, onNavigate }) {
   const [open, setOpen] = useState(false);
@@ -54,7 +55,7 @@ function Dropdown({ item, onNavigate }) {
 }
 
 function Header({ site: savedSite }) {
-  const { headerPreview } = useLiveEditor();
+  const { headerPreview, on: liveOn, scope: liveScope, setScope: setLiveScope, canHeader } = useLiveEditor();
   const site = headerPreview || savedSite;
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
@@ -80,6 +81,7 @@ function Header({ site: savedSite }) {
   return (
     <SitePreviewProvider site={site}><header className="header" id="site-header" data-testid="site-header">
       <HeaderStyleTag styles={site?.header_styles} />
+      {liveOn && canHeader && liveScope !== "header" && <button type="button" className="live-ui live-header-chip" onClick={() => setLiveScope("header")} data-testid="live-header-chip">Edit header colours &amp; layout</button>}
       <div className="wrap header-inner">
         <Link to="/" className="brand" data-testid="brand-link">
           {site?.logo && <img src={media(site.logo.src)} alt="" width={site.logo.width} height={site.logo.height} style={{ height: 44, width: "auto" }} data-site-edit="logo_media_id" data-testid="header-logo" />}
@@ -149,6 +151,7 @@ function useHashScroll() {
 export default function PublicLayout({ preview = false }) {
   const site = useSite();
   useHashScroll();
+  usePageTracking(preview);
   return (
     <PreviewCtx.Provider value={preview}><LiveEditorProvider preview={preview}>
       <div className="site" id="public-site">
