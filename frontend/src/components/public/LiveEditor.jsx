@@ -14,6 +14,8 @@ import { isImageField, isLayoutField } from "./editor/editorFields";
 import { SelectionToolbar } from "./editor/SelectionToolbar";
 import { ColorField, px } from "./editor/ColorField";
 import { normalizeReferenceContent } from "./editor/referenceGeometry";
+import { zoomOf } from "../../lib/designMode";
+import { SliderField } from "./editor/ColorField";
 import { CropControls, parsePos } from "./editor/CropControls";
 import { useFloatingPanel } from "./editor/useFloatingPanel";
 
@@ -63,6 +65,36 @@ const findEl = (sel) => {
   return sel.field === "_section" ? s : s.querySelector(`[data-edit="${sel.field}"]`);
 };
 
+// Which other editable items in the same section a moved/resized item now covers.
+// Text is compared line by line (not by its box), so text that merely sits near a photo
+// is not reported; a photo that fills most of the section counts as a background.
+const inter = (a, b) => Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left)) * Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top));
+const isPic = (node) => node.matches("figure, img, picture") || (!!node.querySelector("img") && !node.textContent.trim());
+const rectsOf = (node) => {
+  if (isPic(node)) return [node.getBoundingClientRect()];
+  const range = document.createRange(); range.selectNodeContents(node);
+  const rs = [...range.getClientRects()].filter((r) => r.width > 1 && r.height > 1);
+  return rs.length ? rs : [node.getBoundingClientRect()];
+};
+export function overlapsOf(el) {
+  const secEl = el?.closest("[data-sec]");
+  if (!secEl || el === secEl) return [];
+  const secBox = secEl.getBoundingClientRect();
+  const big = (node) => { const r = node.getBoundingClientRect(); return r.width * r.height > 0.5 * secBox.width * secBox.height; };
+  const mine = rectsOf(el);
+  const hits = [];
+  secEl.querySelectorAll("[data-edit]").forEach((o) => {
+    if (o === el || o.contains(el) || el.contains(o) || !o.getClientRects().length) return;
+    if (o.closest("[data-edit]") !== o && o.closest("[data-edit]")?.contains(el)) return;
+    if ((isPic(o) && big(o)) || (isPic(el) && big(el))) return;
+    const theirs = rectsOf(o);
+    let area = 0;
+    mine.forEach((a) => theirs.forEach((b) => { area += inter(a, b); }));
+    if (area > 60) hits.push(o);
+  });
+  return hits;
+}
+
 const DEFAULTS = {
   text: { heading: "New heading", body_html: "<p>New paragraph. Click to edit this text.</p>", style: "stacked" },
   image_text: { heading: "Heading", body_html: "<p>Describe this section.</p>", image: { media_id: "" }, image_side: "left" },
@@ -103,6 +135,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
   const [addAt, setAddAt] = useState(null);
   const [rect, setRect] = useState(null);
   const [device, setDevice] = useState("desktop");
+  const [overlap, setOverlap] = useState(null);
   const [hist, setHist] = useState({ past: [], future: [] });
   const [panelSide, setPanelSide] = useState("right");
   const fp = useFloatingPanel("page");
@@ -110,7 +143,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
   const fileRef = useRef(null);
   const inlineDraft = useRef(null);
   const dragging = useRef(null);
-  const [narrow, setNarrow] = useState(() => typeof window !== "undefined" && window.innerWidth < 961);
+  const [narrow, setNarrow] = useState(() => typeof window !== "undefined" && window.innerWidth < 1440);
 
   useEffect(() => {
     if (!enabled) { loadedSession.current = false; return undefined; }
@@ -147,6 +180,20 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
   }, [content, setContent]);
 
   const patchSec = (id, fn) => commit(sections.map((s) => (s.id === id ? fn(s) : s)));
+  // Clears every saved position and size in one section (text styles, colours and crops stay).
+  const resetSectionLayout = (id) => {
+    patchSec(id, (s) => {
+      const styles = {};
+      Object.entries(s.styles || {}).forEach(([f, v]) => {
+        const next = { ...v };
+        ["translateX", "translateY", "width", "height"].forEach((k) => delete next[k]);
+        if (Object.keys(next).length) styles[f] = next;
+      });
+      return { ...s, styles };
+    });
+    setOverlap(null);
+    toast.success("Section layout tidied — positions and sizes reset. Ctrl/⌘+Z undoes it.");
+  };
   const revealSelection = (next) => {
     if (next && window.innerWidth > 960) {
       const box = findEl(next)?.getBoundingClientRect();
@@ -325,6 +372,14 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
     return () => { el.removeEventListener("input", record); el.removeEventListener("blur", commitText); el.removeAttribute("contenteditable"); };
   }, [on, scope, sel, content]); // eslint-disable-line
 
+  // Outline the items an overlap warning is about; drop the warning when the selection changes.
+  useEffect(() => {
+    if (!overlap) return undefined;
+    overlap.els.forEach((el) => el.classList.add("live-overlap-hit"));
+    return () => overlap.els.forEach((el) => el.classList.remove("live-overlap-hit"));
+  }, [overlap]);
+  useEffect(() => { setOverlap((o) => (o && sel && o.key === `${sel.sec}:${sel.field}` ? o : null)); }, [sel]);
+
   // track selection rectangle
   useEffect(() => {
     if (!on || !sel) { setRect(null); return undefined; }
@@ -339,7 +394,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
   }, [on, sel, device]);
 
   useEffect(() => {
-    const onResize = () => setNarrow(window.innerWidth < 961);
+    const onResize = () => setNarrow(window.innerWidth < 1440);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
@@ -399,6 +454,15 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
     return best;
   };
   const endDrag = () => { dragging.current = null; };
+  // After a move/resize: warn (with one-click undo) when the item now covers another one.
+  const checkOverlap = () => {
+    const at = selRef.current;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      const el = findEl(at);
+      const hits = el ? overlapsOf(el) : [];
+      setOverlap(hits.length ? { key: `${at.sec}:${at.field}`, els: hits, names: [...new Set(hits.map((h) => labelFor(h.dataset.edit)))].slice(0, 3) } : null);
+    }));
+  };
   const resize = (dir) => (e) => {
     e.preventDefault(); e.stopPropagation();
     dragging.current = "start";
@@ -409,6 +473,8 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
     const { xs, ys } = gatherSnaps(el);
     const sx0 = e.clientX, sy0 = e.clientY, w0 = r0.width, h0 = r0.height;
     const tx0 = num(st.translateX), ty0 = num(st.translateY);
+    const z = zoomOf(el); // screen px -> design px when the page is scaled to fit
+    const d = (v) => Math.round(v / z);
     const mv = (ev) => {
       let dx = ev.clientX - sx0, dy = ev.clientY - sy0;
       const gls = [];
@@ -417,10 +483,10 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
       if (dir.includes("s")) { const s = nearest(r0.bottom + dy, ys); if (s != null) { dy += s - (r0.bottom + dy); gls.push({ y: s }); } }
       if (dir.includes("n")) { const s = nearest(r0.top + dy, ys); if (s != null) { dy += s - (r0.top + dy); gls.push({ y: s }); } }
       const patch = {};
-      if (dir.includes("e")) patch.width = `${Math.max(40, Math.round(w0 + dx))}px`;
-      if (dir.includes("w")) { const nw = Math.max(40, Math.round(w0 - dx)); patch.width = `${nw}px`; patch.translateX = `${tx0 + (w0 - nw)}px`; }
-      if (dir.includes("s")) patch.height = `${Math.max(20, Math.round(h0 + dy))}px`;
-      if (dir.includes("n")) { const nh = Math.max(20, Math.round(h0 - dy)); patch.height = `${nh}px`; patch.translateY = `${ty0 + (h0 - nh)}px`; }
+      if (dir.includes("e")) patch.width = `${Math.max(40, d(w0 + dx))}px`;
+      if (dir.includes("w")) { const nw = Math.max(40 * z, w0 - dx); patch.width = `${d(nw)}px`; patch.translateX = `${tx0 + d(w0 - nw)}px`; }
+      if (dir.includes("s")) patch.height = `${Math.max(20, d(h0 + dy))}px`;
+      if (dir.includes("n")) { const nh = Math.max(20 * z, h0 - dy); patch.height = `${d(nh)}px`; patch.translateY = `${ty0 + d(h0 - nh)}px`; }
       // Keep the opposite edge fixed when flex alignment repositions a resized action.
       if (el?.dataset.editGroup === "action") {
         for (const [size, variable] of [["width", "--ed-w"], ["height", "--ed-h"]]) {
@@ -429,12 +495,12 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
         el.style.setProperty("--ed-t", `translate(${tx0}px, ${ty0}px)`);
         el.style.setProperty("transform", "var(--ed-t)", "important");
         const resized = el.getBoundingClientRect();
-        if (patch.width) patch.translateX = `${tx0 + (dir.includes("w") ? r0.right - resized.width : r0.left) - resized.left}px`;
-        if (patch.height) patch.translateY = `${ty0 + (dir.includes("n") ? r0.bottom - resized.height : r0.top) - resized.top}px`;
+        if (patch.width) patch.translateX = `${tx0 + d((dir.includes("w") ? r0.right - resized.width : r0.left) - resized.left)}px`;
+        if (patch.height) patch.translateY = `${ty0 + d((dir.includes("n") ? r0.bottom - resized.height : r0.top) - resized.top)}px`;
       }
       setStyles(patch); setGuides(gls);
     };
-    const up = () => { endDrag(); setGuides([]); window.removeEventListener("pointermove", mv); window.removeEventListener("pointerup", up); };
+    const up = () => { endDrag(); setGuides([]); window.removeEventListener("pointermove", mv); window.removeEventListener("pointerup", up); checkOverlap(); };
     window.addEventListener("pointermove", mv); window.addEventListener("pointerup", up);
   };
   const moveDrag = (e) => {
@@ -445,6 +511,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
     const r0 = el?.getBoundingClientRect() || rect;
     const { xs, ys } = gatherSnaps(el);
     const sx0 = e.clientX, sy0 = e.clientY, tx0 = num(st.translateX), ty0 = num(st.translateY);
+    const z = zoomOf(el);
     const mv = (ev) => {
       let dx = ev.clientX - sx0, dy = ev.clientY - sy0;
       const gls = [];
@@ -454,9 +521,9 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
         const yc = [[r0.top + dy], [r0.bottom + dy], [r0.top + r0.height / 2 + dy]].map(([v]) => [nearest(v, ys), v]).filter((c) => c[0] != null);
         if (yc.length) { yc.sort((a, b) => Math.abs(a[0] - a[1]) - Math.abs(b[0] - b[1])); dy += yc[0][0] - yc[0][1]; gls.push({ y: yc[0][0] }); }
       }
-      setStyles({ translateX: `${tx0 + dx}px`, translateY: `${ty0 + dy}px` }); setGuides(gls);
+      setStyles({ translateX: `${tx0 + Math.round(dx / z)}px`, translateY: `${ty0 + Math.round(dy / z)}px` }); setGuides(gls);
     };
-    const up = () => { endDrag(); setGuides([]); window.removeEventListener("pointermove", mv); window.removeEventListener("pointerup", up); };
+    const up = () => { endDrag(); setGuides([]); window.removeEventListener("pointermove", mv); window.removeEventListener("pointerup", up); checkOverlap(); };
     window.addEventListener("pointermove", mv); window.addEventListener("pointerup", up);
   };
   // Drag the photo inside its frame (crop position). One drag = one undo step.
@@ -512,13 +579,14 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
   }); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!on || scope !== "page") return null;
-  if (!ready) return <aside className="live-ui live-panel" data-testid="live-editor-loading" role={loadError ? "alert" : "status"}>
+  if (!ready) return createPortal(<aside className="live-ui live-panel" data-testid="live-editor-loading" role={loadError ? "alert" : "status"}>
     <p>{loadError || "Loading editable content…"}</p>
     {loadError && <button type="button" className="live-btn" onClick={() => setLoadAttempt((n) => n + 1)} data-testid="live-loading-retry">Retry loading</button>}
     <button type="button" className="live-btn" onClick={exit} data-testid="live-loading-close">Close editor</button>
-  </aside>;
+  </aside>, document.body);
 
-  return (
+  // Rendered into <body>: the page content may be scaled (zoom), the editor UI never is.
+  return createPortal(
     <>
       {guides.map((g, i) => (
         <div key={i} className={`live-ui live-guide ${g.x != null ? "live-guide-v" : "live-guide-h"}`} style={g.x != null ? { left: g.x } : { top: g.y }} data-testid="live-guide" />
@@ -563,7 +631,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
           ))}
         </div>
 
-        {narrow && <p className="live-narrow-note" data-testid="live-narrow-note">Sizes and positions you set apply to desktop screens (961px and wider); tablets and phones get an automatic layout. Check them with the tablet/phone buttons.</p>}
+        {narrow && <p className="live-narrow-note" data-testid="live-narrow-note">You are editing the desktop design, scaled to fit this screen. Sizes and positions apply to screens wider than 1200px; tablets and phones get an automatic layout — check them with the tablet/phone buttons.</p>}
 
         {!sel || !sec ? (
           <>
@@ -571,6 +639,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
               <li><b>Text:</b> click it and type.</li>
               <li><b>Photo:</b> click it to replace, crop or zoom.</li>
               <li><b>Move / resize:</b> drag the dark grip or the red handles.</li>
+              <li><b>Things overlapping?</b> Click the section, then “Tidy this section”.</li>
               <li><b>Save:</b> Ctrl/⌘+S. Undo: Ctrl/⌘+Z. Esc deselects.</li>
             </ul>
             <Group title="Page title & list of all fields" testid="live-group-fields">
@@ -579,6 +648,13 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
           </>
         ) : (
           <div data-testid="live-controls">
+            {overlap && <div className="live-overlap-warn" role="alert" data-testid="live-overlap-warn">
+              <strong>Heads up:</strong> this now covers {overlap.names.join(", ")}. Visitors would see them on top of each other.
+              <div className="live-row">
+                <button type="button" className="live-btn" onClick={() => { undo(); setOverlap(null); }} data-testid="live-overlap-undo"><Undo2 size={14} /> Undo that move</button>
+                <button type="button" className="live-btn" onClick={() => setOverlap(null)} data-testid="live-overlap-keep">Keep it</button>
+              </div>
+            </div>}
             <div className="live-selected">
               <p className="live-label" data-testid="live-selected-label">{labelFor(field)}</p>
               <button type="button" className="live-link-btn" onClick={() => selectField(null)} title="Deselect (Esc)" data-testid="live-deselect">Done</button>
@@ -603,12 +679,13 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
                   Object.keys(f).forEach((k) => (f[k] === "" || f[k] == null) && delete f[k]);
                   return { ...s, styles: { ...(s.styles || {}), _section: f } };
                 })} />
+                <TidyButton onClick={() => resetSectionLayout(sec.id)} />
               </Group>
             ) : isText ? (<>
               <p className="live-hint">Type directly on the page to change the words.</p>
               <Group title="Text style" open testid="live-group-text">
                 <div className="live-row">
-                  <label className="live-field">Size (px)<input type="number" min="8" max="200" value={px(st.fontSize)} placeholder={cstyle ? String(Math.round(parseFloat(cstyle.fontSize))) : "Default"} onChange={(e) => setStyles({ fontSize: e.target.value ? `${e.target.value}px` : "" })} data-testid="live-font-size" /></label>
+                  <SliderField label="Size (px)" min={10} max={96} value={st.fontSize || ""} fallback={cstyle ? parseFloat(cstyle.fontSize) : undefined} placeholder={cstyle ? String(Math.round(parseFloat(cstyle.fontSize))) : "Default"} onChange={(v) => setStyles({ fontSize: v })} testid="live-font-size" />
                   <label className="live-field">Weight
                     <select value={st.fontWeight || ""} onChange={(e) => setStyles({ fontWeight: e.target.value })} data-testid="live-font-weight">
                       <option value="">Default</option>{[["300", "Light"], ["400", "Regular"], ["500", "Medium"], ["600", "Semibold"], ["700", "Bold"]].map(([w, l]) => <option key={w} value={w}>{l}</option>)}
@@ -675,6 +752,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
                   Object.keys(f).forEach((k) => (f[k] === "" || f[k] == null) && delete f[k]);
                   return { ...s, styles: { ...(s.styles || {}), _section: f } };
                 })} />
+                <TidyButton onClick={() => resetSectionLayout(sec.id)} />
               </Group>
             )}
 
@@ -718,8 +796,16 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
         </div>,
         document.body
       )}
-    </>
+    </>,
+    document.body
   );
+}
+
+function TidyButton({ onClick }) {
+  return <div className="live-tidy">
+    <button type="button" className="live-btn" onClick={onClick} data-testid="live-tidy-section"><RotateCcw size={14} /> Tidy this section</button>
+    <p className="live-hint live-hint-small">Puts every text and photo in this section back in its standard place and size (keeps your text styles, colours and crops). Use it when things overlap.</p>
+  </div>;
 }
 
 function Group({ title, open = false, testid, children }) {

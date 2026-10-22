@@ -1,5 +1,5 @@
 import { HtmlDiv } from "./editor/HtmlDiv";
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { ChevronDown, Menu, X } from "lucide-react";
 import { useSite, PreviewCtx, SitePreviewProvider } from "../../lib/site";
@@ -11,6 +11,7 @@ import { HeaderStyleTag } from "./editor/HeaderStyleTag";
 import { SiteTextStyles } from "./editor/TextStyleTag";
 import { SiteText } from "./editor/SiteText";
 import { usePageTracking } from "../../lib/track";
+import { useDesignMode } from "../../lib/designMode";
 
 function Dropdown({ item, onNavigate }) {
   const [open, setOpen] = useState(false);
@@ -148,6 +149,14 @@ function useHashScroll() {
   }, [pathname, hash]);
 }
 
+// The page content is re-rendered when the screen switches between the exact design
+// (1200px and wider, scaled to fit) and the automatic tablet/phone layout.
+function PageContent() {
+  const { on } = useLiveEditor();
+  const mode = useDesignMode(on);
+  return <main id="main" tabIndex={-1} data-layout={mode.design ? "design" : "fluid"}><Fragment key={mode.design ? "design" : "fluid"}><Outlet /></Fragment></main>;
+}
+
 export default function PublicLayout({ preview = false }) {
   const site = useSite();
   useHashScroll();
@@ -163,7 +172,7 @@ export default function PublicLayout({ preview = false }) {
           </div>
         )}
         <Header site={site} />
-        <main id="main" tabIndex={-1}><Outlet /></main>
+        <PageContent />
         <Footer site={site} />
         <SiteChromeEditor />
         <HeaderEditor />

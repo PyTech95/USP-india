@@ -639,7 +639,7 @@ html.motion-ready main .reveal.d4 { transition-delay: .36s; }
 /* spacing: ~50% of previous */
 .site .work-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
 @media (min-width: 1440px) { .site .work-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-@media (min-width: 640px) and (max-width: 1279.98px) { .site .work-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 640px) and (max-width: 1279.98px) { :where(html.ed-fluid) .site .work-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 1024px) {
   .site .split, .site .split.right, .site .text-cols, .site .stacked.has-aside { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
   .site .split .photo, .site .split.right .photo { max-width: min(100%, 560px); justify-self: start; }
@@ -755,11 +755,11 @@ html.motion-ready main .reveal.d4 { transition-delay: .36s; }
 /* ---------- Public content typography (brand spec) ----------
    Home keeps its own journal styling via more-specific .page-home rules. */
 .site:has(main) .eyebrow { font-weight: 700; font-size: 12px; line-height: 24px; letter-spacing: 0.2em; text-transform: uppercase; color: #2b2b2b; }
+/* Smaller text below 1440px applies to the automatic (tablet/phone) layout only; 1200px+
+   screens show the 1440px design scaled to fit, so they keep the design's sizes. */
 @media (max-width: 1440px) {
-  .site .h2, .site .text-cols-head .h2 { font-size: 27px; line-height: 35px; }
-  .site:has(main) .prose, .site:has(main) .lede, .site:has(main) .hero-after,
-  .site:has(main) .split-text, .site:has(main) .split-text .prose,
-  .site:has(main) .image-body, .site:has(main) .work-card-body p { font-size: 16px; line-height: 24px; }
+  :where(html.ed-fluid) .site .h2, :where(html.ed-fluid) .site .text-cols-head .h2 { font-size: 27px; line-height: 35px; }
+  :where(html.ed-fluid) .site:has(main) .prose, :where(html.ed-fluid) .site:has(main) .lede, :where(html.ed-fluid) .site:has(main) .hero-after, :where(html.ed-fluid) .site:has(main) .split-text, :where(html.ed-fluid) .site:has(main) .split-text .prose, :where(html.ed-fluid) .site:has(main) .image-body, :where(html.ed-fluid) .site:has(main) .work-card-body p { font-size: 16px; line-height: 24px; }
 }
 
 /* ---------- Title font: Public Sans (home keeps its serif titles) ---------- */
@@ -1646,18 +1646,16 @@ body.live-editing .header { z-index: 1; }
   #public-site.site #site-header .nav-list > li > span > button.nav-link { padding: 0 .35rem 0 0 !important; opacity: .55; }
 }
 
-/* Live-editor geometry: exact saved size/offset on desktop (same as in the editor); fluid on tablet/phone */
-#public-site [style*="--ed-w"] { width: min(var(--ed-w), 100%) !important; max-width: 100% !important; }
-@media (min-width: 961px) {
-  body:not(.live-editing) #public-site [style*="--ed-w"] { width: var(--ed-w) !important; max-width: none !important; }
-  body:not(.live-editing) #public-site [style*="--ed-h"] { height: var(--ed-h) !important; }
-  body:not(.live-editing) #public-site [style*="--ed-t"] { transform: var(--ed-t) !important; }
-}
-/* While editing, always show the exact saved geometry so resize/move responds at any screen width */
-body.live-editing #public-site [style*="--ed-w"] { width: var(--ed-w) !important; max-width: none !important; }
-body.live-editing #public-site [style*="--ed-h"] { height: var(--ed-h) !important; }
-body.live-editing #public-site [style*="--ed-t"] { transform: var(--ed-t) !important; }
+/* Live-editor geometry (see lib/designMode.js). Sizes/offsets are only rendered in design
+   mode (1200px+ and while editing) and are exact on the 1440px design; between 1200 and
+   1440px the whole page content is scaled to fit, so the design never overlaps or overflows.
+   Tablets and phones get no saved geometry at all — each section's own responsive layout. */
+#public-site [style*="--ed-w"] { width: var(--ed-w) !important; max-width: none !important; }
+#public-site [style*="--ed-h"] { height: var(--ed-h) !important; }
+#public-site [style*="--ed-t"] { transform: var(--ed-t) !important; }
 #public-site { overflow-x: clip; }
+#public-site main#main { container-type: inline-size; width: 100%; box-sizing: border-box; }
+html.dz #public-site main#main { zoom: var(--dz, 1); width: 1440px !important; max-width: none !important; margin-inline: 0 !important; }
 /* Editor-sized photos: the picture always fills its saved box (same box = same visible size) */
 #public-site figure.photo[style*="--ed-h"] { display: flex; flex-direction: column; }
 #public-site figure.photo[style*="--ed-h"] > .photo-frame { flex: 1 1 auto; min-height: 0; }
@@ -1668,10 +1666,7 @@ body.live-editing #public-site [style*="--ed-t"] { transform: var(--ed-t) !impor
   html #public-site.site #site-header .header-inner, html #public-site #site-footer > .wrap { max-width: 1440px !important; margin-inline: auto !important; }
   #public-site.site #site-header .header-inner { background: #fff; }
 }
-@media (max-width: 960px) {
-  #public-site figure.photo[style*="--ed-h"] { height: auto !important; }
-  #public-site figure.photo[style*="--ed-ar"] > .photo-frame > img { height: auto !important; aspect-ratio: var(--ed-ar) !important; }
-}
+html.ed-fluid #public-site figure.photo[style*="--ed-ar"] > .photo-frame > img { width: 100% !important; height: auto !important; aspect-ratio: var(--ed-ar) !important; object-fit: cover !important; }
 @media (max-width: 767px) {
   #public-site figure.craft-hero-photo[style*="--ed-ar"] > .photo-frame > img { aspect-ratio: 4 / 5 !important; }
 }

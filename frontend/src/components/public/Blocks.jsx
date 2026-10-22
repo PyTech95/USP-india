@@ -16,6 +16,7 @@ import { TheatreHero, TheatreArchive, TheatreProduction } from "./TheatreSection
 import { AboutHero, AboutIntroduction, AboutTeam, AboutApproach } from "./AboutSections";
 import { SplitHero, PlainHero, WorkRows, ConnectForm } from "./PageSections";
 import { HomeFieldNotes } from "./HomeFieldNotes";
+import { isDesignMode } from "../../lib/designMode";
 
 export const fontStack = (f) => `"${f}", system-ui, sans-serif`;
 const LAYOUT_PROPS = ["--ed-w", "--ed-h", "--ed-ar", "--ed-crop", "--ed-zoom", "aspectRatio", "overflow", "--ed-t", "--ed-y", "position", "alignSelf", "justifySelf", "zIndex", "paddingTop", "paddingBottom", "paddingLeft", "paddingRight", "marginTop", "marginBottom", "marginLeft", "marginRight", "backgroundColor", "borderRadius"];
@@ -28,14 +29,18 @@ function applyProps(node, obj, keys) {
     else node.style.removeProperty(toKebab(p));
   });
 }
-// Free-form layout from editor values. Width shrinks to fit; fixed height/offset apply on desktop only (see index.css).
+// Free-form layout from editor values (measured on the 1440px design).
+// Design mode (1200px+ screens, and while editing): exact size/offset, scaled to fit by
+// the page zoom. Fluid mode (tablets/phones): sizes and offsets are left out so every
+// section uses its own responsive layout; a photo keeps the shape it was resized to.
 export function layoutStyle(raw, field) {
   const o = {};
-  const tx = raw.translateX, ty = raw.translateY;
-  if (raw.width) o["--ed-w"] = raw.width;
+  const design = isDesignMode();
+  const tx = design ? raw.translateX : "", ty = design ? raw.translateY : "";
+  if (raw.width && design) o["--ed-w"] = raw.width;
   if (raw.height) {
-    o["--ed-h"] = raw.height;
-    if (!isImageField(field) && field !== "_contact_card") o.overflow = "visible";
+    if (design) o["--ed-h"] = raw.height;
+    if (!isImageField(field) && field !== "_contact_card") { if (design) o.overflow = "visible"; }
     else if (isImageField(field) && /px$/.test(raw.width || "") && /px$/.test(raw.height)) o["--ed-ar"] = `${parseFloat(raw.width)} / ${parseFloat(raw.height)}`;
   }
   if (raw.objectPosition) o.objectPosition = raw.objectPosition;
@@ -45,7 +50,7 @@ export function layoutStyle(raw, field) {
   if (raw.backgroundColor) o.backgroundColor = raw.backgroundColor;
   if (raw.borderRadius) o.borderRadius = raw.borderRadius;
   if (tx || ty) { o["--ed-t"] = `translate(${tx || "0px"}, ${ty || "0px"})`; o["--ed-y"] = ty || "0px"; o.zIndex = 5; }
-  if (raw.width || raw.height || tx || ty) { o.position = "relative"; o.alignSelf = "flex-start"; o.justifySelf = "start"; }
+  if (design && (raw.width || raw.height || tx || ty)) { o.position = "relative"; o.alignSelf = "flex-start"; o.justifySelf = "start"; }
   ["paddingTop", "paddingBottom", "paddingLeft", "paddingRight", "marginTop", "marginBottom", "marginLeft", "marginRight"].forEach((k) => { if (raw[k]) o[k] = raw[k]; });
   return o;
 }

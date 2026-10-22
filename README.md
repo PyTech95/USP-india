@@ -74,9 +74,18 @@ HTTPS is required in production (login cookies are marked secure).
 
 **Backups:** back up the MongoDB database (`mongodump --db uspindia`) and the `backend/storage/` folder — together they are the whole site.
 
+## Responsive layout (how sizes and positions work)
+
+Sizes and positions set in the live editor (dragging, resizing, "Move X/Y") are saved for a **1440px-wide desktop design**:
+
+- **Screens wider than 1200px** show that design exactly. Between 1200 and 1440px the page content is scaled down to fit, so nothing overlaps or runs off the screen; wider screens show it at full size, centred.
+- **Tablets and phones (1200px and narrower)** ignore saved positions and sizes: every section uses its own responsive layout (columns stack, photos fill the width). Text styles, colours, backgrounds and photo crops still apply.
+- Check tablet/phone views with the tablet and phone buttons in the editor panel.
+- If items end up on top of each other, the editor warns straight after the move (with Undo). Click any section → **Tidy this section** to put its texts and photos back in their standard places.
+
 ## Live editor
 
-- **Edit Header** (bottom toolbar, or the “Edit header colours & layout” button on the header): brand & logo, navigation, and *Style & spacing* — header background, the line under the header, brand and subtitle colours, menu-bar background, menu text, hover/current colour, the lines between menu items, dropdown and mobile-menu colours, fonts, letter case and spacing, header height and the space below it. Changes show immediately; **Save header** publishes them on every page.
+- **Edit Header** (bottom toolbar, or point at the header and click “Edit header colours & layout”): five one-click colour schemes (Original, Clean white, Warm sand, Charcoal, USP red), then brand & logo, navigation, and *Style & spacing* — header background, the line under the header, brand and subtitle colours, menu-bar background, menu text, hover/current colour, the lines between menu items, hover background, current-page underline, dropdown (and dropdown hover) and mobile-menu colours, a shadow, fonts, letter case and spacing, header height and the space below it. Sizes have sliders; every colour field offers the site colours and your recently used colours, and × returns it to the default. Changes show immediately; **Save header** publishes them on every page.
 - The editor panels open beside the page. Drag the title to move a panel, drag its left/right/bottom edges or corners to resize it; it never leaves the screen and remembers where you put it. The dock button puts it back on the right.
 - Click text on the page and type. Click a photo to replace it, or to **crop** it: pick a shape (Original, Square, 4:3, 3:2, 16:9, 3:4, 4:5), zoom with the slider, and drag the photo to choose what shows.
 - Drag the dark grip to move an element, the red handles to resize it; arrow keys nudge (Shift = 10px).
