@@ -1,6 +1,6 @@
 /* Shared split hero (Our Work, Connect), Our Work rows and Connect form layout. */
-#public-site .ps-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: stretch; background: #ECE9E4; height: clamp(440px, 36vw, 620px); }
-#public-site .ps-hero-copy { display: flex; flex-direction: column; justify-content: center; padding: clamp(3rem, 6vw, 6rem) clamp(20px, 7.3vw, 113px); }
+#public-site .ps-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: stretch; background: #ECE9E4; height: clamp(440px, 36cqw, 620px); }
+#public-site .ps-hero-copy { display: flex; flex-direction: column; justify-content: center; padding: clamp(3rem, 6cqw, 6rem) clamp(20px, 7.3cqw, 113px); }
 #public-site .ps-hero-copy .eyebrow::before { display: none; }
 #public-site .ps-hero-copy .eyebrow::after { content: ""; order: -1; display: block; width: 2.6rem; height: 3px; background: var(--ruby, #D41445); margin-bottom: 1.6rem; }
 #public-site .ps-hero-copy .eyebrow { flex-direction: column; align-items: flex-start; gap: 0; color: #4a4743; }
@@ -12,8 +12,8 @@
 #public-site .ps-hero-photo > *, #public-site .ps-hero-photo img { height: 100% !important; width: 100%; aspect-ratio: auto !important; object-fit: cover; display: block; }
 #public-site .ps-hero-photo figcaption { display: none; }
 
-#public-site .ps-rows-head { max-width: 46rem; margin-bottom: clamp(2.5rem, 4vw, 4rem); }
-#public-site .ps-row { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: clamp(2rem, 5vw, 5.5rem); align-items: center; padding-block: clamp(2rem, 3.5vw, 3.5rem); border-top: 1px solid #e4e1dc; }
+#public-site .ps-rows-head { max-width: 46rem; margin-bottom: clamp(2.5rem, 4cqw, 4rem); }
+#public-site .ps-row { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: clamp(2rem, 5cqw, 5.5rem); align-items: center; padding-block: clamp(2rem, 3.5cqw, 3.5rem); border-top: 1px solid #e4e1dc; }
 #public-site .ps-row.flip .ps-row-photo { order: 2; }
 #public-site .ps-row-photo { margin: 0; }
 #public-site .ps-row-photo img { width: 100%; display: block; }
@@ -26,10 +26,10 @@
 #public-site .ps-link:hover { color: var(--ruby, #D41445); }
 #public-site .ps-link:hover svg { transform: translateX(4px); }
 
-#public-site .ps-connect { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(2.5rem, 6vw, 6.5rem); align-items: start; }
+#public-site .ps-connect { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(2.5rem, 6cqw, 6.5rem); align-items: start; }
 #public-site .ps-connect-intro { margin: 0 0 2rem; font-size: var(--ts-body); line-height: 1.75; color: #55514c; }
 #public-site .ps-connect-form .ps-form-card { margin-top: .5rem; }
-#public-site .ps-connect-side { border-left: 1px solid #e4e1dc; padding-left: clamp(2rem, 4vw, 4rem); }
+#public-site .ps-connect-side { border-left: 1px solid #e4e1dc; padding-left: clamp(2rem, 4cqw, 4rem); }
 #public-site .ps-detail { padding-block: 1.1rem; border-bottom: 1px solid #e4e1dc; }
 #public-site .ps-detail .eyebrow { margin: 0 0 .35rem; }
 #public-site .ps-detail .eyebrow::before { display: none; }
@@ -40,18 +40,18 @@
 
 /* Home-style plain hero (About, Connect) */
 #public-site .ps-plain-hero { background: #ede9e6; }
-#public-site .ps-plain-inner { padding-block: clamp(4rem, 6.9vw, 132px) clamp(3rem, 4.8vw, 92px); }
+#public-site .ps-plain-inner { padding-block: clamp(4rem, 6.9cqw, 132px) clamp(3rem, 4.8cqw, 92px); }
 #public-site .ps-plain-hero .h1 { margin: 0; font-weight: 300; text-transform: uppercase; color: #2b2926; }
-#public-site .ps-plain-tagline { margin: clamp(1.75rem, 2.3vw, 44px) 0 0; font-size: var(--ts-accent); font-weight: 300; line-height: 1.5; color: #55514c; max-width: 44rem; }
+#public-site .ps-plain-tagline { margin: clamp(1.75rem, 2.3cqw, 44px) 0 0; font-size: var(--ts-accent); font-weight: 300; line-height: 1.5; color: #55514c; max-width: 44rem; }
 #about-reference .hb-hero { margin-inline: -4.348% !important; }
-@media (min-width: 1566px) { #about-reference .hb-hero { margin-inline: calc((1440px - 100vw) / 2) !important; } }
+
 
 #public-site .ps-topics { list-style: none; margin: 0; padding: 0; border-top: 1px solid #e4e1dc; }
 #public-site .ps-topics li { display: grid; gap: .25rem; padding: 1.1rem 0 1.1rem 1.2rem; border-bottom: 1px solid #e4e1dc; position: relative; }
 #public-site .ps-topics li::before { content: ""; position: absolute; left: 0; top: 1.45rem; width: 6px; height: 6px; background: var(--ruby, #D41445); }
 #public-site .ps-topics strong { font-weight: 500; color: #2b2926; }
 #public-site .ps-topics span { color: #6a655f; font-size: .95rem; }
-#public-site .ps-form-card { background: #F6F5F3; padding: clamp(1.5rem, 3vw, 3rem); }
+#public-site .ps-form-card { background: #F6F5F3; padding: clamp(1.5rem, 3cqw, 3rem); }
 #public-site .ps-form-card form { max-width: none !important; }
 
 /* Connect: details band */
@@ -63,7 +63,7 @@
   #public-site .ps-hero, #public-site .ps-row, #public-site .ps-connect { grid-template-columns: 1fr; }
   #public-site .ps-hero { height: auto; }
   #public-site .ps-hero-photo > .photo-frame { position: relative; }
-  #public-site .ps-hero-copy { padding: 3rem clamp(20px, 7.3vw, 113px) 2.5rem; }
+  #public-site .ps-hero-copy { padding: 3rem clamp(20px, 7.3cqw, 113px) 2.5rem; }
   #public-site .ps-connect-side { border-left: 0; padding-left: 0; }
   #public-site .ps-hero-photo > *, #public-site .ps-hero-photo img { height: auto !important; aspect-ratio: 4 / 3 !important; }
   #public-site .ps-row.flip .ps-row-photo { order: 0; }
@@ -73,8 +73,8 @@
 #public-site .ps-hero-photo figcaption, #public-site .ps-row-photo figcaption { display: none !important; }
 #public-site .ps-hero-photo .photo-frame { height: 100%; }
 #public-site .ps-row-title, #public-site .ps-topics strong { font-family: var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif) !important; }
-#public-site .page-our-work .hb-text .section { padding-bottom: clamp(1.5rem, 2.5vw, 2.5rem) !important; }
-#public-site .page-our-work .ps-rows { padding-top: clamp(2rem, 3vw, 3rem) !important; }
+#public-site .page-our-work .hb-text .section { padding-bottom: clamp(1.5rem, 2.5cqw, 2.5rem) !important; }
+#public-site .page-our-work .ps-rows { padding-top: clamp(2rem, 3cqw, 3rem) !important; }
 #public-site .ps-row:last-child { border-bottom: 1px solid #e4e1dc; }
 @media (max-width: 700px) { #about-reference .hb-hero { margin-inline: -12px !important; } }
 

@@ -1,0 +1,108 @@
+/* =====================================================================
+   One layout grid for every public page (loaded last).
+
+   Every section's content starts and ends on the same two lines:
+     page edge -> box edge (--gutter) -> content edge (--inset)
+   On the 1440px desktop design the content runs from 100px inside the
+   boxed layout to 100px before its right edge; tablets and phones use a
+   smaller inset (at least 20px, the same inside and outside coloured bands). Coloured bands still fill the box; their text uses the
+   same content edges, so everything lines up down the page and stays
+   centred on any screen.
+   ===================================================================== */
+#public-site main#main {
+  --gutter: calc((100cqw - var(--box-w)) / 2);
+  --inset: 100px;
+  --band-pad: var(--inset);
+  --content-l: calc(var(--gutter) + var(--inset));
+}
+html.ed-fluid #public-site main#main { --inset: clamp(0px, calc((100cqw - 640px) * 0.12), 56px); --band-pad: max(20px, var(--inset)); --content-l: calc(var(--gutter) + var(--band-pad)); }
+/* (tablets and phones: text in full-width sections lines up with text inside the coloured bands) */
+
+/* Short alias for a selector strong enough to win over the page stylesheets */
+/* P = html body #public-site#public-site#public-site#public-site#public-site#public-site main#main */
+
+/* ---- Sections that span the page: content between the content edges ---- */
+html body #public-site#public-site#public-site#public-site#public-site#public-site main#main :is(.hb-text, .hb-image_text, .hb-image, .hb-notes_feed):not(.hb-bg):not(.band):not(#archaeology):not(#active-use-summary):not(#the-ambition):not(#restoration-skills):not(.rak-use-grid > *):not(.about-intro-grid > *) > section.wrap.section,
+html body #public-site#public-site#public-site#public-site#public-site#public-site main#main .hb-related_work > section > .wrap.section,
+html body #public-site#public-site#public-site#public-site#public-site#public-site main#main .hb-contact_invite:not(.hb-bg) .invite-inner,
+html body #public-site#public-site#public-site#public-site#public-site#public-site main#main .hb-image_text > section.rak-restoration {
+  padding-left: var(--content-l) !important; padding-right: var(--content-l) !important; box-sizing: border-box !important;
+}
+
+/* ---- Coloured bands / box-wide blocks: the band fills the box, the text sits on the content edges ---- */
+html body #public-site#public-site#public-site#public-site#public-site#public-site main#main :is(.hb.band, .hb.hb-bg, #archaeology, #active-use-summary, #the-ambition, #restoration-skills) > section:is(.wrap, .section),
+html body #public-site#public-site#public-site#public-site#public-site#public-site main#main section:is(#archaeology, #active-use-summary, #the-ambition, #restoration-skills).wrap,
+html body #public-site#public-site#public-site#public-site#public-site#public-site main#main .hb-contact_invite.hb-bg .invite-inner,
+html body #public-site#public-site#public-site#public-site#public-site#public-site main#main .hero-home .hero-text,
+html body #public-site#public-site#public-site#public-site#public-site#public-site main#main .ps-plain-hero > .ps-plain-inner,
+html body #public-site#public-site#public-site#public-site#public-site#public-site main#main .hero-type,
+html body #public-site#public-site#public-site#public-site#public-site#public-site main#main .rak-hero > :is(.rak-hero-copy, .rak-hero-photos) {
+  padding-left: var(--band-pad) !important; padding-right: var(--band-pad) !important; box-sizing: border-box !important;
+}
+html body #public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-split-copy { padding-left: var(--band-pad) !important; }
+html body #public-site#public-site#public-site#public-site#public-site#public-site main#main .craft-hero-intro { padding-right: var(--band-pad) !important; }
+html.ed-design body #public-site#public-site#public-site#public-site#public-site#public-site main#main .craft-hero-intro { padding-left: 30% !important; }
+
+/* ---- Grouped columns (Rakhigarhi's three uses, About's introduction) ---- */
+html body #public-site#public-site#public-site#public-site#public-site#public-site main#main .rak-use-grid { padding-left: var(--content-l) !important; padding-right: var(--content-l) !important; box-sizing: border-box; column-gap: 6% !important; }
+/* About keeps its own centred wrapper; its columns already sit on the 100px content edges. */
+
+/* ---- Divider lines between sections: centred, exactly as wide as the content ---- */
+html body #public-site#public-site#public-site#public-site#public-site#public-site main#main section.text-cols::after,
+html body #public-site#public-site#public-site#public-site#public-site#public-site main#main .invite-inner::before,
+html body #public-site#public-site#public-site#public-site#public-site#public-site main#main .invite-inner::after {
+  left: var(--content-l) !important; right: var(--content-l) !important; width: auto !important; margin: 0 !important; transform: none !important;
+}
+
+/* ---- Home: "Our Work" — four even cards in two equal columns; the links line up by row and sit close to the text ---- */
+html body #public-site#public-site#public-site#public-site#public-site#public-site main#main .hb-related_work .work-grid,
+html body #public-site#public-site#public-site#public-site#public-site#public-site main#main .hb-related_work .sec-head { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; column-gap: 8% !important; }
+html body #public-site#public-site#public-site#public-site#public-site#public-site main#main .hb-related_work .work-grid { row-gap: 72px !important; align-items: stretch !important; }
+html body #public-site#public-site#public-site#public-site#public-site#public-site main#main .hb-related_work .work-card-body p { margin-bottom: 24px !important; max-width: 34em; }
+html body #public-site#public-site#public-site#public-site#public-site#public-site main#main .hb-related_work .sec-head { margin-bottom: 72px !important; }
+html body #public-site#public-site#public-site#public-site#public-site#public-site main#main .hb-related_work > section > .wrap.section { padding-bottom: 96px !important; }
+html body #public-site#public-site#public-site#public-site#public-site#public-site main#main .hb-related_work + .hb { margin-top: 0 !important; }
+
+/* ---- Home: Field Notes uses the same edges (overrides the earlier 54px inset) ---- */
+html.ed-design body #public-site#public-site#public-site#public-site#public-site#public-site main#main #home-reference .hfn { padding-inline: var(--content-l) !important; }
+
+/* ---- Tablets and phones ---- */
+@media (max-width: 700px) {
+  html body #public-site#public-site#public-site#public-site#public-site#public-site main#main .hb-related_work :is(.work-grid, .sec-head) { grid-template-columns: minmax(0, 1fr) !important; row-gap: 48px !important; }
+  html body #public-site#public-site#public-site#public-site#public-site#public-site main#main .hb-related_work .sec-head { row-gap: 20px !important; margin-bottom: 48px !important; }
+  html body #public-site#public-site#public-site#public-site#public-site#public-site main#main .hb-related_work > section > .wrap.section { padding-bottom: 64px !important; }
+  html body #public-site#public-site#public-site#public-site#public-site#public-site main#main .rak-use-grid { column-gap: 0 !important; }
+  html body #public-site#public-site#public-site#public-site#public-site#public-site main#main .craft-hero-intro { padding-left: var(--band-pad) !important; }
+}
+
+/* ---- Two-column sections share one column line on the desktop design:
+        the right-hand column starts at the same place in every section ---- */
+html.ed-design body #public-site#public-site#public-site#public-site#public-site#public-site main#main :is(section.text-cols, section.stacked):not(.rak-use-grid *) {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important; column-gap: 8% !important;
+}
+
+/* ---- Footer: same content edges as the page (it sits outside the scaled content) ---- */
+html.ed-design body #public-site#public-site#public-site #site-footer.usp-footer { padding-left: calc(var(--box-w) * 0.07467) !important; padding-right: calc(var(--box-w) * 0.07467) !important; }
+html.ed-fluid body #public-site#public-site#public-site #site-footer.usp-footer { padding-left: max(20px, clamp(0px, calc((100cqw - 640px) * 0.12), 56px)) !important; padding-right: max(20px, clamp(0px, calc((100cqw - 640px) * 0.12), 56px)) !important; }
+
+/* ---- Photo + text sections: the same two columns as text sections; text starts on the column line,
+        the photo keeps its size and is centred in its half ---- */
+html.ed-design body #public-site#public-site#public-site#public-site#public-site#public-site main#main section.wrap.section.split:has(> figure.photo) {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important; column-gap: 8% !important; justify-content: stretch !important;
+}
+html.ed-design body #public-site#public-site#public-site#public-site#public-site#public-site main#main section.split:has(> figure.photo) > figure.photo { justify-self: center !important; max-width: 100% !important; }
+html.ed-design body #public-site#public-site#public-site#public-site#public-site#public-site main#main section.split:has(> figure.photo) > .split-text { justify-self: stretch !important; width: auto !important; max-width: none !important; }
+
+/* ---- A divider under a hero is as wide as the content, not the whole box ---- */
+html body #public-site#public-site#public-site#public-site#public-site#public-site main#main .hb-hero + .hb-text:not(.hb-bg):not(.band) > section.wrap.section {
+  border-top: 0 !important;
+  background-image: linear-gradient(#e3dfdb, #e3dfdb) !important; background-repeat: no-repeat !important;
+  background-size: calc(100% - 2 * var(--band-pad)) 1px !important; background-position: center top !important;
+}
+
+/* ---- Rakhigarhi: the two small detail photos are the same size ---- */
+html body #public-site#public-site#public-site#public-site#public-site#public-site main#main .rak-detail-photos { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 16px !important; align-items: start !important; }
+html body #public-site#public-site#public-site#public-site#public-site#public-site main#main .rak-detail-photos figure.photo { width: 100% !important; max-width: none !important; margin: 0 !important; }
+html body #public-site#public-site#public-site#public-site#public-site#public-site main#main .rak-detail-photos figure.photo img { width: 100% !important; height: auto !important; aspect-ratio: 3 / 4 !important; object-fit: cover !important; }
+html.ed-design body #public-site#public-site#public-site#public-site#public-site#public-site main#main :is(.rak-restoration-top, .rak-restoration-bottom) { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; column-gap: 8% !important; }
+html.ed-design body #public-site#public-site#public-site#public-site#public-site#public-site main#main .rak-restoration-top > figure.photo { width: 100% !important; max-width: none !important; }

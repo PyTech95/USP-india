@@ -133,4 +133,4 @@
 @media (prefers-reduced-motion: reduce) {
   .site #workshops-reference .reveal { animation: none; opacity: 1; }
 }/* Plain hero (no photo): full-bleed band like the other Our Work heroes */
-.site #workshops-reference > .hb-hero:first-child, .site #workshops-reference .hb-hero:has(.hero-text) { width: 100vw; margin-left: calc(50% - 50vw); }
+.site #workshops-reference > .hb-hero:first-child, .site #workshops-reference .hb-hero:has(.hero-text) { width: 100cqw; margin-left: calc(50% - 50cqw); }

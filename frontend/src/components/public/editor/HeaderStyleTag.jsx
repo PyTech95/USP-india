@@ -25,6 +25,10 @@ export const HeaderStyleTag = ({ styles = {} }) => {
   rule([" .dropdown a"], { color: styles.dropdownColor });
   rule([" nav[aria-label=Main]"], { "padding-left": styles.navPaddingX, "padding-right": styles.navPaddingX });
   rule([" .brand img"], { height: styles.logoHeight });
+  // Logo moved with the header editor: desktop header only (phones keep the logo in its place)
+  const lx = /^-?\d+(\.\d+)?px$/.test(styles.logoOffsetX || "") ? styles.logoOffsetX : "0px";
+  const ly = /^-?\d+(\.\d+)?px$/.test(styles.logoOffsetY || "") ? styles.logoOffsetY : "0px";
+  if (lx !== "0px" || ly !== "0px") rules.push(`@media (min-width: 961px) { html body #public-site#public-site#public-site.site #site-header#site-header .brand img { position: relative !important; z-index: 2 !important; transform: translate(${lx}, ${ly}) !important; } }`);
   rule([" nav[aria-label=Main]", " .nav-list"], { background: styles.navBackgroundColor });
   rule([" .nav-list"], { gap: styles.navGap });
   rule([" .dropdown"], { background: styles.dropdownBackgroundColor });

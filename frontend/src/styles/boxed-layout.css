@@ -27,9 +27,9 @@ html body #public-site#public-site .page-connect .hb.hb-hero { display: none !im
 html body #public-site#public-site main .pcc-hero {
   width: var(--box-w); margin: 5px 0 0 calc(50% - var(--box-w) / 2); box-sizing: border-box;
   background: #eeeae7; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 2rem;
-  padding: clamp(56px, 6vw, 84px) var(--pcc-pad);
+  padding: clamp(56px, 6cqw, 84px) var(--pcc-pad);
 }
-#public-site .pcc-title { font: 300 clamp(40px, 4.4vw, 60px)/1.1 var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif); letter-spacing: -.01em; margin: 0; color: #1f1d1b; text-transform: none; }
+#public-site .pcc-title { font: 300 clamp(40px, 4.4cqw, 60px)/1.1 var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif); letter-spacing: -.01em; margin: 0; color: #1f1d1b; text-transform: none; }
 #public-site .pcc-intro { margin: 0; padding-left: 24px; border-left: 3px solid #a3234a; font-size: 18px; line-height: 1.65; font-weight: 300; color: #55514c; max-width: 480px; }
 #public-site .pcc-grid {
   width: var(--box-w); margin-left: calc(50% - var(--box-w) / 2); box-sizing: border-box;
@@ -38,7 +38,7 @@ html body #public-site#public-site main .pcc-hero {
 #public-site .pcc-label { font-size: 12px; letter-spacing: .22em; text-transform: uppercase; color: #55514c; margin: 0 0 18px; font-weight: 400; }
 #public-site .pcc-kicker { margin: 34px 0 44px; }
 #public-site .pcc-detail { margin-bottom: 56px; }
-#public-site .pcc-email { font-size: clamp(22px, 2.2vw, 30px); font-weight: 300; color: #1f1d1b; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 6px; text-decoration-color: #b9b4ae; }
+#public-site .pcc-email { font-size: clamp(22px, 2.2cqw, 30px); font-weight: 300; color: #1f1d1b; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 6px; text-decoration-color: #b9b4ae; }
 #public-site .pcc-address { margin: 0; font-size: 20px; line-height: 1.65; font-weight: 300; color: #2b2926; white-space: pre-line; }
 #public-site .pcc-phone { display: inline-block; font-size: 20px; line-height: 1.65; color: #2b2926; }
 #public-site .pcc-address .ps-line { display: block; }
@@ -158,7 +158,7 @@ html body #public-site#public-site #theatre-reference .hb.hb-hero::after, html b
 html body #public-site#public-site #theatre-reference .hb.hb-hero + .hb .text-cols { border-top: 0 !important; }
 
 /* Craft: breathing space below "Impact & Livelihood" */
-html body #public-site#public-site #craft-reference #impact-ambition > section { padding-bottom: clamp(64px, 6vw, 96px) !important; }
+html body #public-site#public-site #craft-reference #impact-ambition > section { padding-bottom: clamp(64px, 6cqw, 96px) !important; }
 
 /* Craft hero: photo fills the whole frame width, full 4:3 picture, no side bands */
 html body #public-site#public-site #craft-reference .craft-hero-frame { height: auto !important; background: transparent !important; }
@@ -199,7 +199,7 @@ html body #public-site#public-site .usp-footer-social svg:not(.fb) { width: 19px
 .fn-close:hover { color: #a3234a; }
 .fn-dialog-body { padding: 56px clamp(24px, 10.5%, 88px) 72px; }
 .fn-cat { font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: #a3234a; margin: 0 0 16px; }
-.fn-reader-title { font: 400 clamp(28px, 3.6vw, 40px)/1.2 var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif); color: #1f1d1b; margin: 0 0 18px; }
+.fn-reader-title { font: 400 clamp(28px, 3.6cqw, 40px)/1.2 var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif); color: #1f1d1b; margin: 0 0 18px; }
 .fn-standfirst { font-size: 16px; line-height: 1.6; color: #6b665f; margin: 0; font-weight: 300; }
 .fn-rule { display: block; width: 34px; height: 2px; background: #a3234a; margin: 34px 0 36px; }
 .fn-body p { font-size: 18px; line-height: 1.9; color: #2b2926; font-weight: 300; margin: 0 0 22px; }
@@ -250,7 +250,7 @@ html body #public-site#public-site #workshops-reference #student-projects > sect
 html body #public-site#public-site #workshops-reference #restoration-skills { background: transparent !important; overflow: visible !important; }
 html body #public-site#public-site #workshops-reference #restoration-skills > section.split {
   display: grid !important; grid-template-columns: minmax(0, 36fr) minmax(0, 30fr) minmax(0, 18fr) !important; grid-template-areas: "text big small";
-  column-gap: 2% !important; align-items: center !important; padding: clamp(48px, 5vw, 80px) clamp(20px, 5.8%, 72px) !important; max-width: none !important; background: transparent !important;
+  column-gap: 2% !important; align-items: center !important; padding: clamp(48px, 5cqw, 80px) clamp(20px, 5.8%, 72px) !important; max-width: none !important; background: transparent !important;
 }
 html body #public-site#public-site #workshops-reference #restoration-skills .split-text { grid-area: text; padding: 0 !important; }
 html body #public-site#public-site #workshops-reference #restoration-skills .split-text:not([style*="--ed-w"]) { width: auto !important; max-width: 400px !important; }
@@ -264,7 +264,7 @@ html body #public-site#public-site #workshops-reference #restoration-skills .col
 html body #public-site#public-site #workshops-reference #restoration-skills .collage-1 img { aspect-ratio: 3 / 4 !important; object-fit: cover !important; }
 html body #public-site#public-site #workshops-reference #restoration-skills .eyebrow { font-size: 12px !important; letter-spacing: .18em !important; margin: 0 0 24px !important; }
 html body #public-site#public-site #workshops-reference #restoration-skills .eyebrow::before { display: none !important; }
-html body #public-site#public-site #workshops-reference #restoration-skills .h2 { font-size: clamp(28px, 2.6vw, 38px) !important; line-height: 1.22 !important; margin: 0 !important; }
+html body #public-site#public-site #workshops-reference #restoration-skills .h2 { font-size: clamp(28px, 2.6cqw, 38px) !important; line-height: 1.22 !important; margin: 0 !important; }
 html body #public-site#public-site #workshops-reference #restoration-skills .h2::after { content: "" !important; display: block !important; width: 42px !important; height: 2px !important; background: #D41445 !important; margin: 30px 0 34px !important; }
 html body #public-site#public-site #workshops-reference #restoration-skills .prose::after { content: none !important; display: none !important; }
 html body #public-site#public-site #workshops-reference #restoration-skills .prose p { font-size: 15px !important; line-height: 1.75 !important; margin: 0 0 18px !important; }
@@ -305,7 +305,7 @@ html body #public-site#public-site [data-testid="page-field-notes"] .ps-plain-in
   display: grid !important; grid-template-columns: 1fr minmax(0, 330px); align-items: center; gap: 2rem;
   padding: 44px 0 34px !important; max-width: none !important; border-bottom: 1px solid #e3dfdb; background: transparent !important;
 }
-html body #public-site#public-site [data-testid="page-field-notes"] .ps-plain-inner .h1 { font: 400 clamp(34px, 3.2vw, 46px)/1.1 var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif) !important; text-transform: none !important; letter-spacing: -.01em !important; margin: 0 !important; color: #1f1d1b !important; }
+html body #public-site#public-site [data-testid="page-field-notes"] .ps-plain-inner .h1 { font: 400 clamp(34px, 3.2cqw, 46px)/1.1 var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif) !important; text-transform: none !important; letter-spacing: -.01em !important; margin: 0 !important; color: #1f1d1b !important; }
 html body #public-site#public-site [data-testid="page-field-notes"] .ps-plain-tagline { font: 300 15px/1.65 var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif) !important; color: #55514c !important; margin: 0 !important; max-width: none !important; }
 #public-site .fn-section { width: var(--box-w); margin: 0 0 0 calc(50% - var(--box-w) / 2); box-sizing: border-box; padding: 0 0 120px; }
 #public-site .fn-list { --fw: var(--box-w); }
@@ -320,7 +320,7 @@ html body #public-site#public-site [data-testid="page-field-notes"] .ps-plain-ta
 #public-site .fn-eyebrow { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: #a3234a; margin: 0 0 10px; }
 #public-site .fn-featured { padding-top: 26px; }
 #public-site .fn-featured-head { display: grid; grid-template-columns: 1fr minmax(0, 340px); gap: 2rem; align-items: center; margin-bottom: 22px; }
-#public-site .fn-featured-title { font: 400 clamp(24px, 2.3vw, 30px)/1.2 var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif) !important; color: #1f1d1b !important; margin: 0 !important; text-transform: none !important; letter-spacing: 0 !important; }
+#public-site .fn-featured-title { font: 400 clamp(24px, 2.3cqw, 30px)/1.2 var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif) !important; color: #1f1d1b !important; margin: 0 !important; text-transform: none !important; letter-spacing: 0 !important; }
 #public-site .fn-summary { font: 300 15px/1.6 var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif); color: #55514c; margin: 0; max-width: 420px; }
 #public-site .fn-strip { display: flex; gap: 8px; height: calc(var(--fw) * .198); }
 #public-site .fn-strip-item { all: unset; cursor: pointer; overflow: hidden; flex: 1 1 0; min-width: 0; }
@@ -328,7 +328,7 @@ html body #public-site#public-site [data-testid="page-field-notes"] .ps-plain-ta
 #public-site .fn-caption { font-size: 12px; color: #76716b; margin: 14px 0 0; }
 #public-site .fn-group { margin-top: calc(var(--fw) * .072); }
 #public-site .fn-pair { display: grid; grid-template-columns: 44fr 51fr; column-gap: 5%; align-items: start; }
-#public-site .fn-title { font: 400 clamp(20px, 1.9vw, 24px)/1.25 var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif) !important; color: #1f1d1b !important; margin: 20px 0 12px !important; text-transform: none !important; letter-spacing: 0 !important; }
+#public-site .fn-title { font: 400 clamp(20px, 1.9cqw, 24px)/1.25 var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif) !important; color: #1f1d1b !important; margin: 20px 0 12px !important; text-transform: none !important; letter-spacing: 0 !important; }
 #public-site .fn-a-media { display: flex; align-items: center; gap: 10px; }
 #public-site .fn-a-main { flex: 0 0 68%; aspect-ratio: 3 / 4; }
 #public-site .fn-a-second { flex: 0 0 30.5%; aspect-ratio: 3 / 4; }
@@ -370,8 +370,8 @@ html body #public-site#public-site#public-site#public-site#public-site main :is(
 #public-site .usp-footer-meta::before { background: #c9c5c0 !important; }
 
 /* Connect: beige box holding one white card (no separate hero) */
-html body #public-site#public-site#public-site main .ps-connect-page.ps-connect-page { width: var(--box-w) !important; margin: 5px 0 0 calc(50% - var(--box-w) / 2) !important; box-sizing: border-box; background: #eeeae7 !important; padding: clamp(24px, 5vw, 72px) 0 !important; }
-html body #public-site#public-site main .ps-connect-page .pcc-card { background: #fff; margin: 0 clamp(16px, 0.5%, 8px); padding: clamp(32px, 6.5vw, 88px) clamp(20px, 6.5vw, 88px) clamp(40px, 6vw, 96px); box-sizing: border-box; }
+html body #public-site#public-site#public-site main .ps-connect-page.ps-connect-page { width: var(--box-w) !important; margin: 5px 0 0 calc(50% - var(--box-w) / 2) !important; box-sizing: border-box; background: #eeeae7 !important; padding: clamp(24px, 5cqw, 72px) 0 !important; }
+html body #public-site#public-site main .ps-connect-page .pcc-card { background: #fff; margin: 0 max(16px, 5.9%); padding: clamp(32px, 6.5cqw, 88px) clamp(20px, 6.5cqw, 88px) clamp(40px, 6cqw, 96px); box-sizing: border-box; }
 html body #public-site#public-site main .ps-connect-page .pcc-card[style*="--ed-w"] { width: min(var(--ed-w), calc(100% - 32px)) !important; max-width: calc(100% - 32px) !important; margin-inline: auto; }
 html body #public-site#public-site main .ps-connect-page .pcc-card[style*="--ed-h"] { overflow: auto !important; }
 @media (max-width: 960px) {
@@ -381,7 +381,7 @@ html body #public-site#public-site main .ps-connect-page .pcc-hero { width: auto
 html body #public-site#public-site main .ps-connect-page .pcc-intro { border: 0 !important; padding: 0 !important; margin-top: 30px !important; max-width: 640px !important; font-size: 18px !important; }
 html body #public-site#public-site main .ps-connect-page .pcc-grid { width: auto !important; margin: 0 !important; padding: 64px 0 0 !important; }
 html body #public-site#public-site main .ps-connect-page .pcc-detail { margin-bottom: 64px; }
-@media (max-width: 760px) { html body #public-site#public-site main .ps-connect-page .pcc-card { margin: 0 12px; } }
+@media (max-width: 760px) { html body #public-site#public-site main .ps-connect-page .pcc-card { margin: 0 16px; } }
 
 html body #public-site#public-site#public-site #craft-reference [data-sec][style*="--ed-h"] .craft-hero-full img { height: 100% !important; object-fit: cover !important; aspect-ratio: auto !important; }
 html body #public-site#public-site#public-site #craft-reference [data-sec][style*="--ed-h"] figure.craft-hero-photo.craft-hero-full { height: 100% !important; }
@@ -431,12 +431,12 @@ html body #public-site#public-site#public-site#public-site main :is(.hb.hb-hero,
 }
 
 /* ===== Rakhigarhi hero: white, heading + two excavation photos (user mockup) ===== */
-html body #public-site#public-site#public-site #rakhigarhi-reference .rak-hero { background: transparent !important; padding: clamp(40px, 4vw, 64px) 0 0 !important; display: block !important; min-height: 0 !important; }
+html body #public-site#public-site#public-site #rakhigarhi-reference .rak-hero { background: transparent !important; padding: clamp(40px, 4cqw, 64px) 0 0 !important; display: block !important; min-height: 0 !important; }
 html body #public-site#public-site#public-site #rakhigarhi-reference .rak-hero-copy { max-width: none !important; padding: calc(var(--accent-line) + var(--accent-line-gap)) 0 0 !important; margin: 0 !important; text-align: left !important; }
 html body #public-site#public-site#public-site #rakhigarhi-reference .rak-hero-copy .eyebrow { display: block !important; font-size: 11px !important; letter-spacing: .32em !important; text-transform: uppercase; color: #55514c !important; margin: 0 0 18px !important; }
 html body #public-site#public-site#public-site #rakhigarhi-reference .rak-hero-copy .eyebrow::after { content: none !important; display: none !important; }
-html body #public-site#public-site#public-site #rakhigarhi-reference .rak-hero-copy .h1 { font-size: clamp(30px, 3vw, 44px) !important; line-height: 1.22 !important; font-weight: 400 !important; letter-spacing: -.01em !important; text-transform: none !important; white-space: pre-line; margin: 0 !important; color: #1f1d1b !important; max-width: none !important; }
-#public-site .rak-hero-photos { display: grid; grid-template-columns: 51fr 32fr; column-gap: 7.5%; align-items: center; margin-top: clamp(28px, 3vw, 44px); }
+html body #public-site#public-site#public-site #rakhigarhi-reference .rak-hero-copy .h1 { font-size: clamp(30px, 3cqw, 44px) !important; line-height: 1.22 !important; font-weight: 400 !important; letter-spacing: -.01em !important; text-transform: none !important; white-space: pre-line; margin: 0 !important; color: #1f1d1b !important; max-width: none !important; }
+#public-site .rak-hero-photos { display: grid; grid-template-columns: 51fr 32fr; column-gap: 7.5%; align-items: center; margin-top: clamp(28px, 3cqw, 44px); }
 #public-site .rak-hero-ph-main .photo-frame img, #public-site .rak-hero-ph-main img { aspect-ratio: 3 / 4 !important; width: 100% !important; height: auto !important; object-fit: cover !important; }
 #public-site .rak-hero-ph-side img { aspect-ratio: 914 / 1280 !important; width: 100% !important; height: auto !important; object-fit: cover !important; }
 #public-site .rak-hero-ph :is(figure, .photo-frame) { margin: 0 !important; width: 100% !important; max-width: none !important; aspect-ratio: auto !important; height: auto !important; }
@@ -447,8 +447,8 @@ html body #public-site#public-site#public-site #rakhigarhi-reference .rak-hero-c
   #public-site .rak-hero-ph-side { margin: 0 0 0 30%; }
 }
 /* Text below the photos: white, thin rule above, red divider between the two columns */
-html body #public-site#public-site#public-site main #rakhigarhi-reference #archaeology { background: transparent !important; margin-top: clamp(28px, 3vw, 48px) !important; }
-html body #public-site#public-site#public-site main #rakhigarhi-reference #archaeology > section { border-top: 1px solid #e3dfdb !important; padding: clamp(28px, 2.5vw, 40px) 0 clamp(48px, 5vw, 80px) !important; background: transparent !important; }
+html body #public-site#public-site#public-site main #rakhigarhi-reference #archaeology { background: transparent !important; margin-top: clamp(28px, 3cqw, 48px) !important; }
+html body #public-site#public-site#public-site main #rakhigarhi-reference #archaeology > section { border-top: 1px solid #e3dfdb !important; padding: clamp(28px, 2.5cqw, 40px) 0 clamp(48px, 5cqw, 80px) !important; background: transparent !important; }
 html body #public-site#public-site#public-site main #rakhigarhi-reference #archaeology .aside-statement { font-size: 15px !important; line-height: 1.75 !important; font-weight: 300 !important; }
 html body #public-site#public-site#public-site main #rakhigarhi-reference #archaeology .prose p { font-size: 15px !important; line-height: 1.75 !important; }
 #public-site .rak-hero-ph figcaption { font-size: 12px !important; color: #76716b !important; border: 0 !important; padding-left: 0 !important; margin-top: 10px !important; }

@@ -26,7 +26,7 @@
 
   /* Keep this column inside its section rails, even with offsets saved on
      the former full-width canvas. Preserve vertical placement and font sizes. */
-  @media (min-width: 1440px) {
+  @media (min-width: 99999px) { /* wide-screen-only rule retired: wide screens show the 1280px design */
     body:not(.live-editing) #public-site #craft-reference #craft-centre[style*="--ed-h"] > .split > .split-text {
       width: min(540px, 100%) !important;
       justify-self: start !important;

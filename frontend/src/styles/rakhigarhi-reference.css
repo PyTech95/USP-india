@@ -167,8 +167,8 @@ html body #public-site#public-site#public-site #rakhigarhi-reference .rak-hero-a
 }
 /* Three editable boxes: two left, one vertically centred right, with a 70% divider. */
 html body #public-site #rakhigarhi-reference #the-ambition .ambition-body { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-html body #public-site #rakhigarhi-reference #the-ambition .ambition-left { display: flex; flex-direction: column; gap: 28px; min-width: 0; padding-right: clamp(28px, 3.5vw, 56px); }
-html body #public-site #rakhigarhi-reference #the-ambition .ambition-right { display: flex; flex-direction: column; justify-content: center; min-width: 0; padding-left: clamp(28px, 3.5vw, 56px); }
+html body #public-site #rakhigarhi-reference #the-ambition .ambition-left { display: flex; flex-direction: column; gap: 28px; min-width: 0; padding-right: clamp(28px, 3.5cqw, 56px); }
+html body #public-site #rakhigarhi-reference #the-ambition .ambition-right { display: flex; flex-direction: column; justify-content: center; min-width: 0; padding-left: clamp(28px, 3.5cqw, 56px); }
 html body #public-site #rakhigarhi-reference #the-ambition .ambition-divider { position: absolute; left: 50%; top: 15%; height: 70%; width: 1px; background: #ddd6cf; pointer-events: none; }
 html body #public-site #rakhigarhi-reference #the-ambition .ambition-text { display: block; width: 100%; min-height: 1em; }
 html body #public-site #rakhigarhi-reference #the-ambition .ambition-text > p { padding: 0 !important; border: 0 !important; margin: 0 0 1em; }

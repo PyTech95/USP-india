@@ -12,6 +12,7 @@ SIZES = {"paddingTop": (0, 160), "paddingBottom": (0, 160), "paddingLeft": (0, 1
          "brandFontSize": (16, 72), "subtitleFontSize": (8, 24), "logoHeight": (16, 160), "navGap": (0, 48),
          "accentLineWidth": (8, 240), "accentLineThickness": (1, 12), "accentLineGap": (0, 120),
          "borderWidth": (0, 12), "letterSpacing": (0, 8), "marginBottom": (0, 160), "navPaddingX": (0, 120)}
+OFFSETS = {"logoOffsetX": (-600, 600), "logoOffsetY": (-200, 200)}  # logo moved in the header editor (desktop)
 FONTS = {"Helvetica Neue", "Public Sans", "Lora", "Source Serif 4", "Libre Baskerville", "Source Sans 3", "Noto Sans",
          "Atkinson Hyperlegible", "Cormorant", "Literata", "Playfair Display", "Merriweather",
          "DM Serif Display", "Montserrat", "Poppins", "Raleway", "Work Sans"}
@@ -29,6 +30,9 @@ def clean_header_styles(styles):
         elif key in SIZES:
             match = re.fullmatch(r"(\d+(?:\.\d+)?)px", value)
             valid = bool(match) and SIZES[key][0] <= float(match[1]) <= SIZES[key][1]
+        elif key in OFFSETS:
+            match = re.fullmatch(r"(-?\d+(?:\.\d+)?)px", value)
+            valid = bool(match) and OFFSETS[key][0] <= float(match[1]) <= OFFSETS[key][1]
         elif key in ("fontFamily", "brandFontFamily"):
             valid = value in FONTS
         elif key == "textTransform":
@@ -37,6 +41,8 @@ def clean_header_styles(styles):
             valid = value in {str(n) for n in range(300, 801, 100)}
         elif key == "headerShadow":
             valid = value in {"none", "soft", "strong"}
+        elif key == "brandText":
+            valid = value in {"show", "hide"}
         elif key == "position":
             valid = value in {"relative", "sticky"}
         if not valid:

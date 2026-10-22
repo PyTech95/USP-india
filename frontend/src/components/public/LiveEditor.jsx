@@ -16,6 +16,7 @@ import { ColorField, px } from "./editor/ColorField";
 import { normalizeReferenceContent } from "./editor/referenceGeometry";
 import { zoomOf } from "../../lib/designMode";
 import { SliderField } from "./editor/ColorField";
+import { LineControls } from "./editor/LineControls";
 import { CropControls, parsePos } from "./editor/CropControls";
 import { useFloatingPanel } from "./editor/useFloatingPanel";
 
@@ -607,7 +608,9 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
             <SelectionToolbar section={sec} wholeSection={field === "_section"} container={isLayout && field !== "_section"}
               onMove={(direction) => field === "_section" ? move(sec.id, direction) : setStyles({ translateY: `${num(st.translateY) + direction * 10}px` })}
               onDuplicate={() => dup(sec.id)} onHide={() => toggleHide(sec.id)} onDelete={remove}
-              onAdd={() => setAddAt(idx(sec.id) + 1)} onSelectSection={() => selectField({ sec: sec.id, field: "_section" })} />
+              onAdd={() => setAddAt(idx(sec.id) + 1)} onSelectSection={() => selectField({ sec: sec.id, field: "_section" })}
+              lines={{ above: !!st.lineAbove, below: !!st.lineBelow }}
+              onLine={(where) => { const k = where === "above" ? "lineAbove" : "lineBelow"; setStyles({ [k]: st[k] ? "" : (field === "_section" ? "divider" : "accent") }); }} />
           )}
         </div>
       )}
@@ -717,6 +720,10 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
                 <label className="live-field">Corner radius (px)<input type="number" min="0" max="80" value={px(st.borderRadius)} placeholder="0" onChange={(e) => setStyles({ borderRadius: e.target.value ? `${e.target.value}px` : "" })} data-testid="live-font-radius" /></label>
               </Group>
             </>) : <p className="live-hint" data-testid="live-container-hint">Resize the white contact card using its handles or Size &amp; position below.</p>}
+
+            <Group title={field === "_section" ? "Lines (red lines & dividers)" : "Lines"} open={field === "_section"} testid="live-group-lines">
+              <LineControls st={st} setStyles={setStyles} el={selEl} section={field === "_section"} />
+            </Group>
 
             {(isImage || isText || isLayout) && (
               <Group title="Size & position" open={isLayout} testid="live-group-layout">

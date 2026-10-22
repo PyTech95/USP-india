@@ -96,7 +96,10 @@ async def publish_page(key: str, user=Depends(require("content.publish"))):
 STYLE_KEYS = {"fontFamily", "fontSize", "fontWeight", "fontStyle", "color", "backgroundColor", "textAlign", "textTransform",
               "width", "height", "maxWidth", "lineHeight", "letterSpacing", "borderRadius", "opacity",
               "paddingTop", "paddingBottom", "paddingLeft", "paddingRight", "marginTop", "marginBottom", "marginLeft", "marginRight", "objectPosition",
-              "translateX", "translateY", "zoom", "aspectRatio"}
+              "translateX", "translateY", "zoom", "aspectRatio",
+              # lines: added above/below an element, and the built-in red lines / dividers
+              "lineAbove", "lineBelow", "lineColor", "lineLength", "lineThickness", "lineGap",
+              "accentLength", "accentThickness", "accentGap", "accentColor", "dividers"}
 
 
 def clean_styles(styles):

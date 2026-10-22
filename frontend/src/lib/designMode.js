@@ -2,13 +2,15 @@ import { useEffect, useState } from "react";
 
 // How the live editor's sizes and positions are shown.
 //
-// Positions and sizes set in the live editor are measured on a 1440px-wide design.
-//  - "design" mode (screens wider than 1200px, and always while editing): the saved
-//    design is shown exactly; below 1440px the page content is scaled to fit (CSS zoom),
-//    so nothing overlaps or runs off the screen.
+// The desktop design is 1440px wide (the approved page designs are drawn at this width).
+//  - "design" mode (screens wider than 1200px, and always while editing): the page content
+//    (main) is that 1440px design; below 1440px it is scaled down to fit with CSS zoom, and on
+//    wider screens it stays 1440px wide, centred. Every desktop screen therefore shows exactly
+//    the same layout. Header and footer are full width and responsive on their own.
 //  - "fluid" mode (tablets, phones and small laptops up to 1200px): saved positions/sizes are ignored
 //    and every section uses its own responsive layout. Colours, fonts, crops stay.
 export const DESIGN_WIDTH = 1440;
+export const MAX_ZOOM = 1;
 export const MIN_DESIGN_WIDTH = 1201;
 
 const viewportWidth = () => (typeof document === "undefined" ? DESIGN_WIDTH : document.documentElement.clientWidth || window.innerWidth);
@@ -16,7 +18,7 @@ const viewportWidth = () => (typeof document === "undefined" ? DESIGN_WIDTH : do
 export function computeMode(editing = false) {
   const w = viewportWidth();
   const design = editing || w >= MIN_DESIGN_WIDTH;
-  const k = design ? Math.min(1, w / DESIGN_WIDTH) : 1;
+  const k = design ? Math.min(MAX_ZOOM, w / DESIGN_WIDTH) : 1;
   return { design, k: Math.round(k * 10000) / 10000 };
 }
 
@@ -31,7 +33,7 @@ export function applyMode(mode) {
   const root = document.documentElement;
   root.classList.toggle("ed-design", mode.design);
   root.classList.toggle("ed-fluid", !mode.design);
-  root.classList.toggle("dz", mode.design && mode.k < 1);
+  root.classList.toggle("dz", mode.design && mode.k !== 1);
   root.style.setProperty("--dz", String(mode.k));
 }
 

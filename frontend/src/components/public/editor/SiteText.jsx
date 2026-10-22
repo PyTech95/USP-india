@@ -3,7 +3,7 @@ import { useSite } from "../../../lib/site";
 import { getPath } from "./editorFields";
 
 export const UI_TEXT = {
-  menu: "Menu", privacy: "Privacy", skip: "Skip to content", home: "Home", our_work: "Our Work",
+  menu: "Menu", privacy: "Privacy", privacy_policy: "Privacy Policy", latest_note: "Latest field note", skip: "Skip to content", home: "Home", our_work: "Our Work",
   field_notes: "Field Notes", search_notes: "Search Field Notes", search: "Search", all_topics: "All topics",
   note_singular: "note", note_plural: "notes", matching: "matching", in_category: "in", page: "Page",
   empty_notes: "No Field Notes have been published here yet.", related_notes: "Related Field Notes",

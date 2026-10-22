@@ -1,11 +1,11 @@
 /* One type scale for every public page: page title, section heading, eyebrow,
    body copy and accent statements. Editor-set inline sizes still take priority. */
 #public-site {
-  --ts-h1: clamp(2.125rem, 1.4vw + 1.6rem, 3.25rem);
-  --ts-h2: clamp(1.625rem, .6vw + 1.4rem, 2.125rem);
-  --ts-accent: clamp(1.25rem, .5vw + 1rem, 1.5rem);
-  --ts-sub: clamp(1.125rem, .25vw + 1rem, 1.25rem);
-  --ts-body: clamp(1rem, .15vw + .95rem, 1.125rem);
+  --ts-h1: clamp(2.125rem, 1.4cqw + 1.6rem, 3.25rem);
+  --ts-h2: clamp(1.625rem, .6cqw + 1.4rem, 2.125rem);
+  --ts-accent: clamp(1.25rem, .5cqw + 1rem, 1.5rem);
+  --ts-sub: clamp(1.125rem, .25cqw + 1rem, 1.25rem);
+  --ts-body: clamp(1rem, .15cqw + .95rem, 1.125rem);
 }
 #public-site#public-site main [data-sec] h1 { font-size: var(--ts-h1) !important; line-height: 1.18 !important; }
 #public-site#public-site main [data-sec] h2.h2 { font-size: var(--ts-h2) !important; line-height: 1.3 !important; }
