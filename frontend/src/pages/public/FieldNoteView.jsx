@@ -42,6 +42,8 @@ export function NoteArticle({ note, id, slug, published_at, updated_at, related 
             {data.credits && <p className="meta"><SiteText name="credits" />: <span {...sx(s, "credits")} data-testid="note-credits">{data.credits}</span></p>}
             {data.references?.length > 0 && <section><SiteText name="references" as="h2" /><ol>{data.references.map((r, i) => <li key={i}><span {...sx(s, `references.${i}.text`)} data-testid={`note-reference-${i}`}>{r.text}</span>{r.url && <> — <a href={r.url} rel="noopener noreferrer" data-testid={`note-reference-source-${i}`}><SiteText name="source" /></a></>}</li>)}</ol></section>}
             {data.downloads?.length > 0 && <section><SiteText name="downloads" as="h2" /><ul style={{ listStyle: "none", padding: 0 }}>{data.downloads.map((d, i) => d.media && <li key={i}><a href={media(`/api/media/${d.media.id}/file`)} data-testid={`note-download-${i}`}><Download size={16} aria-hidden="true" /> <span {...sx(s, `downloads.${i}.label`)}>{d.label || "Download"}</span></a></li>)}</ul></section>}
+            {data.seo?.faq?.length > 0 && <section className="fn-faq" data-testid="note-faq"><h2>Questions &amp; answers</h2>
+              {data.seo.faq.map((f, i) => <details key={i}><summary>{f.q}</summary><p>{f.a}</p></details>)}</section>}
           </div>
         </div>
       </Fragment>

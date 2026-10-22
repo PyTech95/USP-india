@@ -5,6 +5,7 @@ import { api, errMsg } from "../../../lib/api";
 import { useSite, useRefreshSite } from "../../../lib/site";
 import { useAuth } from "../../../lib/auth";
 import { MediaPicker } from "../../admin/Kit";
+import { useFloatingPanel } from "./useFloatingPanel";
 import { useLiveEditor } from "./LiveEditorProvider";
 import { UI_TEXT } from "./SiteText";
 import { getPath } from "./editorFields";
@@ -18,6 +19,7 @@ export const SiteChromeEditor = () => {
   const [path, setPath] = useState("contact.email"), [area, setArea] = useState("footer"), [value, setValue] = useState("");
   const [styles, setStyles] = useState({}), [currentSize, setCurrentSize] = useState("");
   const [busy, setBusy] = useState(false), [picker, setPicker] = useState(false), [dirty, setDirty] = useState(false), [error, setError] = useState("");
+  const fp = useFloatingPanel("site");
   const sessionVisible = enabled && scope === "site" && can("config");
   const visible = on && sessionVisible;
   const chooseField = (next, location = area) => {
@@ -66,8 +68,11 @@ export const SiteChromeEditor = () => {
   };
   const style = (key, next) => { setStyles((s) => ({ ...s, [key]: next })); setDirty(true); };
   if (!visible) return null;
-  return <aside className="live-ui live-panel live-site-panel" data-testid="live-site-panel" data-live-panel-ready="true">
-    <div className="live-row live-top"><strong data-testid="live-site-title">Text &amp; typography</strong><button className="live-btn" type="button" onClick={() => setScope("page")} aria-label="Close site text" data-testid="live-site-close"><X size={16} /></button></div>
+  return <aside className="live-ui live-panel live-site-panel live-floating" {...fp.panelProps} data-testid="live-site-panel" data-live-panel-ready="true">
+    {fp.handles()}
+<div className="live-scroll">
+    <div className="live-row live-top"><strong className="live-drag" {...fp.dragProps} data-testid="live-site-title">Text &amp; typography</strong>
+      {fp.placed && <button type="button" className="live-btn" onClick={fp.reset} title="Put the panel back on the right" aria-label="Dock panel">↦</button>}<button className="live-btn" type="button" onClick={() => setScope("page")} aria-label="Close site text" data-testid="live-site-close"><X size={16} /></button></div>
     <label className="live-field">Field<select value={path} onChange={(e) => chooseField(e.target.value, ["header", "main", "footer"].find((a) => document.querySelector(textSelector(e.target.value, a))) || (/^(menus\.footer|contact\.|social|privacy|tagline|logo|display\.copyright)/.test(e.target.value) ? "footer" : /^(ui_text|display)\./.test(e.target.value) ? "main" : "header"))} data-testid="live-site-field">{fields.map((field) => <option key={field} value={field}>{DISPLAY_FIELDS[field] || field}</option>)}</select></label>
     <label className="live-field">Location<select value={area} onChange={(e) => chooseField(path, e.target.value)} data-testid="live-site-area"><option value="header">Header</option><option value="main">Page content</option><option value="footer">Footer</option></select></label>
     {path === "logo_media_id" ? <button type="button" className="live-btn" onClick={() => setPicker(true)} data-testid="live-site-logo"><Images size={16} /> Choose approved logo</button> : <>
@@ -80,5 +85,5 @@ export const SiteChromeEditor = () => {
     <div className="live-row" style={{ marginTop: 14 }}><button className="live-btn live-primary" type="button" disabled={busy || !dirty} onClick={() => save()} data-testid="live-site-save"><Save size={15} /> {busy ? "Saving…" : "Save text & style"}</button></div>
     <button type="button" className="live-btn" onClick={() => setScope("header")} data-testid="live-site-open-header"><PanelTop size={15} /> Edit Header</button>
     <MediaPicker open={picker} onClose={() => setPicker(false)} onPick={(m) => save(m.id)} />
-  </aside>;
+  </div></aside>;
 };

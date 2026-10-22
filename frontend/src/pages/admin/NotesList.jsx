@@ -5,7 +5,9 @@ import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { api, errMsg, fmtDateTime } from "../../lib/api";
 import { useAuth } from "../../lib/auth";
-import { PageHead, Tag } from "../../components/admin/Kit";
+import { PageHead, Tag, SelectIn } from "../../components/admin/Kit";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../../components/ui/dialog";
+import { slugify } from "./NoteEditor";
 
 function Taxonomy() {
   const [t, setT] = useState(null);
@@ -34,19 +36,42 @@ export default function NotesList() {
   const nav = useNavigate();
   const [notes, setNotes] = useState([]);
   const [q, setQ] = useState("");
-  useEffect(() => { api.get("/admin/notes").then((r) => setNotes(r.data)); }, []);
-  const create = async () => {
-    try {
-      const r = await api.post("/admin/notes", { title: "Untitled Field Note", slug: `untitled-${Date.now().toString(36)}`, kind: "article", body_html: "<p></p>" });
-      nav(`/admin/field-notes/${r.data.id}`);
-    } catch (e) { toast.error(errMsg(e)); }
+  const [adding, setAdding] = useState(false);
+  const [draft, setDraft] = useState({ title: "", category: "" });
+  const [cats, setCats] = useState([]);
+  useEffect(() => { api.get("/admin/notes").then((r) => setNotes(r.data)); api.get("/admin/settings").then((r) => setCats(r.data.taxonomy?.categories || [])); }, []);
+  const create = async (e) => {
+    e?.preventDefault();
+    const title = draft.title.trim() || "Untitled Field Note";
+    const base = draft.title.trim() ? slugify(title) : `untitled-${Date.now().toString(36)}`;
+    for (let i = 0; i < 20; i++) {
+      try {
+        const r = await api.post("/admin/notes", { title, slug: i ? `${base}-${i + 1}` : base, kind: "article", category: draft.category, body_html: "<p></p>" });
+        nav(`/admin/field-notes/${r.data.id}`);
+        return;
+      } catch (err) {
+        if (err.response?.status !== 409) { toast.error(errMsg(err)); return; }
+      }
+    }
   };
   const shown = notes.filter((n) => (n.draft.title + n.slug).toLowerCase().includes(q.toLowerCase()));
   return (
     <div>
       <PageHead title="Field Notes" desc="Articles, photo essays, interviews, workshop reflections and resources share one format. Contributors can write drafts; editors publish.">
-        {can("notes.draft") && <Button onClick={create} data-testid="new-note-btn">New Field Note</Button>}
+        {can("notes.draft") && <Button onClick={() => setAdding(true)} data-testid="new-note-btn">New Field Note</Button>}
       </PageHead>
+      <Dialog open={adding} onOpenChange={setAdding}>
+        <DialogContent className="admin" style={{ minHeight: 0 }}>
+          <DialogHeader><DialogTitle>New Field Note</DialogTitle><DialogDescription>Give it a title — you can add photos, the story and search details on the next screen.</DialogDescription></DialogHeader>
+          <form onSubmit={create}>
+            <label className="text-sm font-semibold block mb-1" htmlFor="new-note-title">Title</label>
+            <Input id="new-note-title" autoFocus value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} placeholder="e.g. What the Haveli Reveals" className="mb-1" data-testid="new-note-title" />
+            <p className="text-xs text-muted-foreground mb-3">Web address: /field-notes/{slugify(draft.title)}</p>
+            {cats.length > 0 && <SelectIn label="Category" value={draft.category} onChange={(v) => setDraft({ ...draft, category: v })} options={[["", "—"], ...cats.map((c) => [c, c])]} testid="new-note-category" />}
+            <div className="flex justify-end gap-2"><Button type="button" variant="outline" onClick={() => setAdding(false)}>Cancel</Button><Button type="submit" data-testid="new-note-create">Create and edit</Button></div>
+          </form>
+        </DialogContent>
+      </Dialog>
       <Input placeholder="Search notes" aria-label="Search notes" value={q} onChange={(e) => setQ(e.target.value)} className="mb-3 max-w-sm" data-testid="admin-notes-search" />
       <div className="bg-white border overflow-x-auto">
         <table className="w-full text-sm">

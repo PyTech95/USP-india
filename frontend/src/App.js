@@ -25,6 +25,8 @@ import Seo from "./pages/admin/Seo";
 import Users from "./pages/admin/Users";
 import Settings from "./pages/admin/Settings";
 import ImportExport from "./pages/admin/ImportExport";
+import EnquirySettings from "./pages/admin/EnquirySettings";
+import Traffic from "./pages/admin/Traffic";
 import { PagePreview, NotePreview } from "./pages/admin/Previews";
 
 const CHILDREN = ["rakhigarhi", "theatre", "craft-livelihood", "workshops-learning"];
@@ -78,6 +80,8 @@ function App() {
               <Route path="menus" element={<Menus />} />
               <Route path="appearance" element={<Appearance />} />
               <Route path="enquiries" element={<Enquiries />} />
+              <Route path="enquiries/settings" element={<EnquirySettings />} />
+              <Route path="traffic" element={<Traffic />} />
               <Route path="seo" element={<Seo />} />
               <Route path="users" element={<Users />} />
               <Route path="settings" element={<Settings />} />

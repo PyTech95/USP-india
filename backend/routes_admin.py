@@ -25,11 +25,19 @@ async def snapshot(etype, eid, content, action, user, note=""):
 
 
 def clean_seo(seo):
-    seo = {k: (seo or {}).get(k, d) for k, d in (("title", ""), ("description", ""), ("canonical", ""), ("noindex", False), ("share_media_id", ""))}
+    """Search (SEO) and AI-answer (GEO) fields shared by pages and Field Notes."""
+    raw = seo or {}
+    seo = {k: raw.get(k, d) for k, d in (("title", ""), ("description", ""), ("canonical", ""), ("noindex", False), ("share_media_id", ""),
+                                          ("keywords", ""), ("summary", ""), ("place", ""), ("faq", []))}
     if seo["canonical"] and not seo["canonical"].startswith(SITE_URL + "/"):
         raise HTTPException(400, f"Canonical URL must start with {SITE_URL}/")
     seo["title"] = str(seo["title"])[:200]
     seo["description"] = str(seo["description"])[:400]
+    seo["keywords"] = str(seo["keywords"])[:300]
+    seo["summary"] = str(seo["summary"])[:1200]
+    seo["place"] = str(seo["place"])[:160]
+    faq = seo["faq"] if isinstance(seo["faq"], list) else []
+    seo["faq"] = [{"q": str(f.get("q", "")).strip()[:300], "a": str(f.get("a", "")).strip()[:2000]} for f in faq[:12] if isinstance(f, dict) and str(f.get("q", "")).strip() and str(f.get("a", "")).strip()]
     return seo
 
 
@@ -249,6 +257,7 @@ class NoteDraft(BaseModel):
     downloads: list = []
     related: list[str] = []
     seo: dict = {}
+    styles: dict = {}
 
 
 async def validate_note(body: NoteDraft, nid=None):
@@ -264,6 +273,7 @@ async def validate_note(body: NoteDraft, nid=None):
     d["slug"] = slug
     d["title"] = d["title"].strip()[:200] or "Untitled"
     d["seo"] = clean_seo(body.seo)
+    d["styles"] = clean_styles(body.styles)
     return sanitize_tree(d)
 
 
@@ -299,6 +309,8 @@ async def save_note(nid: str, body: NoteDraft, user=Depends(require("notes.draft
     n = await get_note(nid)
     check_note_owner(n, user)
     d = await validate_note(body, nid)
+    if not d["styles"]:  # keep sizes/positions set in the live editor
+        d["styles"] = ((n.get("draft") or {}).get("styles") or (n.get("published") or {}).get("styles") or {})
     upd = {"draft": d, "updated_at": now(), "has_unpublished_changes": True}
     if n["status"] != "published":
         upd["slug"] = d["slug"]
@@ -424,7 +436,7 @@ def check_theme(theme):
 FONTS = {"heading": ["Public Sans", "Lora", "Source Serif 4", "Libre Baskerville"], "body": ["Public Sans", "Source Sans 3", "Noto Sans", "Atkinson Hyperlegible"],
          "site": ["Helvetica Neue", "Public Sans", "Source Sans 3", "Noto Sans", "Work Sans", "Montserrat", "Poppins", "Raleway", "Lora", "Literata", "Merriweather", "Playfair Display"]}
 SETTINGS_FIELDS = {"site_name", "full_name", "tagline", "logo_media_id", "favicon_media_id", "theme", "footer_text", "privacy_html",
-                   "contact", "social", "preview_banner", "indexing_enabled", "default_share_media_id", "live_editor_enabled"}
+                   "contact", "social", "preview_banner", "indexing_enabled", "default_share_media_id", "live_editor_enabled", "geo"}
 
 
 class SiteLivePatch(BaseModel):
@@ -544,6 +556,11 @@ async def update_settings(body: dict, user=Depends(require("config"))):
         upd["theme"]["base_size"] = min(22, max(16, int(upd["theme"].get("base_size", 18))))
     if "social" in upd:
         upd["social"] = [{"label": str(x.get("label", ""))[:60], "url": str(x.get("url", ""))[:300]} for x in upd["social"] if str(x.get("url", "")).startswith("https://")]
+    if "geo" in upd:
+        g = upd["geo"] if isinstance(upd["geo"], dict) else {}
+        upd["geo"] = {"org_description": str(g.get("org_description", ""))[:1000], "area_served": str(g.get("area_served", ""))[:200],
+                      "founded": str(g.get("founded", ""))[:20], "ai_crawlers": "block" if g.get("ai_crawlers") == "block" else "allow",
+                      "llms_extra": str(g.get("llms_extra", ""))[:4000]}
     upd = sanitize_tree(upd)
     upd["updated_at"] = now()
     await db.settings.update_one({"key": "site"}, {"$set": upd})
@@ -665,7 +682,11 @@ async def invite(body: InviteIn, user=Depends(require("users"))):
     uid = new_id()
     await db.users.insert_one({"id": uid, "email": email, "name": body.name[:120] or email, "role": body.role, "active": False, "password_hash": "", "created_at": now(), "invited_by": user["email"]})
     t = await issue_token(uid, "invite", 72)
-    return {"ok": True, "invite_url": invite_url("invite", t), "expires_in_hours": 72, "email_status": "not_configured"}
+    import mailer
+    url = invite_url("invite", t)
+    status = await mailer.send_account_email(email, "You are invited to edit the USP India website",
+                                             f"Hello,\n\n{user['email']} has invited you to help edit the USP India website.\nOpen this link within 72 hours to choose your password:\n{url}\n")
+    return {"ok": True, "invite_url": url, "expires_in_hours": 72, "email_status": status}
 
 
 @router.post("/users/{uid}/reset-link")
@@ -710,15 +731,22 @@ async def delete_user(uid: str, user=Depends(require("users"))):
 # ---------------- Dashboard, SEO audit, backup ----------------
 @router.get("/dashboard")
 async def dashboard(user=Depends(current_user)):
-    s = await db.settings.find_one({"key": "site"}, {"_id": 0, "checklist": 1, "email_notifications": 1})
+    import mailer
+    from analytics import visitors_last
+    s = await db.settings.find_one({"key": "site"}, {"_id": 0, "checklist": 1})
+    cfg = await mailer.load()
+    email = {"status": "configured" if mailer.ready(cfg) else "not_configured",
+             "detail": (f"Enquiries are emailed to {', '.join(cfg['recipients'])}." if mailer.ready(cfg) else "Enquiry emails are off — enquiries are only saved in admin. Turn them on in Enquiries → Form settings.")
+             + (f" Last attempt: {cfg['last']['status']}." if cfg["last"].get("status") else "")}
     return {
+        "traffic_7d": await visitors_last(7),
         "pages_with_changes": await db.pages.count_documents({"has_unpublished_changes": True}),
         "notes_published": await db.notes.count_documents({"status": "published"}),
         "notes_draft": await db.notes.count_documents({"status": "draft"}),
         "enquiries_new": await db.enquiries.count_documents({"status": "new"}) if can(user, "enquiries") else None,
         "media_total": await db.media.count_documents({"is_deleted": False}),
         "media_pending": await db.media.count_documents({"is_deleted": False, "permission": "pending"}),
-        "checklist": s["checklist"], "email_notifications": s["email_notifications"],
+        "checklist": s["checklist"], "email_notifications": email,
         "recent_comments": await db.comments.find({}, {"_id": 0}).sort("created_at", -1).to_list(5),
     }
 
@@ -735,8 +763,10 @@ async def seo_audit(user=Depends(current_user)):
         rows.append(await audit_item("page", p["key"], p["path"], p["published"], s))
     for n in await db.notes.find({"status": "published"}, {"_id": 0}).to_list(500):
         rows.append(await audit_item("note", n["id"], f"/field-notes/{n['slug']}", n["published"], s))
+    geo = s.get("geo") or {}
+    site_tips = [] if geo.get("org_description") else ["Describe the organisation under “AI answers (GEO)” below, so AI assistants describe USP India correctly."]
     site_issues = [] if s.get("indexing_enabled") else ["Search indexing is switched off for the whole preview (robots noindex). Enable only after launch approval."]
-    return {"items": rows, "site_issues": site_issues, "site_url": SITE_URL}
+    return {"items": rows, "site_issues": site_issues, "site_tips": site_tips, "indexing_enabled": bool(s.get("indexing_enabled")), "site_url": SITE_URL}
 
 
 async def audit_item(etype, key, path, content, s):
@@ -757,7 +787,14 @@ async def audit_item(etype, key, path, content, s):
         issues.append("Set to noindex (excluded from search and sitemap)")
     if has_placeholder(content):
         issues.append("Contains draft placeholder text")
-    return {"type": etype, "key": key, "path": path, "title": title, "description": seo.get("description", ""), "issues": issues}
+    tips = []  # GEO: things that help AI assistants quote the page correctly
+    if len(seo.get("summary", "")) < 60:
+        tips.append("Add an “In brief” summary for AI answers")
+    if not seo.get("faq"):
+        tips.append("Add 2–3 questions & answers")
+    if not seo.get("place"):
+        tips.append("Add the place this is about")
+    return {"type": etype, "key": key, "path": path, "title": title, "description": seo.get("description", ""), "issues": issues, "tips": tips}
 
 
 @router.get("/backup")

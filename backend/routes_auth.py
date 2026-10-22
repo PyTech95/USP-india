@@ -106,8 +106,13 @@ async def forgot(body: ForgotIn):
     u = await db.users.find_one({"email": body.email.lower(), "active": True})
     if u:
         t = await issue_token(u["id"], "reset", 1)
-        log.warning("Password reset link (email delivery not configured): %s/admin/reset-password?token=%s", os.environ.get("PREVIEW_URL") or SITE_URL, t)
-    return {"ok": True, "message": "If the account exists, a reset link has been created. Email delivery is not configured — ask the site owner for the link."}
+        link = f"{os.environ.get('PREVIEW_URL') or SITE_URL}/admin/reset-password?token={t}"
+        import mailer
+        sent = await mailer.send_account_email(u["email"], "Reset your USP India website password",
+                                               f"Hello,\n\nUse this link within one hour to choose a new password for the USP India website admin:\n{link}\n\nIf you did not ask for this, you can ignore this email.\n")
+        if sent != "sent":
+            log.warning("Password reset link (email %s): %s", sent, link)
+    return {"ok": True, "message": "If the account exists, a reset link has been sent to its email address. If no email arrives, ask the site owner for a reset link."}
 
 
 @router.post("/reset-password")

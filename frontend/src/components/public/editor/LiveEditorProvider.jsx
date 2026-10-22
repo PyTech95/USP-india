@@ -78,7 +78,7 @@ export function LiveEditorProvider({ children, preview = false }) {
     if (dirty && !window.confirm("Discard unsaved changes and log out?")) return;
     try { await logout(); } catch (e) { toast.error(errMsg(e)); }
   };
-  return <Context.Provider value={{ on, enabled, setOn, scope, setScope, registerDirty, headerPreview: on && scope === "header" ? headerPreview : null, setHeaderPreview, textStylePreview: on && scope === "site" ? textStylePreview : null, setTextStylePreview }}>
+  return <Context.Provider value={{ on, enabled, setOn, scope, setScope, registerDirty, canHeader: can("config"), headerPreview: on && scope === "header" ? headerPreview : null, setHeaderPreview, textStylePreview: on && scope === "site" ? textStylePreview : null, setTextStylePreview }}>
     {children}
     {allowed && desktop && <div className="live-ui live-dock" data-testid="live-editor-dock">
       <button type="button" onClick={() => setOn(!on)} aria-expanded={on} data-testid="live-editor-toggle">

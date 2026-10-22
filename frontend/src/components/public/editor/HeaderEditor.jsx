@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Save, X, RotateCcw } from "lucide-react";
+import { Save, X, RotateCcw, GripVertical, PanelRightClose } from "lucide-react";
+import { useFloatingPanel } from "./useFloatingPanel";
 import { toast } from "sonner";
 import { api, errMsg } from "../../../lib/api";
 import { useAuth } from "../../../lib/auth";
@@ -26,21 +27,15 @@ const HeaderEditorPanel = ({ site }) => {
   const [draft, setDraft] = useState(() => fromSite(site));
   const [tab, setTab] = useState("content"), [dirty, setDirty] = useState(false);
   const [busy, setBusy] = useState(false), [picker, setPicker] = useState(false), [error, setError] = useState("");
-  const [top, setTop] = useState(140);
+  // Open just below the header (measured once) so the menu being edited stays visible; no jumping while scrolling.
+  const [top] = useState(() => { const h = document.getElementById("site-header"); return Math.round(Math.min(Math.max((h?.getBoundingClientRect().bottom || 120) + 12, 12), window.innerHeight * .35)); });
+  const fp = useFloatingPanel("header");
   const change = (patch) => { setDraft((d) => ({ ...d, ...patch })); setDirty(true); setError(""); };
   useEffect(() => {
     setHeaderPreview({ ...draft, ui_text: { ...draft.ui_text, menu: draft.mobile_menu_label } });
     return () => setHeaderPreview(null);
   }, [draft, setHeaderPreview]);
   useEffect(() => { registerDirty(dirty, "header"); return () => registerDirty(false, "header"); }, [dirty, registerDirty]);
-  useEffect(() => {
-    const header = document.getElementById("site-header");
-    if (!header) return undefined;
-    const measure = () => setTop(Math.min(Math.max(header.getBoundingClientRect().bottom + 12, 12), window.innerHeight * .4));
-    measure(); const observer = new ResizeObserver(measure); observer.observe(header);
-    window.addEventListener("resize", measure); window.addEventListener("scroll", measure, { passive: true });
-    return () => { observer.disconnect(); window.removeEventListener("resize", measure); window.removeEventListener("scroll", measure); };
-  }, []);
   useEffect(() => {
     if (!on) return undefined;
     const select = (event) => {
@@ -81,15 +76,18 @@ const HeaderEditorPanel = ({ site }) => {
     } catch (e) { setError(errMsg(e)); } finally { setBusy(false); }
   };
   if (!on) return null;
-  return <aside className="live-ui live-panel live-header-panel" style={{ "--header-editor-top": `${top}px` }} data-testid="live-header-panel" data-live-panel-ready="true" aria-label="Edit Header">
-    <div className="live-row live-top"><strong data-testid="header-editor-title">Edit Header</strong><button type="button" className="live-btn" disabled={busy} onClick={() => setScope("page")} aria-label="Close header editor" data-testid="header-editor-close"><X size={16} /></button></div>
+  return <aside className="live-ui live-panel live-header-panel live-floating" {...fp.panelProps} style={{ "--header-editor-top": `${top}px`, ...fp.panelProps.style }} data-testid="live-header-panel" data-live-panel-ready="true" aria-label="Edit Header">
+    {fp.handles()}
+    <div className="live-row live-top"><strong className="live-drag" {...fp.dragProps} data-testid="header-editor-title"><GripVertical size={14} /> Edit Header</strong>
+      {fp.placed && <button type="button" className="live-btn" onClick={fp.reset} title="Put the panel back on the right" aria-label="Dock panel" data-testid="header-editor-dock"><PanelRightClose size={15} /></button>}
+      <button type="button" className="live-btn" disabled={busy} onClick={() => setScope("page")} aria-label="Close header editor" data-testid="header-editor-close"><X size={16} /></button></div>
     <div className="header-editor-tabs" role="tablist" aria-label="Header settings">{["content", "menu", "style"].map((key) => <button type="button" role="tab" key={key} id={`header-tab-${key}`} aria-controls={`header-tab-panel-${key}`} aria-selected={tab === key} onClick={() => setTab(key)} data-testid={`header-tab-${key}`}>{key === "style" ? "Style & spacing" : key === "menu" ? "Navigation" : "Brand & logo"}</button>)}</div>
     {error && <p className="header-editor-error" role="alert" data-testid="header-editor-error">{error}</p>}
-    <fieldset className="header-editor-body" disabled={busy} role="tabpanel" id={`header-tab-panel-${tab}`} aria-labelledby={`header-tab-${tab}`} data-testid={`header-tab-panel-${tab}`}>
+    <div className="header-editor-scroll"><fieldset className="header-editor-body" disabled={busy} role="tabpanel" id={`header-tab-panel-${tab}`} aria-labelledby={`header-tab-${tab}`} data-testid={`header-tab-panel-${tab}`}>
       {tab === "content" && <HeaderContentFields draft={draft} change={change} chooseLogo={() => setPicker(true)} />}
       {tab === "menu" && <HeaderMenuFields menus={draft.menus} changeMenu={changeMenu} />}
       {tab === "style" && <HeaderStyleFields styles={draft.header_styles} change={(key, value) => change({ header_styles: { ...draft.header_styles, [key]: value } })} reset={() => change({ header_styles: {} })} />}
-    </fieldset>
+    </fieldset></div>
     <div className="header-editor-actions"><span data-testid="header-save-status" role="status">{busy ? "Saving…" : dirty ? "Unsaved changes" : "All changes saved"}</span><div className="live-row">
       <button type="button" className="live-btn live-primary" disabled={busy || !dirty} onClick={save} data-testid="header-editor-save"><Save size={15} /> Save header</button>
       <button type="button" className="live-btn" disabled={busy || !dirty} onClick={discard} data-testid="header-editor-discard"><RotateCcw size={15} /> Discard</button>

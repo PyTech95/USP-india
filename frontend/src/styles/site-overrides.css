@@ -104,3 +104,49 @@ body .live-panel[data-panel-side="left"] { left: 12px; right: auto; }
 
 
 @media (min-width: 761px) { body .live-panel[data-moved] { top: var(--lp-top) !important; left: var(--lp-left) !important; right: auto !important; max-height: calc(100dvh - var(--lp-top) - 12px) !important; } }
+
+/* ===== Live editor panels: smooth open, drag to move, drag edges to resize (useFloatingPanel) ===== */
+@keyframes live-panel-in { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: none; } }
+body .live-panel.live-floating { animation: live-panel-in .2s ease-out both; display: flex; flex-direction: column; overflow: hidden !important; padding: 0 !important; }
+body .live-panel.live-floating > .live-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 14px; }
+body .live-panel.live-floating .live-drag { cursor: grab; user-select: none; touch-action: none; display: inline-flex; align-items: center; gap: 4px; }
+body.live-panel-moving, body.live-panel-moving * { cursor: grabbing !important; user-select: none !important; }
+body.live-panel-resizing, body.live-panel-resizing * { user-select: none !important; }
+@media (min-width: 761px) {
+  body .live-panel.live-header-panel:not([data-placed]) { top: var(--header-editor-top, 120px) !important; max-height: calc(100dvh - var(--header-editor-top, 120px) - 12px) !important; }
+  body .live-panel.live-floating[data-placed] { top: var(--fp-y) !important; left: var(--fp-x) !important; right: auto !important; bottom: auto !important;
+    width: var(--fp-w) !important; height: var(--fp-h) !important; max-height: calc(100dvh - 16px) !important; max-width: calc(100vw - 16px) !important; }
+}
+.live-rs { position: absolute; z-index: 8; background: transparent; }
+.live-rs-w { left: 0; top: 10px; bottom: 10px; width: 7px; cursor: ew-resize; }
+.live-rs-e { right: 0; top: 10px; bottom: 10px; width: 7px; cursor: ew-resize; }
+.live-rs-s { left: 10px; right: 10px; bottom: 0; height: 7px; cursor: ns-resize; }
+.live-rs-sw { left: 0; bottom: 0; width: 14px; height: 14px; cursor: nesw-resize; }
+.live-rs-se { right: 0; bottom: 0; width: 14px; height: 14px; cursor: nwse-resize; }
+.live-rs-se::after { content: ""; position: absolute; right: 3px; bottom: 3px; width: 8px; height: 8px; border-right: 2px solid #bbb; border-bottom: 2px solid #bbb; }
+.live-rs:hover { background: rgba(212, 20, 69, .12); }
+@media (max-width: 760px) { .live-rs { display: none; } }
+@media (prefers-reduced-motion: reduce) { body .live-panel.live-floating { animation: none; } }
+
+/* Live editor: quick way into the header editor while editing a page */
+html body #public-site #site-header { position: relative; }
+html body #public-site #site-header .live-header-chip {
+  position: absolute; top: 100%; left: 50%; transform: translate(-50%, -50%); z-index: 30; display: none; white-space: nowrap;
+  font: 600 12px/1 "Public Sans", Helvetica, Arial, sans-serif; letter-spacing: .02em;
+  padding: 7px 11px; border-radius: 999px; border: 1px solid #d41445; background: #fff; color: #d41445;
+  box-shadow: 0 4px 14px rgba(0,0,0,.12); cursor: pointer;
+}
+body.live-editing #public-site #site-header .live-header-chip { display: inline-flex; }
+body.live-editing #public-site #site-header:hover { outline: 2px dashed rgba(212,20,69,.45); outline-offset: -2px; }
+html body #public-site #site-header .live-header-chip:hover { background: #d41445; color: #fff; }
+
+/* Field Note questions & answers (also published as FAQ structured data) */
+.fn-faq { margin: 40px 0 8px; border-top: 1px solid #e3ddd3; padding-top: 18px; }
+.fn-faq h2, .fn-faq h3 { font-size: 1.05rem; font-weight: 600; margin: 0 0 10px; }
+.fn-faq details { border-bottom: 1px solid #ece7de; padding: 10px 0; }
+.fn-faq summary { cursor: pointer; font-weight: 500; list-style-position: outside; }
+.fn-faq details p { margin: 8px 0 2px; }
+/* Header editor: only the middle part scrolls; title, tabs and Save stay in view */
+body .live-header-panel .header-editor-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+body .live-header-panel .header-editor-scroll > .header-editor-body { overflow: visible !important; min-height: 0; }
+body .live-header-panel > .live-top, body .live-header-panel > .header-editor-tabs, body .live-header-panel > .header-editor-actions { flex-shrink: 0; }

@@ -11,13 +11,15 @@ import routes_media
 import routes_public
 import routes_content_release
 import routes_content_json
+import analytics
+import mailer
 from content_sync import runtime as content_runtime
 from seed import seed
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 app = FastAPI(title="USP India CMS", docs_url=None, redoc_url=None, openapi_url=None)
 ALLOWED_ORIGINS = [o.strip() for o in os.environ["CORS_ORIGINS"].split(",") if o.strip()]
-CSRF_EXEMPT = {"/api/auth/login", "/api/auth/forgot-password", "/api/auth/reset-password", "/api/auth/accept-invite", "/api/public/enquiries", "/api/auth/logout"}
+CSRF_EXEMPT = {"/api/auth/login", "/api/auth/forgot-password", "/api/auth/reset-password", "/api/auth/accept-invite", "/api/public/enquiries", "/api/public/track", "/api/auth/logout"}
 
 
 @app.middleware("http")
@@ -44,7 +46,8 @@ async def security(request: Request, call_next):
     return resp
 
 
-for r in (routes_auth.router, routes_admin.router, routes_media.router, routes_public.router, routes_content_release.router, routes_content_json.router):
+for r in (routes_auth.router, routes_admin.router, routes_media.router, routes_public.router, routes_content_release.router, routes_content_json.router,
+          analytics.router, mailer.router):
     app.include_router(r)
 
 app.add_middleware(CORSMiddleware, allow_credentials=True, allow_origins=ALLOWED_ORIGINS, allow_methods=["*"], allow_headers=["*"])
@@ -63,6 +66,7 @@ async def coordinate_content_writes(request: Request, call_next):
 
 @app.on_event("startup")
 async def startup():
+    await analytics.ensure_indexes()
     await seed()
     log.info("Media storage: %s", init_storage())
     # Target readiness waits for a complete, validated, backup-first import.
@@ -108,6 +112,10 @@ if _BUILD.is_dir() and (_BUILD / "index.html").is_file():
     @app.get("/sitemap.xml", include_in_schema=False)
     async def sitemap_xml():
         return await _public.sitemap()
+
+    @app.get("/llms.txt", include_in_schema=False)
+    async def llms_txt():
+        return await _public.llms_txt()
 
     @app.get("/{full_path:path}", include_in_schema=False)
     async def spa_fallback(full_path: str, request: Request):
