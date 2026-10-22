@@ -115,7 +115,7 @@ body.live-panel-resizing, body.live-panel-resizing * { user-select: none !import
 @media (min-width: 761px) {
   body .live-panel.live-header-panel:not([data-placed]) { top: var(--header-editor-top, 120px) !important; max-height: calc(100dvh - var(--header-editor-top, 120px) - 12px) !important; }
   body .live-panel.live-floating[data-placed] { top: var(--fp-y) !important; left: var(--fp-x) !important; right: auto !important; bottom: auto !important;
-    width: var(--fp-w) !important; height: var(--fp-h) !important; max-height: calc(100dvh - 16px) !important; max-width: calc(100cqw - 16px) !important; }
+    width: var(--fp-w) !important; height: var(--fp-h) !important; max-height: calc(100dvh - 16px) !important; max-width: calc(100vw - 16px) !important; }
 }
 .live-rs { position: absolute; z-index: 8; background: transparent; }
 .live-rs-w { left: 0; top: 10px; bottom: 10px; width: 7px; cursor: ew-resize; }
@@ -139,6 +139,17 @@ html body #public-site #site-header .live-header-chip {
 body.live-editing #public-site #site-header:is(:hover, :focus-within) .live-header-chip { display: inline-flex; }
 body.live-editing #public-site #site-header:hover { outline: 2px dashed rgba(212,20,69,.45); outline-offset: -2px; }
 html body #public-site #site-header .live-header-chip:hover { background: #d41445; color: #fff; }
+/* Footer: "Edit footer colours" chip while editing (opens the header editor at the footer colours) */
+html body #public-site #site-footer { position: relative; }
+html body #public-site #site-footer .live-footer-chip {
+  position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 30; display: none; white-space: nowrap;
+  font: 600 12px/1 "Public Sans", Helvetica, Arial, sans-serif; letter-spacing: .02em;
+  padding: 7px 11px; border-radius: 999px; border: 1px solid #d41445; background: #fff; color: #d41445;
+  box-shadow: 0 4px 14px rgba(0,0,0,.12); cursor: pointer;
+}
+body.live-editing #public-site #site-footer:is(:hover, :focus-within) .live-footer-chip { display: inline-flex; }
+body.live-editing #public-site #site-footer:hover { outline: 2px dashed rgba(212,20,69,.45); outline-offset: -2px; }
+html body #public-site #site-footer .live-footer-chip:hover { background: #d41445; color: #fff; }
 
 /* Field Note questions & answers (also published as FAQ structured data) */
 .fn-faq { margin: 40px 0 8px; border-top: 1px solid #e3ddd3; padding-top: 18px; }

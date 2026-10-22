@@ -125,13 +125,14 @@ if _BUILD.is_dir() and (_BUILD / "index.html").is_file():
         if full_path and candidate.is_file() and str(candidate).startswith(str(_BUILD)):
             return FileResponse(candidate)
         if _NO_SSR.match(full_path) or "text/html" not in request.headers.get("accept", "text/html"):
-            return FileResponse(_BUILD / "index.html")
+            # always re-check the page shell, so a new deployment's CSS/JS is picked up straight away
+            return FileResponse(_BUILD / "index.html", headers={"Cache-Control": "no-cache"})
         try:
             target = "/" + full_path + (f"?{request.url.query}" if request.url.query else "")
             status, html_text, headers = await _ssr.render(target)
         except Exception as error:  # never break the site because of SSR
             log.warning("SSR failed for /%s: %s", full_path, error)
-            return FileResponse(_BUILD / "index.html")
+            return FileResponse(_BUILD / "index.html", headers={"Cache-Control": "no-cache"})
         if status in (301, 302, 307, 308) and headers.get("Location"):
             return RedirectResponse(headers["Location"], status_code=status)
         return HTMLResponse(html_text.replace("</head>", _CSS_TAGS + "</head>", 1), status_code=status, headers={"Cache-Control": "no-cache"})

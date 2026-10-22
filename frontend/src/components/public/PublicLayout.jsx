@@ -114,8 +114,12 @@ const SOCIALS = [{ key: "facebook", label: "Facebook", Icon: FacebookIcon }, { k
 
 function Footer({ site }) {
   const email = site?.contact?.email || "info@uspindia.org";
+  const { on: liveOn, scope: liveScope, setScope: setLiveScope, canHeader } = useLiveEditor();
+  // Footer colours live in the header editor (Style & spacing → Colours → Footer); this opens it there.
+  const editColours = () => { setLiveScope("header"); setTimeout(() => window.dispatchEvent(new CustomEvent("live-header-focus", { detail: "footer" })), 80); };
   return (
     <footer className="footer usp-footer" id="site-footer" data-testid="site-footer">
+      {liveOn && canHeader && liveScope !== "header" && <button type="button" className="live-ui live-footer-chip" onClick={editColours} data-testid="live-footer-chip">Edit footer colours</button>}
       <div className="usp-footer-row">
         <a href={`mailto:${email}`} className="usp-footer-email" data-site-edit="contact.email" data-testid="footer-email">{email}</a>
         <div className="usp-footer-social">

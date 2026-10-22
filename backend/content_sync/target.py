@@ -4,6 +4,37 @@ from .schema import COLLECTION_KEYS, SITE_FIELDS, counts, config, validate
 from .state import is_source, lease
 from .merge import merge_bundle
 
+# Positions and sizes saved by the old live editor were measured on whatever screen it was used on.
+# The current site lays every page out on the 1440px design (see frontend lib/designMode.js), where
+# those old offsets push text and photos into each other. The first release applied by this version
+# clears them once (after the usual full backup); fonts, colours, text, photos and crops are kept.
+LAYOUT_RESET = "design-1440-2026-10"
+GEOMETRY_KEYS = ("translateX", "translateY", "width", "height")
+
+
+def strip_geometry(pages):
+    removed = 0
+    for page in pages:
+        for version in ("draft", "published"):
+            body = page.get(version)
+            if not isinstance(body, dict):
+                continue
+            for section in body.get("sections") or []:
+                styles = section.get("styles")
+                if not isinstance(styles, dict):
+                    continue
+                for field in list(styles):
+                    values = styles[field]
+                    if not isinstance(values, dict):
+                        continue
+                    for key in GEOMETRY_KEYS:
+                        if key in values:
+                            values.pop(key)
+                            removed += 1
+                    if not values:
+                        styles.pop(field)
+    return removed
+
 
 async def backup(database, release_id, reason="before content promotion"):
     bid = new_id()
@@ -56,6 +87,8 @@ async def apply(database, bundle, pointer, *, force=False):
             current_site = await database.settings.find_one({"key": "site"}, {"_id": 0}) or {}
             current = {"collections": {name: await database[name].find({}, {"_id": 0}).to_list(100000) for name in COLLECTION_KEYS},
                        "site": {k: current_site[k] for k in SITE_FIELDS if k in current_site}}
+            reset = prior.get("layout_reset") != LAYOUT_RESET
+            cleared = strip_geometry(current["collections"]["pages"]) if reset else 0
             baseline = baseline_doc.get("content") if baseline_doc else (bundle if prior.get("release_id") == pointer["release_id"] else None)
             # Fresh seed content is replaceable only on the first ever release. On
             # upgrades without history, conservatively retain existing live values.
@@ -84,7 +117,8 @@ async def apply(database, bundle, pointer, *, force=False):
                     raise RuntimeError(f"{collection} verification failed")
             status = {"state": "applied", "release_id": pointer["release_id"], "captured_at": pointer["captured_at"],
                       "applied_at": now(), "backup_id": bid, "counts": counts(effective),
-                      "merge_policy": "preserve_live_edits", "preserved_count": len(preserved), "preserved_fields": preserved[:200]}
+                      "merge_policy": "preserve_live_edits", "preserved_count": len(preserved), "preserved_fields": preserved[:200],
+                      "layout_reset": LAYOUT_RESET, **({"layout_reset_fields": cleared, "layout_reset_at": now()} if reset else {})}
             await database.content_baselines.replace_one({"key": "incoming"}, {"key": "incoming", "content": copy.deepcopy(bundle)}, upsert=True)
             await database.content_runtime.update_one({"key": "target"}, {"$set": status, "$unset": {"error": ""}}, upsert=True)
             return status

@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 
 COLORS = {"backgroundColor", "color", "navBackgroundColor", "activeColor", "dropdownBackgroundColor", "brandColor", "subtitleColor",
           "separatorColor", "borderColor", "dropdownColor", "mobileMenuBackgroundColor", "hoverBackgroundColor",
-          "activeLineColor", "dropdownHoverBackgroundColor"}
+          "activeLineColor", "dropdownHoverBackgroundColor", "footerBackgroundColor", "footerStripColor"}
 SIZES = {"paddingTop": (0, 160), "paddingBottom": (0, 160), "paddingLeft": (0, 160),
          "paddingRight": (0, 160), "minHeight": (44, 240), "fontSize": (10, 32),
          "brandFontSize": (16, 72), "subtitleFontSize": (8, 24), "logoHeight": (16, 160), "navGap": (0, 48),

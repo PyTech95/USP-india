@@ -16,7 +16,7 @@ import { TheatreHero, TheatreArchive, TheatreProduction } from "./TheatreSection
 import { AboutHero, AboutIntroduction, AboutTeam, AboutApproach } from "./AboutSections";
 import { SplitHero, PlainHero, WorkRows, ConnectForm } from "./PageSections";
 import { HomeFieldNotes } from "./HomeFieldNotes";
-import { isDesignMode } from "../../lib/designMode";
+import { isDesignMode, designTranslate } from "../../lib/designMode";
 import { LINE_KINDS } from "./editor/lineKinds";
 
 export const fontStack = (f) => `"${f}", system-ui, sans-serif`;
@@ -32,9 +32,10 @@ function applyProps(node, obj, keys) {
   });
 }
 // Free-form layout from editor values (measured on the 1440px design).
-// Design mode (1200px+ screens, and while editing): exact size/offset, scaled to fit by
-// the page zoom. Fluid mode (tablets/phones): sizes and offsets are left out so every
-// section uses its own responsive layout; a photo keeps the shape it was resized to.
+// Design mode (1200px+ screens, and while editing): the saved size/offset, scaled with the
+// page below 1440px (text itself is never scaled). Fluid mode (tablets/phones): sizes and
+// offsets are left out so every section uses its own responsive layout; a photo keeps the
+// shape it was resized to.
 export function layoutStyle(raw, field) {
   const o = {};
   const design = isDesignMode();
@@ -51,7 +52,7 @@ export function layoutStyle(raw, field) {
   if (raw.zoom && parseFloat(raw.zoom) > 1) o["--ed-zoom"] = raw.zoom;
   if (raw.backgroundColor) o.backgroundColor = raw.backgroundColor;
   if (raw.borderRadius) o.borderRadius = raw.borderRadius;
-  if (tx || ty) { o["--ed-t"] = `translate(${tx || "0px"}, ${ty || "0px"})`; o["--ed-y"] = ty || "0px"; o.zIndex = 5; }
+  if (tx || ty) { o["--ed-t"] = designTranslate(tx, ty); o["--ed-y"] = ty || "0px"; o.zIndex = 5; }
   if (design && (raw.width || raw.height || tx || ty)) { o.position = "relative"; o.alignSelf = "flex-start"; o.justifySelf = "start"; }
   ["paddingTop", "paddingBottom", "paddingLeft", "paddingRight", "marginTop", "marginBottom", "marginLeft", "marginRight"].forEach((k) => { if (raw[k]) o[k] = raw[k]; });
   Object.assign(o, lineStyle(raw));
