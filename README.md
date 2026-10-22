@@ -76,13 +76,16 @@ HTTPS is required in production (login cookies are marked secure).
 
 ## Page grid
 
-Every page uses one grid (`frontend/src/styles/layout-grid.css`): all sections start and end on the same two lines — 100px inside the boxed layout on the 1440px design, less on tablets and phones — so text, photos and divider lines stay lined up and centred on any screen. Two-column sections share one column line, so right-hand columns start at the same place down the page. Coloured bands still fill the box; their text uses the same edges.
+Every page uses one grid (`frontend/src/styles/layout-grid.css`): all sections start and end on the same two lines, so text, photos and divider lines stay lined up and centred on any screen. On tablets and phones text inside and outside the coloured bands starts on the same edge.
+
+On desktop, each page follows the owner's approved page designs section by section (`frontend/src/styles/design-1440.css`: positions, column widths and spacing for Home, Who We Are, Theatre, Craft & Livelihood, Workshops & Learning, Field Notes and Connect). Those rules only apply to the desktop design; sizes typed in the live editor still win.
 
 ## Responsive layout (how sizes and positions work)
 
 Sizes and positions set in the live editor (dragging, resizing, "Move X/Y") are saved for a **1440px-wide desktop design**:
 
-- **Screens wider than 1200px** show that design exactly. Between 1200 and 1440px the page content is scaled down to fit, so nothing overlaps or runs off the screen; wider screens show it at full size, centred.
+- **Screens wider than 1200px** show that design exactly. Between 1200 and 1440px the page content is scaled down to fit, so nothing overlaps or runs off the screen; wider screens show it at full size, centred. The header and footer stay full width.
+- Large text sizes typed in the editor shrink smoothly on tablets and phones; body-size text stays as typed.
 - **Tablets and phones (1200px and narrower)** ignore saved positions and sizes: every section uses its own responsive layout (columns stack, photos fill the width). Text styles, colours, backgrounds and photo crops still apply.
 - Check tablet/phone views with the tablet and phone buttons in the editor panel.
 - If items end up on top of each other, the editor warns straight after the move (with Undo). Click any section → **Tidy this section** to put its texts and photos back in their standard places.
@@ -93,6 +96,8 @@ Sizes and positions set in the live editor (dragging, resizing, "Move X/Y") are 
 - The editor panels open beside the page. Drag the title to move a panel, drag its left/right/bottom edges or corners to resize it; it never leaves the screen and remembers where you put it. The dock button puts it back on the right.
 - Click text on the page and type. Click a photo to replace it, or to **crop** it: pick a shape (Original, Square, 4:3, 3:2, 16:9, 3:4, 4:5), zoom with the slider, and drag the photo to choose what shows.
 - Drag the dark grip to move an element, the red handles to resize it; arrow keys nudge (Shift = 10px).
+- **Lines:** select any text, photo or section. The toolbar has *add line above* and *add line below*; the **Lines** panel chooses a short red line or a thin line across, and sets its length, thickness, space from the text and colour (or deletes it). The red lines that are part of the design can be made longer, shorter, thicker, recoloured or removed for one text or a whole section, and a section's thin grey dividers can be hidden. Site-wide red-line defaults are in Edit Header → *Red lines*.
+- **Logo:** Edit Header → *Brand & logo* — replace the logo, set its height, and choose whether the name shows next to it (hidden automatically when a logo is set). The official 2026 logo files (horizontal, stacked, and the USP mark used as the browser-tab icon) are in Media.
 - `Ctrl/⌘+S` saves and publishes, `Ctrl/⌘+Z` undoes, `Esc` deselects.
 
 ## Enquiry form and email

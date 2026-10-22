@@ -5,7 +5,7 @@
      page edge -> box edge (--gutter) -> content edge (--inset)
    On the 1440px desktop design the content runs from 100px inside the
    boxed layout to 100px before its right edge; tablets and phones use a
-   smaller inset. Coloured bands still fill the box; their text uses the
+   smaller inset (at least 20px, the same inside and outside coloured bands). Coloured bands still fill the box; their text uses the
    same content edges, so everything lines up down the page and stays
    centred on any screen.
    ===================================================================== */
@@ -15,7 +15,8 @@
   --band-pad: var(--inset);
   --content-l: calc(var(--gutter) + var(--inset));
 }
-html.ed-fluid #public-site main#main { --inset: clamp(0px, calc((100cqw - 640px) * 0.12), 56px); --band-pad: max(20px, var(--inset)); }
+html.ed-fluid #public-site main#main { --inset: clamp(0px, calc((100cqw - 640px) * 0.12), 56px); --band-pad: max(20px, var(--inset)); --content-l: calc(var(--gutter) + var(--band-pad)); }
+/* (tablets and phones: text in full-width sections lines up with text inside the coloured bands) */
 
 /* Short alias for a selector strong enough to win over the page stylesheets */
 /* P = html body #public-site#public-site#public-site#public-site#public-site#public-site main#main */

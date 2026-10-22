@@ -115,7 +115,7 @@ body.live-panel-resizing, body.live-panel-resizing * { user-select: none !import
 @media (min-width: 761px) {
   body .live-panel.live-header-panel:not([data-placed]) { top: var(--header-editor-top, 120px) !important; max-height: calc(100dvh - var(--header-editor-top, 120px) - 12px) !important; }
   body .live-panel.live-floating[data-placed] { top: var(--fp-y) !important; left: var(--fp-x) !important; right: auto !important; bottom: auto !important;
-    width: var(--fp-w) !important; height: var(--fp-h) !important; max-height: calc(100dvh - 16px) !important; max-width: calc(100vw - 16px) !important; }
+    width: var(--fp-w) !important; height: var(--fp-h) !important; max-height: calc(100dvh - 16px) !important; max-width: calc(100cqw - 16px) !important; }
 }
 .live-rs { position: absolute; z-index: 8; background: transparent; }
 .live-rs-w { left: 0; top: 10px; bottom: 10px; width: 7px; cursor: ew-resize; }
@@ -178,3 +178,24 @@ body .live-header-panel > .live-top, body .live-header-panel > .header-editor-ta
 body.live-editing #public-site .live-overlap-hit { outline: 2px dashed #d97706 !important; outline-offset: 2px; }
 .live-tidy { margin-top: 10px; padding-top: 10px; border-top: 1px dashed #ddd; }
 .live-tidy .live-hint { margin: 6px 0 0; }
+
+/* Header logo: the official logo already carries the name, so the text next to it is hidden unless
+   "Name next to the logo" is set to "Always show" in Edit Header → Brand & logo. */
+html body #public-site .brand.brand-text-hidden > .brand-text { display: none !important; }
+html body #public-site .brand.has-logo img { display: block; max-width: none; width: auto; object-fit: contain; }
+@media (max-width: 700px) {
+  html body #public-site#public-site#public-site#public-site.site #site-header#site-header .brand.has-logo img { height: 42px !important; }
+}
+
+/* Live editor: line controls */
+.live-sectools button.live-on { background: #a3234a !important; color: #fff !important; }
+.live-lines .live-row { align-items: flex-end; flex-wrap: wrap; }
+.live-lines-builtin { border-top: 1px solid #ece8e4; margin-top: 10px; padding-top: 2px; }
+
+/* Header editor: move / resize the logo on the page */
+.live-logo-box { pointer-events: none; }
+.live-logo-box .live-logo-drag { position: absolute; inset: 0; pointer-events: auto; cursor: move; touch-action: none; background: rgba(212, 20, 69, .06); }
+.live-logo-box .live-h-se { right: -7px; bottom: -7px; width: 12px; height: 12px; cursor: nwse-resize; touch-action: none; }
+.live-logo-tag { position: absolute; left: 0; top: calc(100% + 10px); display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; padding: 4px 8px; border-radius: 5px; background: #2d302b; color: #fff; font: 500 11px/1.3 system-ui, sans-serif; pointer-events: auto; box-shadow: 0 4px 12px rgba(0,0,0,.25); }
+.live-logo-tag button { all: unset; cursor: pointer; display: inline-flex; padding: 2px; border-radius: 3px; }
+.live-logo-tag button:hover { background: rgba(255,255,255,.18); }

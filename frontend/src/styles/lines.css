@@ -1,0 +1,14 @@
+/* Lines edited in the live editor.
+   - "Line above / below" an element or section: drawn as a background stripe (see Blocks.jsx lineStyle).
+   - Built-in red lines use --accent-line-w / --accent-line (thickness, 0 = removed) / --accent-line-gap,
+     which the editor can set on a single text or a whole section; --accent-color recolours them.
+   - --hide-dividers on a section removes its thin grey divider lines. */
+html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site [style*="--accent-color"]::after,
+html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site [style*="--accent-color"]::before,
+html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site [style*="--accent-color"] :is(.theatre-split-rule, .theatre-label-accent, .rak-hero-accent),
+html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site [style*="--accent-color"]:is(.theatre-split-rule, .theatre-label-accent, .rak-hero-accent) { background-color: var(--accent-color) !important; }
+html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site [style*="--accent-color"]:is(.aside-statement) { border-left-color: var(--accent-color) !important; }
+html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site .hb[style*="--hide-dividers"] :is(section.text-cols, .invite-inner, .usp-divider)::after,
+html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site .hb[style*="--hide-dividers"] :is(.invite-inner, .work-num)::before { display: none !important; content: none !important; }
+html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site .hb[style*="--hide-dividers"] > section { border-top: 0 !important; border-bottom: 0 !important; }
+html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site .hb[style*="--hide-dividers"]:is(.hb-hero + .hb-text) > section.wrap.section { background-image: none !important; }

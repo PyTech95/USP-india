@@ -1,5 +1,6 @@
 import { HtmlDiv } from "./editor/HtmlDiv";
 import { Fragment, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { ChevronDown, Menu, X } from "lucide-react";
 import { useSite, PreviewCtx, SitePreviewProvider } from "../../lib/site";
@@ -79,14 +80,16 @@ function Header({ site: savedSite }) {
       document.removeEventListener("keydown", escape);
     };
   }, [open]);
+  const brandText = site?.header_styles?.brandText || "";
+  const brandTextHidden = brandText === "hide" || (brandText !== "show" && !!site?.logo);
   return (
     <SitePreviewProvider site={site}><header className="header" id="site-header" data-testid="site-header">
       <HeaderStyleTag styles={site?.header_styles} />
       {liveOn && canHeader && liveScope !== "header" && <button type="button" className="live-ui live-header-chip" onClick={() => setLiveScope("header")} data-testid="live-header-chip">Edit header colours &amp; layout</button>}
       <div className="wrap header-inner">
-        <Link to="/" className="brand" data-testid="brand-link">
+        <Link to="/" className={`brand${site?.logo ? " has-logo" : ""}${brandTextHidden ? " brand-text-hidden" : ""}`} aria-label={brandTextHidden ? `${site?.full_name || site?.brand_label || "USP"} — home` : undefined} data-testid="brand-link">
           {site?.logo && <img src={media(site.logo.src)} alt="" width={site.logo.width} height={site.logo.height} style={{ height: 44, width: "auto" }} data-site-edit="logo_media_id" data-testid="header-logo" />}
-          <span><SiteText path="brand_label" className="brand-name" data-testid="header-brand-name" fallback="USP" /><SiteText path="full_name" className="brand-sub" data-testid="header-brand-subtitle" /></span>
+          <span className="brand-text"><SiteText path="brand_label" className="brand-name" data-testid="header-brand-name" fallback="USP" /><SiteText path="full_name" className="brand-sub" data-testid="header-brand-subtitle" /></span>
         </Link>
         <nav aria-label="Main" ref={menuRef} data-testid="main-navigation">
           <button ref={toggleRef} type="button" className="nav-link menu-toggle" aria-expanded={open} aria-controls="main-menu" onClick={() => setOpen(!open)} data-testid="mobile-menu-toggle">
@@ -174,8 +177,8 @@ export default function PublicLayout({ preview = false }) {
         <Header site={site} />
         <PageContent />
         <Footer site={site} />
-        <SiteChromeEditor />
-        <HeaderEditor />
+        {/* Editor panels live outside the (zoomed) page so they stay the same size and follow the mouse exactly */}
+        {typeof document !== "undefined" && createPortal(<><SiteChromeEditor /><HeaderEditor /></>, document.body)}
       </div>
     </LiveEditorProvider></PreviewCtx.Provider>
   );

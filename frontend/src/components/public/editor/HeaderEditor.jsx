@@ -9,6 +9,7 @@ import { MediaPicker } from "../../admin/Kit";
 import { useLiveEditor } from "./LiveEditorProvider";
 import { HeaderContentFields, HeaderMenuFields, flattenHeaderMenu } from "./HeaderContentFields";
 import { HeaderStyleFields } from "./HeaderStyleFields";
+import { LogoHandles } from "./LogoHandles";
 
 const fromSite = (site) => ({ ...site, brand_label: site.brand_label ?? "USP", full_name: site.full_name || "",
   logo_media_id: site.logo?.id || "", mobile_menu_label: site.ui_text?.menu || "Menu",
@@ -31,6 +32,7 @@ const HeaderEditorPanel = ({ site }) => {
   const [top] = useState(() => { const h = document.getElementById("site-header"); return Math.round(Math.min(Math.max((h?.getBoundingClientRect().bottom || 120) + 12, 12), window.innerHeight * .35)); });
   const fp = useFloatingPanel("header");
   const change = (patch) => { setDraft((d) => ({ ...d, ...patch })); setDirty(true); setError(""); };
+  const changeStyles = (patch) => { setDraft((d) => ({ ...d, header_styles: { ...(d.header_styles || {}), ...patch } })); setDirty(true); setError(""); };
   useEffect(() => {
     setHeaderPreview({ ...draft, ui_text: { ...draft.ui_text, menu: draft.mobile_menu_label } });
     return () => setHeaderPreview(null);
@@ -46,7 +48,7 @@ const HeaderEditorPanel = ({ site }) => {
       const path = target.dataset.siteEdit;
       setTab(path.startsWith("menus.") ? "menu" : "content");
       requestAnimationFrame(() => {
-        if (path === "logo_media_id") { setPicker(true); return; }
+        if (path === "logo_media_id") return; // the logo is moved/resized with its own handles; double-click it to replace
         const item = flattenHeaderMenu(draft.menus.main).find((m) => `${m.path}.label` === path);
         const testid = item ? `header-menu-label-${item.id}` : `header-content-${(path === "ui_text.menu" ? "mobile_menu_label" : path).replaceAll("_", "-")}`;
         const field = document.querySelector(`[data-testid="${testid}"]`);
@@ -92,6 +94,7 @@ const HeaderEditorPanel = ({ site }) => {
       <button type="button" className="live-btn live-primary" disabled={busy || !dirty} onClick={save} data-testid="header-editor-save"><Save size={15} /> Save header</button>
       <button type="button" className="live-btn" disabled={busy || !dirty} onClick={discard} data-testid="header-editor-discard"><RotateCcw size={15} /> Discard</button>
     </div></div>
+    {draft.logo && <LogoHandles styles={draft.header_styles} onChange={changeStyles} onReplace={() => setPicker(true)} />}
     <MediaPicker open={picker} onClose={() => setPicker(false)} onPick={(m) => {
       if (!m.public_ok) { setError("Choose an approved public logo image."); return; }
       change({ logo_media_id: m.id, logo: { ...m, src: m.thumb } });

@@ -2,20 +2,20 @@
    ruled editorial sections, archive photo, production columns, grey ambition band. */
 #theatre-reference { --t-rule: #E2DFDA; --t-ruby: var(--ruby, #D41445); --t-text: #55514C; }
 #public-site:has(#theatre-reference) .crumbs { display: none; }
-#theatre-reference .section { padding-block: clamp(2.5rem, 4vw, 4rem); }
+#theatre-reference .section { padding-block: clamp(2.5rem, 4cqw, 4rem); }
 #theatre-reference .eyebrow { color: #4A4743; font-weight: 500; letter-spacing: .14em; font-size: .72rem; }
 #theatre-reference .eyebrow::before { display: none; }
 #theatre-reference .h2 { font-weight: 400; color: #2E2B28; }
 #theatre-reference .prose p, #theatre-reference .text-cols p, #theatre-reference .stacked p { color: var(--t-text); }
 
 /* Hero */
-#theatre-reference .theatre-split { display: grid; grid-template-columns: 44fr 56fr; background: #ECEAE7; min-height: clamp(520px, 40vw, 780px); overflow: hidden; }
-#theatre-reference .theatre-split-copy { align-self: center; padding: clamp(3rem, 5vw, 5rem) clamp(2rem, 3vw, 3rem) clamp(3rem, 5vw, 5rem) clamp(1.5rem, 6.75vw, 8.5rem); max-width: 760px; }
-#theatre-reference .theatre-split-copy .eyebrow { color: #2E2B28; font-size: clamp(.8rem, .3vw + .7rem, 1rem); letter-spacing: .04em; font-weight: 400; margin-bottom: clamp(1.5rem, 2.5vw, 2.4rem); }
-#theatre-reference .theatre-split-copy .h1 { color: #1F1D1B; font-weight: 400; line-height: 1.15; font-size: clamp(2.1rem, 2.4vw + 1rem, 3.6rem); margin: 0 0 clamp(1.5rem, 2.4vw, 2.4rem); }
-#theatre-reference .theatre-split-lead { font-size: clamp(1.1rem, .5vw + .95rem, 1.5rem); color: #2E2B28; line-height: 1.4; margin: 0 0 1.4rem; }
-#theatre-reference .theatre-split-intro p { color: #3A3734; font-size: clamp(1rem, .35vw + .9rem, 1.3rem); line-height: 1.5; margin: 0; }
-#theatre-reference .theatre-split-intro::after { content: ""; display: block; width: 3.6rem; height: 2px; background: var(--t-ruby); margin-top: clamp(1.6rem, 2.4vw, 2.6rem); }
+#theatre-reference .theatre-split { display: grid; grid-template-columns: 44fr 56fr; background: #ECEAE7; min-height: clamp(520px, 40cqw, 780px); overflow: hidden; }
+#theatre-reference .theatre-split-copy { align-self: center; padding: clamp(3rem, 5cqw, 5rem) clamp(2rem, 3cqw, 3rem) clamp(3rem, 5cqw, 5rem) clamp(1.5rem, 6.75cqw, 8.5rem); max-width: 760px; }
+#theatre-reference .theatre-split-copy .eyebrow { color: #2E2B28; font-size: clamp(.8rem, .3cqw + .7rem, 1rem); letter-spacing: .04em; font-weight: 400; margin-bottom: clamp(1.5rem, 2.5cqw, 2.4rem); }
+#theatre-reference .theatre-split-copy .h1 { color: #1F1D1B; font-weight: 400; line-height: 1.15; font-size: clamp(2.1rem, 2.4cqw + 1rem, 3.6rem); margin: 0 0 clamp(1.5rem, 2.4cqw, 2.4rem); }
+#theatre-reference .theatre-split-lead { font-size: clamp(1.1rem, .5cqw + .95rem, 1.5rem); color: #2E2B28; line-height: 1.4; margin: 0 0 1.4rem; }
+#theatre-reference .theatre-split-intro p { color: #3A3734; font-size: clamp(1rem, .35cqw + .9rem, 1.3rem); line-height: 1.5; margin: 0; }
+#theatre-reference .theatre-split-intro::after { content: ""; display: block; width: 3.6rem; height: 2px; background: var(--t-ruby); margin-top: clamp(1.6rem, 2.4cqw, 2.6rem); }
 #theatre-reference .theatre-split-photo { margin: 0; position: relative; height: 100%; }
 #theatre-reference .theatre-split-photo > *, #theatre-reference .theatre-split-photo .photo-frame { height: 100%; aspect-ratio: auto !important; }
 #theatre-reference .theatre-split-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 30% 50%; display: block; }
@@ -23,7 +23,7 @@
 #theatre-reference .theatre-split-photo figcaption { display: none; }
 @media (max-width: 960px) {
   #theatre-reference .theatre-split { grid-template-columns: 1fr; min-height: 0; }
-  #theatre-reference .theatre-split-copy { max-width: none; padding: 2.5rem clamp(1.25rem, 5vw, 2.5rem) 2rem; }
+  #theatre-reference .theatre-split-copy { max-width: none; padding: 2.5rem clamp(1.25rem, 5cqw, 2.5rem) 2rem; }
   #theatre-reference .theatre-split-photo img { height: auto; aspect-ratio: 4 / 3; object-position: 40% 50%; }
   #theatre-reference .theatre-split-photo::before { display: none; }
 }
@@ -31,28 +31,28 @@
 #theatre-reference .theatre-hero-photo, #theatre-reference .theatre-hero-photo img { width: 100%; display: block; margin: 0; }
 #theatre-reference .theatre-hero-photo, #theatre-reference .theatre-hero-photo > * { aspect-ratio: auto !important; }
 #theatre-reference .theatre-hero-photo img { aspect-ratio: 16 / 9; height: auto; max-height: min(78vh, 760px); object-fit: cover; object-position: 50% 45%; }
-#theatre-reference .theatre-archive { padding-bottom: clamp(1.5rem, 2.5vw, 2.5rem); }
+#theatre-reference .theatre-archive { padding-bottom: clamp(1.5rem, 2.5cqw, 2.5rem); }
 #theatre-reference .theatre-hero-photo figcaption { display: none; }
 #theatre-reference .theatre-hero::after { content: ""; position: absolute; inset: 45% 0 0; background: linear-gradient(to top, rgba(10, 8, 6, .72), transparent); pointer-events: none; }
-#theatre-reference .theatre-hero-copy { position: absolute; z-index: 1; left: clamp(20px, 4vw, 64px); right: clamp(20px, 4vw, 64px); bottom: clamp(1.5rem, 4vw, 3.5rem); color: #fff; }
+#theatre-reference .theatre-hero-copy { position: absolute; z-index: 1; left: clamp(20px, 4cqw, 64px); right: clamp(20px, 4cqw, 64px); bottom: clamp(1.5rem, 4cqw, 3.5rem); color: #fff; }
 #theatre-reference .theatre-hero-copy .eyebrow { color: #fff; margin-bottom: .8rem; }
-#theatre-reference .theatre-hero-copy .h1 { color: #fff; margin: 0; font-weight: 400; line-height: 1.12; font-size: clamp(2rem, 3vw + 1rem, 3.6rem); }
+#theatre-reference .theatre-hero-copy .h1 { color: #fff; margin: 0; font-weight: 400; line-height: 1.12; font-size: clamp(2rem, 3cqw + 1rem, 3.6rem); }
 #theatre-reference .theatre-hero-line { display: block; }
 
 /* Intro split */
-#theatre-reference .theatre-introduction { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 6vw, 6rem); padding-block: clamp(2.5rem, 4vw, 3.5rem); }
-#theatre-reference .theatre-intro-heading { font-size: clamp(1.25rem, .8vw + 1rem, 1.6rem); line-height: 1.35; color: #2E2B28; margin: 0; }
+#theatre-reference .theatre-introduction { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 6cqw, 6rem); padding-block: clamp(2.5rem, 4cqw, 3.5rem); }
+#theatre-reference .theatre-intro-heading { font-size: clamp(1.25rem, .8cqw + 1rem, 1.6rem); line-height: 1.35; color: #2E2B28; margin: 0; }
 #theatre-reference .theatre-intro-heading::after { content: ""; display: block; width: 2.4rem; height: 2px; background: var(--t-ruby); margin-top: 1.4rem; }
 #theatre-reference .theatre-intro-copy p { margin: 0; color: var(--t-text); }
 
 /* Sections stay separated by whitespace, not full-width grey rules. */
 html body #public-site #theatre-reference :is(.text-cols, .theatre-archive, .hb.band, .invite) { border-top: 0 !important; border-bottom: 0 !important; }
-#theatre-reference .text-cols { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 6vw, 6rem); }
+#theatre-reference .text-cols { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 6cqw, 6rem); }
 #theatre-reference .text-cols > *, #theatre-reference .stacked > * { min-width: 0; }
 
 /* Archive */
 #theatre-reference .theatre-archive .prose { max-width: 52rem; }
-#theatre-reference .theatre-archive-photo { margin: clamp(2rem, 3vw, 3rem) auto 0; max-width: 92%; }
+#theatre-reference .theatre-archive-photo { margin: clamp(2rem, 3cqw, 3rem) auto 0; max-width: 92%; }
 #theatre-reference .theatre-archive-photo img { width: 100%; display: block; }
 #theatre-reference .theatre-link { display: inline-flex; align-items: center; gap: 1rem; margin-top: 1.5rem; color: #2E2B28; text-decoration: none; font-size: .95rem; }
 #theatre-reference .theatre-link svg { transition: transform .2s ease; }
@@ -61,14 +61,14 @@ html body #public-site #theatre-reference :is(.text-cols, .theatre-archive, .hb.
 /* Production */
 #theatre-reference .theatre-production .h2::after { content: ""; display: block; width: 2.4rem; height: 2px; background: var(--t-ruby); margin-top: 1.2rem; }
 #theatre-reference .theatre-production-subtitle { font-size: 1.15rem; color: #2E2B28; margin: 0 0 2rem; }
-#theatre-reference .theatre-production-columns { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 6vw, 6rem); align-items: start; }
-#theatre-reference .theatre-production-question { white-space: pre-line; font-size: clamp(1.15rem, .6vw + 1rem, 1.45rem); line-height: 1.4; color: #2E2B28; margin: 1.5rem 0 1.25rem; }
+#theatre-reference .theatre-production-columns { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 6cqw, 6rem); align-items: start; }
+#theatre-reference .theatre-production-question { white-space: pre-line; font-size: clamp(1.15rem, .6cqw + 1rem, 1.45rem); line-height: 1.4; color: #2E2B28; margin: 1.5rem 0 1.25rem; }
 
 /* Ambition band */
 #theatre-reference #theatre-ambition { background: #ECEBE9; }
-#theatre-reference #theatre-ambition .stacked { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 6vw, 6rem); align-items: center; }
+#theatre-reference #theatre-ambition .stacked { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 6cqw, 6rem); align-items: center; }
 #theatre-reference #theatre-ambition .h2 { white-space: pre-line; }
-#theatre-reference #theatre-ambition .aside-statement { white-space: pre-line; font-size: clamp(1.2rem, .7vw + 1rem, 1.55rem); line-height: 1.4; color: #2E2B28; margin: 0; border: 0; padding: 0; }
+#theatre-reference #theatre-ambition .aside-statement { white-space: pre-line; font-size: clamp(1.2rem, .7cqw + 1rem, 1.55rem); line-height: 1.4; color: #2E2B28; margin: 0; border: 0; padding: 0; }
 #theatre-reference #theatre-ambition .aside-statement::after { content: ""; display: block; width: 2.4rem; height: 2px; background: var(--t-ruby); margin-top: 1.2rem; }
 
 /* Connect */

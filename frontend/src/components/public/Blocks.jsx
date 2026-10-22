@@ -17,9 +17,11 @@ import { AboutHero, AboutIntroduction, AboutTeam, AboutApproach } from "./AboutS
 import { SplitHero, PlainHero, WorkRows, ConnectForm } from "./PageSections";
 import { HomeFieldNotes } from "./HomeFieldNotes";
 import { isDesignMode } from "../../lib/designMode";
+import { LINE_KINDS } from "./editor/lineKinds";
 
 export const fontStack = (f) => `"${f}", system-ui, sans-serif`;
-const LAYOUT_PROPS = ["--ed-w", "--ed-h", "--ed-ar", "--ed-crop", "--ed-zoom", "aspectRatio", "overflow", "--ed-t", "--ed-y", "position", "alignSelf", "justifySelf", "zIndex", "paddingTop", "paddingBottom", "paddingLeft", "paddingRight", "marginTop", "marginBottom", "marginLeft", "marginRight", "backgroundColor", "borderRadius"];
+const LAYOUT_PROPS = ["--ed-w", "--ed-h", "--ed-ar", "--ed-crop", "--ed-zoom", "aspectRatio", "overflow", "--ed-t", "--ed-y", "position", "alignSelf", "justifySelf", "zIndex", "paddingTop", "paddingBottom", "paddingLeft", "paddingRight", "marginTop", "marginBottom", "marginLeft", "marginRight", "backgroundColor", "borderRadius",
+  "backgroundImage", "backgroundSize", "backgroundPosition", "backgroundRepeat", "--accent-line-w", "--accent-line", "--accent-line-gap", "--accent-color", "--hide-dividers"];
 const toKebab = (p) => (p.startsWith("--") ? p : p.replace(/[A-Z]/g, (m) => "-" + m.toLowerCase()));
 function applyProps(node, obj, keys) {
   if (!node) return;
@@ -52,6 +54,27 @@ export function layoutStyle(raw, field) {
   if (tx || ty) { o["--ed-t"] = `translate(${tx || "0px"}, ${ty || "0px"})`; o["--ed-y"] = ty || "0px"; o.zIndex = 5; }
   if (design && (raw.width || raw.height || tx || ty)) { o.position = "relative"; o.alignSelf = "flex-start"; o.justifySelf = "start"; }
   ["paddingTop", "paddingBottom", "paddingLeft", "paddingRight", "marginTop", "marginBottom", "marginLeft", "marginRight"].forEach((k) => { if (raw[k]) o[k] = raw[k]; });
+  Object.assign(o, lineStyle(raw));
+  return o;
+}
+// Lines added in the live editor ("Line above / below") and the built-in red lines / dividers.
+function lineStyle(raw) {
+  const o = {};
+  const layers = [], sizes = [], places = [];
+  const side = raw.textAlign === "center" ? "center" : raw.textAlign === "right" ? "right" : "left";
+  [["lineAbove", "top", "paddingTop"], ["lineBelow", "bottom", "paddingBottom"]].forEach(([key, where, pad]) => {
+    const kind = LINE_KINDS[raw[key]];
+    if (!kind) return;
+    const color = raw.lineColor || kind.color, length = raw.lineLength || kind.length, thick = raw.lineThickness || kind.thickness, gap = raw.lineGap || kind.gap;
+    layers.push(`linear-gradient(${color}, ${color})`); sizes.push(`${length} ${thick}`); places.push(`${side} ${where}`);
+    o[pad] = raw[pad] ? `calc(${raw[pad]} + ${gap} + ${thick})` : `calc(${gap} + ${thick})`;
+  });
+  if (layers.length) { o.backgroundImage = layers.join(", "); o.backgroundSize = sizes.join(", "); o.backgroundPosition = places.join(", "); o.backgroundRepeat = "no-repeat"; }
+  if (raw.accentLength) o["--accent-line-w"] = raw.accentLength;
+  if (raw.accentThickness) o["--accent-line"] = raw.accentThickness;
+  if (raw.accentGap) o["--accent-line-gap"] = raw.accentGap;
+  if (raw.accentColor) o["--accent-color"] = raw.accentColor;
+  if (raw.dividers === "hide") o["--hide-dividers"] = "1";
   return o;
 }
 // Button geometry belongs to the shared text-and-icon wrapper.
