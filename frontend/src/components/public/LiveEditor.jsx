@@ -10,7 +10,7 @@ import { api, errMsg } from "../../lib/api";
 import { MediaPicker } from "../admin/Kit";
 import { useLiveEditor } from "./editor/LiveEditorProvider";
 import { FieldInspector } from "./editor/FieldInspector";
-import { isImageField, isLayoutField } from "./editor/editorFields";
+import { isImageField, isLayoutField, isFixedField } from "./editor/editorFields";
 import { SelectionToolbar } from "./editor/SelectionToolbar";
 import { ColorField, px } from "./editor/ColorField";
 import { normalizeReferenceContent } from "./editor/referenceGeometry";
@@ -36,6 +36,13 @@ function labelFor(field) {
   const f = field.match(/^feature\.(\w+)$/);
   if (f) return `Featured note — ${SUB[f[1]] || f[1]}`;
   if (field === "more_label") return "Bottom link";
+  if (field === "latest_label") return "Small label";
+  // Field Notes list (styles only; the words and photos belong to each note)
+  const LIST = { title: "Title", summary: "Summary", caption: "Caption", image: "Photo", image2: "Second photo" };
+  const lf = field.match(/^list\.featured\.(\w+?)(\d*)$/);
+  if (lf) return lf[1] === "image" ? `Latest note — Photo ${Number(lf[2] || 0) + 1}` : `Latest note — ${LIST[lf[1]] || lf[1]}`;
+  const lc = field.match(/^list\.(cards|related)\.(\d+)\.(\w+)$/);
+  if (lc) return `${lc[1] === "cards" ? "Note card" : "Related note"} ${Number(lc[2]) + 1} — ${LIST[lc[3]] || lc[3]}`;
   return field;
 }
 const TEXT_FIELDS = ["eyebrow", "heading", "subheading", "intro", "body_html", "aside", "text"];
@@ -60,10 +67,14 @@ const setPath = (obj, path, val) => {
   return root;
 };
 const findSecEl = (id) => (id ? document.querySelector(`main [data-sec="${CSS.escape(id)}"]`) : null);
+// A section can also own elements elsewhere on the page (data-sec-part), e.g. the related
+// notes under a Field Note.
 const findEl = (sel) => {
   const s = findSecEl(sel?.sec);
   if (!s) return null;
-  return sel.field === "_section" ? s : s.querySelector(`[data-edit="${sel.field}"]`);
+  if (sel.field === "_section") return s;
+  const q = `[data-edit="${sel.field}"]`;
+  return s.querySelector(q) || document.querySelector(`main [data-sec-part="${CSS.escape(sel.sec)}"] ${q}, main [data-sec-part="${CSS.escape(sel.sec)}"]${q}`);
 };
 
 // Which other editable items in the same section a moved/resized item now covers.
@@ -167,6 +178,9 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
   const isImage = isImageField(field);
   const isLayout = isLayoutField(field);
   const isText = !!field && !isLayout && !isImage;
+  // Field Notes list elements: style, size and position only (the words and photos belong to each note)
+  const fixed = isFixedField(field);
+  const lockedSection = sec?.type === "notes_list";
   const selEl = on && sel ? findEl(sel) : null;
   const cstyle = selEl ? window.getComputedStyle(selEl) : null;
   const spacingEl = field === "_section" && sec?.data?.layout === "rakhigarhi-ambition-aligned" ? selEl?.querySelector(":scope > section") : selEl;
@@ -245,7 +259,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
   const move = (id, dir) => { const i = idx(id); const j = i + dir; if (j < 0 || j >= sections.length) return; const a = [...sections]; [a[i], a[j]] = [a[j], a[i]]; commit(a); };
   const dup = (id) => { const i = idx(id); const a = [...sections]; a.splice(i + 1, 0, { ...clone(a[i]), id: newId() }); commit(a); };
   const remove = () => {
-    if (!sel) return;
+    if (!sel || fixed || (field === "_section" && lockedSection)) return;
     if (field === "_section") {
       if (!window.confirm("Delete this whole section, including its text and images?")) return;
       inlineDraft.current = null;
@@ -308,7 +322,8 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
         el = [...region.querySelectorAll("[data-edit]")].filter((node) => node.getClientRects().length).sort((a, b) => distance(a) - distance(b))[0];
         if (!el) return null;
       }
-      return { el, secEl: e.target.closest("[data-sec]") };
+      const secEl = e.target.closest("[data-sec], [data-sec-part]");
+      return { el, secEl, sec: secEl?.dataset.sec || secEl?.dataset.secPart };
     };
     // Select on pointerdown (before the old field blurs) so one click is always enough to switch fields.
     const down = (e) => {
@@ -317,13 +332,13 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
       if (!t?.secEl) return;
       if (e.target.closest('[aria-hidden="true"]')) e.preventDefault();
       lastPoint.current = { x: e.clientX, y: e.clientY };
-      selectField({ sec: t.secEl.dataset.sec, field: t.el ? t.el.dataset.edit : "_section" });
+      selectField({ sec: t.sec, field: t.el ? t.el.dataset.edit : "_section" });
     };
     const h = (e) => {
       const t = pick(e);
       if (!t) return;
       if (t.el || t.secEl) { e.preventDefault(); e.stopPropagation(); }
-      if (t.secEl) selectField({ sec: t.secEl.dataset.sec, field: t.el ? t.el.dataset.edit : "_section" });
+      if (t.secEl) selectField({ sec: t.sec, field: t.el ? t.el.dataset.edit : "_section" });
     };
     document.addEventListener("pointerdown", down, true);
     document.addEventListener("click", h, true);
@@ -334,7 +349,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
   useEffect(() => {
     const selected = findEl(sel);
     const el = selected?.querySelector("[data-edit-text]") || selected;
-    if (!on || scope !== "page" || !el || !isText) return undefined;
+    if (!on || scope !== "page" || !el || !isText || fixed) return undefined;
     el.contentEditable = "true";
     if (document.activeElement !== el) {
       el.focus({ preventScroll: true });
@@ -605,7 +620,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
           <span className="live-handle live-h-se" onPointerDown={resize("se")} data-testid="live-resize-se" />
           <span className="live-handle live-h-sw" onPointerDown={resize("sw")} data-testid="live-resize-sw" />
           {sec && !noteId && (
-            <SelectionToolbar section={sec} wholeSection={field === "_section"} container={isLayout && field !== "_section"}
+            <SelectionToolbar section={sec} wholeSection={field === "_section"} container={(isLayout && field !== "_section") || fixed} locked={lockedSection}
               onMove={(direction) => field === "_section" ? move(sec.id, direction) : setStyles({ translateY: `${num(st.translateY) + direction * 10}px` })}
               onDuplicate={() => dup(sec.id)} onHide={() => toggleHide(sec.id)} onDelete={remove}
               onAdd={() => setAddAt(idx(sec.id) + 1)} onSelectSection={() => selectField({ sec: sec.id, field: "_section" })}
@@ -663,7 +678,10 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
               <button type="button" className="live-link-btn" onClick={() => selectField(null)} title="Deselect (Esc)" data-testid="live-deselect">Done</button>
             </div>
 
-            {isImage ? (<>
+            {isImage && fixed ? (<>
+              <p className="live-hint" data-testid="live-fixed-hint">This photo belongs to the field note. Resize, move, crop or zoom it here; to replace it, use “Edit story &amp; image” under the note.</p>
+              <Group title="Crop & zoom" open testid="live-group-crop"><CropControls st={st} setStyles={setStyles} /></Group>
+            </>) : isImage ? (<>
               <Group title="Crop & zoom" open testid="live-group-crop"><CropControls st={st} setStyles={setStyles} /></Group>
               <Group title="Change photo" open testid="live-group-photo">
                 <div className="live-row" style={{ marginBottom: 0 }}>
@@ -685,7 +703,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
                 <TidyButton onClick={() => resetSectionLayout(sec.id)} />
               </Group>
             ) : isText ? (<>
-              <p className="live-hint">Type directly on the page to change the words.</p>
+              <p className="live-hint" data-testid={fixed ? "live-fixed-hint" : undefined}>{fixed ? "These words belong to the field note — change them with “Edit story & image” under the note. Size, colour, position and spacing can be changed here." : "Type directly on the page to change the words."}</p>
               <Group title="Text style" open testid="live-group-text">
                 <div className="live-row">
                   <SliderField label="Size (px)" min={10} max={96} value={st.fontSize || ""} fallback={cstyle ? parseFloat(cstyle.fontSize) : undefined} placeholder={cstyle ? String(Math.round(parseFloat(cstyle.fontSize))) : "Default"} onChange={(v) => setStyles({ fontSize: v })} testid="live-font-size" />

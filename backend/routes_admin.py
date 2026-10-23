@@ -14,7 +14,7 @@ from header_settings import HeaderPatch, HeaderSaved, clean_header_styles, valid
 from text_styles import clean_text_style, text_style_key
 
 router = APIRouter(prefix="/api/admin")
-SECTION_TYPES = {"hero", "text", "image_text", "image", "gallery", "quote", "video", "related_work", "notes_feed", "download", "contact_invite", "contact_form"}
+SECTION_TYPES = {"hero", "text", "image_text", "image", "gallery", "quote", "video", "related_work", "notes_feed", "notes_list", "download", "contact_invite", "contact_form"}
 SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 NOTE_KINDS = {"article", "photo_essay", "interview", "workshop_reflection", "resource"}
 

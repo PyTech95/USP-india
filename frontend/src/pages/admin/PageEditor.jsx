@@ -23,7 +23,10 @@ export const SCHEMAS = {
   contact_invite: ["Contact invitation", [["eyebrow", "text", "Small label above heading"], ["heading", "text"], ["text", "textarea"], ["button_label", "text"], ["href", "text", "Button link"], ["buttons", "list:links", "Several buttons (replaces the single button)"]]],
   related_work: ["Related work", [["eyebrow", "text", "Small label above heading"], ["heading", "text"], ["intro", "textarea"], ["items", "list:work", "Items"]]],
   contact_form: ["Enquiry form", [["heading", "text"], ["intro", "textarea"]]],
+  notes_list: ["Field Notes list (all published notes, newest first)", [["latest_label", "text", "Small label above the latest note"]]],
 };
+// Sections that only belong on one page are not offered in "Add section".
+const ADDABLE = Object.entries(SCHEMAS).filter(([k]) => k !== "notes_list");
 const DEFAULTS = { image_side: "left", layout: "full", count: 3, items: [], buttons: [], href: "/connect", button_label: "Connect with Us" };
 const newId = () => Math.random().toString(36).slice(2, 12);
 
@@ -156,7 +159,7 @@ export default function PageEditor() {
             <div className="flex gap-2 items-center mt-3">
               <label htmlFor="add-type" className="text-sm font-semibold">Add section</label>
               <select id="add-type" className="h-10 border border-input bg-white px-2" value={addType} onChange={(e) => setAddType(e.target.value)} data-testid="add-section-type">
-                {Object.entries(SCHEMAS).map(([k, [l]]) => <option key={k} value={k}>{l}</option>)}
+                {ADDABLE.map(([k, [l]]) => <option key={k} value={k}>{l}</option>)}
               </select>
               <Button variant="outline" onClick={addSection} data-testid="add-section-btn">Add</Button>
             </div>

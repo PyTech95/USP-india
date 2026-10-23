@@ -52,6 +52,9 @@ export const SiteChromeEditor = () => {
       if (event.target.closest(".live-ui,[role=dialog]")) return;
       const el = event.target.closest("[data-site-edit],[data-site-style]");
       if (!el) return;
+      // A page field inside a site-styled line (e.g. the author in a note's date line) is edited as a page field.
+      const field = event.target.closest("[data-edit]");
+      if (scope === "page" && field && field !== el && el.contains(field)) return;
       if (el.closest("#site-header") && scope === "page") { event.preventDefault(); event.stopPropagation(); setScope("header"); return; }
       event.preventDefault(); event.stopPropagation();
       const location = el.closest("header.header") ? "header" : el.closest("footer.footer") ? "footer" : "main";

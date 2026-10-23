@@ -48,7 +48,7 @@ export function NoteArticle({ note, id, slug, published_at, updated_at, related 
         </div>
       </Fragment>
     </article>
-    <section className="wrap section"><SiteText name="related_notes" as="h2" className="h2" /><NoteList items={related} /></section>
+    <section className="wrap section"><SiteText name="related_notes" as="h2" className="h2" /><NoteList items={related} ed={id ? (field) => sx(s, field) : undefined} part={id ? s.id : undefined} /></section>
   </>;
 }
 
