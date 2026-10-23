@@ -10,7 +10,9 @@ export const setPath = (obj, path, value) => {
   return root;
 };
 export const isLayoutField = (field) => field === "_section" || field === "_contact_card";
-export const isImageField = (field) => /(^|\.)(image|cover|poster)$|^collage\.\d+$/.test(field || "");
+export const isImageField = (field) => /(^|\.)(image\d*|cover|poster)$|^collage\.\d+$/.test(field || ""); // image, image2, …
+// Styled in the live editor but filled from elsewhere (the Field Notes list shows each note's own words and photos).
+export const isFixedField = (field) => /^list\./.test(field || "");
 const SKIP = new Set(["media", "original", "edit_note", "notes", "media_id", "anchor", "layout", "style", "styles", "image_side", "slot", "crop", "cropMobile", "size", "placeholder_label", "id", "slug", "seo", "related", "tags"]);
 export function editableFields(data, prefix = "") {
   const result = [];

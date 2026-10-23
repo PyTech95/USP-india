@@ -322,8 +322,8 @@ html body #public-site#public-site [data-testid="page-field-notes"] .ps-plain-ta
 #public-site .fn-featured-head { display: grid; grid-template-columns: 1fr minmax(0, 340px); gap: 2rem; align-items: center; margin-bottom: 22px; }
 #public-site .fn-featured-title { font: 400 clamp(24px, 2.3vw, 30px)/1.2 var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif) !important; color: #1f1d1b !important; margin: 0 !important; text-transform: none !important; letter-spacing: 0 !important; }
 #public-site .fn-summary { font: 300 15px/1.6 var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif); color: #55514c; margin: 0; max-width: 420px; }
-#public-site .fn-strip { display: flex; gap: 8px; height: calc(var(--fw) * .198); }
-#public-site .fn-strip-item { all: unset; cursor: pointer; overflow: hidden; flex: 1 1 0; min-width: 0; }
+#public-site .fn-strip { display: flex; gap: 8px; align-items: flex-start; }
+#public-site .fn-strip-item { all: unset; cursor: pointer; overflow: hidden; flex: 1 1 0; min-width: 0; height: calc(var(--fw) * .198); }
 #public-site .fn-strip-item:nth-child(1) { flex-grow: .97; } #public-site .fn-strip-item:nth-child(2) { flex-grow: 1.02; } #public-site .fn-strip-item:nth-child(3) { flex-grow: .9; } #public-site .fn-strip-item:nth-child(4) { flex-grow: .93; } #public-site .fn-strip-item:nth-child(5) { flex-grow: 1.04; }
 #public-site .fn-caption { font-size: 12px; color: #76716b; margin: 14px 0 0; }
 #public-site .fn-group { margin-top: calc(var(--fw) * .072); }
@@ -345,7 +345,7 @@ html body #public-site#public-site [data-testid="page-field-notes"] .ps-plain-ta
 @media (max-width: 760px) {
   html body #public-site#public-site [data-testid="page-field-notes"] .ps-plain-inner, #public-site .fn-featured-head { grid-template-columns: 1fr; gap: 14px; }
   #public-site .fn-strip { height: auto; display: grid; grid-template-columns: repeat(2, 1fr); }
-  #public-site .fn-strip-item { aspect-ratio: 1; }
+  #public-site .fn-strip-item { aspect-ratio: 1; height: auto; }
   #public-site .fn-strip-item:first-child { grid-column: span 2; aspect-ratio: 4 / 3; }
   #public-site .fn-pair, #public-site .fn-c { grid-template-columns: 1fr; }
   #public-site .fn-b, #public-site .fn-c { margin-top: 56px; }

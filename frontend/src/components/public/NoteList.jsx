@@ -7,12 +7,14 @@ import { Pencil } from "lucide-react";
 
 export const KIND = { article: "Article", photo_essay: "Photo essay", interview: "Interview", workshop_reflection: "Workshop reflection", resource: "Resource" };
 
-export function NoteList({ items }) {
+// ed (field => live-editor props) and part (the section that stores the styles) are given on a
+// Field Note page, so the related notes' photos can be resized like any other photo.
+export function NoteList({ items, ed, part }) {
   const { on } = useLiveEditor();
   if (!items.length) return <SiteText as="p" name="empty_notes" data-testid="notes-empty" />;
   return (
     <ul style={{ listStyle: "none", padding: 0, margin: "1.5rem 0 0" }} data-testid="notes-list">
-      {items.map((n) => (
+      {items.map((n, i) => (
         <li key={n.slug} className="note-item reveal" data-testid={`note-item-${n.slug}`}>
           <article>
             <p className="eyebrow" style={{ marginBottom: ".5rem" }} data-site-style="display.notes-category" data-testid={`note-category-${n.slug}`}><SiteText name={`kind_${n.kind}`} fallback="Field Note" />{n.category ? ` · ${n.category}` : ""}</p>
@@ -21,7 +23,7 @@ export function NoteList({ items }) {
             <p className="meta" style={{ margin: 0 }} data-site-style="display.notes-meta" data-testid={`note-meta-${n.slug}`}>{n.author}{n.author ? " · " : ""}<time dateTime={n.published_at}>{fmtDate(n.published_at)}</time></p>
             {on && <Link to={`/field-notes/${n.slug}?edit=1`} className="more-link live-note-link" data-live-navigate data-testid={`edit-note-${n.slug}`}><Pencil size={14} /> Edit story & image</Link>}
           </article>
-          <div>{n.cover && <Photo ref_={{ media: n.cover }} sizes="(min-width: 860px) 30vw, 90vw" crop="4/3" framed testid={`note-card-image-${n.slug}`} />}</div>
+          <div data-sec-part={part}>{n.cover && <Photo ref_={{ media: n.cover }} sizes="(min-width: 860px) 30vw, 90vw" crop="4/3" framed testid={`note-card-image-${n.slug}`} ed={ed?.(`list.related.${i}.image`)} />}</div>
         </li>
       ))}
     </ul>

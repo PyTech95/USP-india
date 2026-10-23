@@ -16,20 +16,39 @@ import { TheatreHero, TheatreArchive, TheatreProduction } from "./TheatreSection
 import { AboutHero, AboutIntroduction, AboutTeam, AboutApproach } from "./AboutSections";
 import { SplitHero, PlainHero, WorkRows, ConnectForm } from "./PageSections";
 import { HomeFieldNotes } from "./HomeFieldNotes";
+import { NotesListing } from "./NotesListing";
 import { isDesignMode, designTranslate } from "../../lib/designMode";
 import { LINE_KINDS } from "./editor/lineKinds";
 
 export const fontStack = (f) => `"${f}", system-ui, sans-serif`;
-const LAYOUT_PROPS = ["--ed-w", "--ed-h", "--ed-ar", "--ed-crop", "--ed-zoom", "aspectRatio", "overflow", "--ed-t", "--ed-y", "position", "alignSelf", "justifySelf", "zIndex", "paddingTop", "paddingBottom", "paddingLeft", "paddingRight", "marginTop", "marginBottom", "marginLeft", "marginRight", "backgroundColor", "borderRadius",
+const LAYOUT_PROPS = ["--ed-w", "--ed-h", "--ed-ar", "--ed-crop", "--ed-zoom", "aspectRatio", "overflow", "--ed-t", "--ed-y", "position", "alignSelf", "justifySelf", "zIndex",
+  "width", "maxWidth", "minWidth", "flex", "height", "maxHeight", "minHeight", "transform", "paddingTop", "paddingBottom", "paddingLeft", "paddingRight", "marginTop", "marginBottom", "marginLeft", "marginRight", "backgroundColor", "borderRadius",
   "backgroundImage", "backgroundSize", "backgroundPosition", "backgroundRepeat", "--accent-line-w", "--accent-line", "--accent-line-gap", "--accent-color", "--hide-dividers"];
+// Spacing, position and colour always belong to the editor: when not set, the element shows the
+// stylesheet's value (as the live site always has). Sizes and transforms are only removed again
+// when the editor set them, so a component's own inline size stays.
+const OWNED = new Set(["aspectRatio", "overflow", "position", "alignSelf", "justifySelf", "zIndex", "paddingTop", "paddingBottom", "paddingLeft", "paddingRight",
+  "marginTop", "marginBottom", "marginLeft", "marginRight", "backgroundColor", "borderRadius", "backgroundImage", "backgroundSize", "backgroundPosition", "backgroundRepeat"]);
 const toKebab = (p) => (p.startsWith("--") ? p : p.replace(/[A-Z]/g, (m) => "-" + m.toLowerCase()));
+// Editor values are written on the element itself with !important, so no page stylesheet can
+// hold a saved size, position, spacing or colour back.
 function applyProps(node, obj, keys) {
   if (!node) return;
+  const before = node.__edProps || new Set(), now = new Set();
   keys.forEach((p) => {
-    const v = obj[p];
-    if (v !== undefined && v !== null && v !== "") node.style.setProperty(toKebab(p), String(v), "important");
-    else node.style.removeProperty(toKebab(p));
+    const v = obj[p], k = toKebab(p);
+    if (v !== undefined && v !== null && v !== "") { node.style.setProperty(k, String(v), "important"); now.add(k); }
+    else if (OWNED.has(p) || k.startsWith("--") || before.has(k)) node.style.removeProperty(k);
   });
+  node.__edProps = now;
+}
+// Inline styles on a child element (photo frame / picture), removed again when no longer needed.
+function applyInline(node, decl, tag) {
+  if (!node) return;
+  const before = node[tag] || {};
+  Object.keys(before).forEach((k) => { if (!decl || !(k in decl)) node.style.removeProperty(k); });
+  if (decl) Object.entries(decl).forEach(([k, v]) => node.style.setProperty(k, v, "important"));
+  node[tag] = decl || {};
 }
 // Free-form layout from editor values (measured on the 1440px design).
 // Design mode (1200px+ screens, and while editing): the saved size/offset, scaled with the
@@ -39,12 +58,23 @@ function applyProps(node, obj, keys) {
 export function layoutStyle(raw, field) {
   const o = {};
   const design = isDesignMode();
+  const image = isImageField(field);
+  const scaled = (v) => `calc(${v} * var(--dz, 1))`;
   const tx = design ? raw.translateX : "", ty = design ? raw.translateY : "";
-  if (raw.width && design) o["--ed-w"] = raw.width;
+  if (raw.width && design) {
+    o["--ed-w"] = raw.width;
+    o.width = scaled(raw.width); o.maxWidth = "none"; o.minWidth = "0"; o.flex = "0 0 auto";
+  }
   if (raw.height) {
-    if (design) o["--ed-h"] = raw.height;
-    if (!isImageField(field) && field !== "_contact_card") { if (design) o.overflow = "visible"; }
-    else if (isImageField(field) && /px$/.test(raw.width || "") && /px$/.test(raw.height)) o["--ed-ar"] = `${parseFloat(raw.width)} / ${parseFloat(raw.height)}`;
+    if (design) {
+      o["--ed-h"] = raw.height;
+      // a photo's frame gets the height (see sx); text boxes and sections keep at least the saved
+      // height and grow with their content, so they never run into the next block
+      if (image) { o.height = "auto"; o.maxHeight = "none"; o.minHeight = "0"; o.aspectRatio = "auto"; }
+      else { o.height = "auto"; o.maxHeight = "none"; o.minHeight = scaled(raw.height); }
+    }
+    if (!image && field !== "_contact_card") { if (design) o.overflow = "visible"; }
+    else if (image && /px$/.test(raw.width || "") && /px$/.test(raw.height)) o["--ed-ar"] = `${parseFloat(raw.width)} / ${parseFloat(raw.height)}`;
   }
   if (raw.objectPosition) o.objectPosition = raw.objectPosition;
   // Image crop from the live editor: frame shape + zoom (position = objectPosition).
@@ -52,8 +82,9 @@ export function layoutStyle(raw, field) {
   if (raw.zoom && parseFloat(raw.zoom) > 1) o["--ed-zoom"] = raw.zoom;
   if (raw.backgroundColor) o.backgroundColor = raw.backgroundColor;
   if (raw.borderRadius) o.borderRadius = raw.borderRadius;
-  if (tx || ty) { o["--ed-t"] = designTranslate(tx, ty); o["--ed-y"] = ty || "0px"; o.zIndex = 5; }
-  if (design && (raw.width || raw.height || tx || ty)) { o.position = "relative"; o.alignSelf = "flex-start"; o.justifySelf = "start"; }
+  if (tx || ty) { o["--ed-t"] = designTranslate(tx, ty); o.transform = designTranslate(tx, ty); o["--ed-y"] = ty || "0px"; o.zIndex = 5; }
+  // positioned so a moved block can sit above its neighbours; it stays where the design puts it
+  if (design && (raw.width || raw.height || tx || ty)) o.position = "relative";
   ["paddingTop", "paddingBottom", "paddingLeft", "paddingRight", "marginTop", "marginBottom", "marginLeft", "marginRight"].forEach((k) => { if (raw[k]) o[k] = raw[k]; });
   Object.assign(o, lineStyle(raw));
   return o;
@@ -92,7 +123,27 @@ export function sx(s, field) {
       if (node && style.position) node.style.removeProperty("position");
       const pinned = node && style.position && /^(absolute|fixed)$/.test(getComputedStyle(node).position);
       applyProps(node, style, pinned ? LAYOUT_PROPS.filter((p) => !["position", "alignSelf", "justifySelf"].includes(p)) : LAYOUT_PROPS);
-      if (node && !node.dataset.testid) node.dataset.testid = `editable-${s?.id || "text"}-${field.replaceAll(".", "-")}`;
+      if (node) {
+        // a size or offset needs a box: inline text (a link, a list label) becomes inline-block
+        const geo = !!(style.width || style.minHeight || style.transform || style["--ed-h"]);
+        if (geo && (node.__edInline || getComputedStyle(node).display === "inline")) { node.style.setProperty("display", "inline-block", "important"); node.__edInline = true; }
+        else if (!geo && node.__edInline) { node.style.removeProperty("display"); node.__edInline = false; }
+        // a photo resized in the editor: its frame takes the height and the picture fills it
+        if (isImageField(field)) {
+          const h = style["--ed-h"], frame = node.querySelector(":scope > .photo-frame"), img = frame?.querySelector(":scope > img");
+          applyInline(frame, h ? { height: `calc(${h} * var(--dz, 1))`, "aspect-ratio": "auto", "max-height": "none", "min-height": "0" } : null, "__edFrame");
+          // a box that holds a photo (Field Notes list): the box itself takes the height, or the chosen crop shape
+          const box = !frame && !node.matches("figure, img, video");
+          const crop = style["--ed-crop"];
+          applyInline(node, box && h ? { height: `calc(${h} * var(--dz, 1))`, "aspect-ratio": "auto", "max-height": "none", "min-height": "0" }
+            : box && crop ? { "aspect-ratio": crop, height: "auto" } : null, "__edBox");
+          // a photo pinned to both edges of its section (top and bottom) is released at the bottom so its height can change
+          const pin = h && /^(absolute|fixed)$/.test(getComputedStyle(node).position) && getComputedStyle(node).top !== "auto";
+          applyInline(node, pin ? { bottom: "auto" } : null, "__edPin");
+          applyInline(img, h ? { width: "100%", height: "100%", "max-width": "none", "max-height": "none", "aspect-ratio": "auto", "object-fit": "cover" } : null, "__edImg");
+        }
+        if (!node.dataset.testid) node.dataset.testid = `editable-${s?.id || "text"}-${field.replaceAll(".", "-")}`;
+      }
     },
     ...(isImageField(field) ? { captionEd: sx(s, `${field}.caption`), creditEd: sx(s, `${field}.credit`) } : {}),
   };
@@ -382,6 +433,7 @@ function BlockInner({ s, first, i, home, pageKey }) {
     ) : null;
   }
   if (t === "related_work") return <section data-testid={id}><RelatedWork d={d} s={s} i={i} home={home} /></section>;
+  if (t === "notes_list") return <NotesListing s={s} ed={(field) => sx(s, field)} />;
   if (t === "notes_feed" && d.layout === "home-editorial")
     return <HomeFieldNotes s={s} id={id} ed={(field) => sx(s, field)} />;
   if (t === "notes_feed")

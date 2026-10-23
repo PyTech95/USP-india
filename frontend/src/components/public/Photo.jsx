@@ -11,7 +11,7 @@ function Pending({ ref_, testid }) {
   );
 }
 
-export function Photo({ ref_, eager = false, sizes = "(min-width: 1024px) 58vw, 100vw", crop, cropMobile, framed, testid, small, className = "", ed, captionSlot = false }) {
+export function Photo({ ref_, eager = false, sizes = "(min-width: 1024px) 58vw, 100vw", crop, cropMobile, framed, testid, small, className = "", ed, captionSlot = false, fill = false }) {
   const preview = usePreview();
   const [showOriginal, setShowOriginal] = useState(false);
   const m = ref_?.media;
@@ -52,9 +52,12 @@ export function Photo({ ref_, eager = false, sizes = "(min-width: 1024px) 58vw, 
     ...(es.paddingRight ? { paddingRight: es.paddingRight } : {}),
   };
   const focus = es.objectPosition || (framed_ ? `${m.focal_desktop.x}% ${m.focal_desktop.y}%` : "");
+  const edH = es["--ed-h"]; // photo resized in the editor (desktop design): the picture fills its frame
+  // fill: the photo sits in a box that sets its size (Field Notes list), so a crop or zoom keeps filling it
+  const fillMode = !!edH || (fill && framed_);
   const imgStyle = {
-    ...(es.height ? { height: es.height, width: "100%", aspectRatio: "auto", objectFit: framed_ ? "cover" : "contain" } : {}),
-    ...(framed_ && !es.height ? { objectFit: "cover", height: "auto", width: "100%", ...(editorCrop ? { aspectRatio: editorCrop } : {}) } : {}),
+    ...(fillMode ? { width: "100%", height: "100%", maxWidth: "none", maxHeight: "none", aspectRatio: "auto", objectFit: "cover" } : {}),
+    ...(framed_ && !fillMode ? { objectFit: "cover", height: "auto", width: "100%", ...(editorCrop ? { aspectRatio: editorCrop } : {}) } : {}),
     ...(focus ? { objectPosition: focus } : {}),
     ...(zoom > 1 ? { transform: `scale(${zoom})`, transformOrigin: focus || "50% 50%" } : {}),
   };
@@ -75,7 +78,7 @@ export function Photo({ ref_, eager = false, sizes = "(min-width: 1024px) 58vw, 
           style={imgStyle}
           ref={(node) => {
             if (!node) return;
-            ["height", "width", "aspect-ratio", "object-fit", "object-position", "transform", "transform-origin"].forEach((p) => node.style.removeProperty(p));
+            ["height", "width", "max-width", "max-height", "aspect-ratio", "object-fit", "object-position", "transform", "transform-origin"].forEach((p) => node.style.removeProperty(p));
             Object.entries(imgStyle).forEach(([key, val]) => node.style.setProperty(key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`), val, "important"));
           }}
         />
