@@ -21,6 +21,7 @@ import "@/styles/responsive.css";
 import "@/styles/layout-grid.css";
 import "@/styles/lines.css";
 import "@/styles/design-1440.css";
+import "@/styles/theatre-collage.css";
 import App from "@/App";
 
 const queryClient = new QueryClient({

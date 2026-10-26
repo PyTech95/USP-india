@@ -84,6 +84,7 @@ are cleared once on the first start (they were measured on another layout and ma
 Every page uses one grid (`frontend/src/styles/layout-grid.css`): all sections start and end on the same two lines, so text, photos and divider lines stay lined up and centred on any screen. On tablets and phones text inside and outside the coloured bands starts on the same edge.
 
 On desktop, each page follows the owner's approved page designs section by section (`frontend/src/styles/design-1440.css`: positions, column widths and spacing for Home, Who We Are, Theatre, Craft & Livelihood, Workshops & Learning, Field Notes and Connect). Those rules only apply to the desktop design; sizes typed in the live editor still win.
+The Theatre page's top section follows the October 2026 design (`frontend/src/styles/theatre-collage.css`): two overlapping rehearsal photos, the title at the bottom left with a short orange line, and the introduction in a light band. Both photos, the texts and the line can be changed, cropped, resized and moved in the live editor.
 
 ## Responsive layout (how sizes and positions work)
 

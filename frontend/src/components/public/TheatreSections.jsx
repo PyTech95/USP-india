@@ -37,7 +37,33 @@ export const TheatreSplitHero = ({ data, first, id, editable }) => {
   </div>;
 };
 
+// Two overlapping rehearsal photos at the top right, the title at the bottom left with a short
+// line under it, and the introduction in a light band below (owner's October 2026 design).
+export const TheatreCollageHero = ({ data, first, id, editable }) => {
+  const Heading = first ? "h1" : "h2";
+  return <div className="theatre-collage" data-testid="theatre-collage-hero">
+    <div className="tc-top">
+      <div className="tc-copy" data-testid="theatre-hero-copy">
+        {data.eyebrow && <p className="eyebrow tc-eyebrow" data-testid={`${id}-eyebrow`} {...editable("eyebrow")}>{data.eyebrow}</p>}
+        <Heading className="h1 tc-heading" data-testid={`${id}-heading`} {...editable("heading")}>
+          {(data.heading || "").split(/(?<=\.)\s+|\n+/).filter(Boolean).map((line, i) => <span className="theatre-hero-line" key={i}>{line}</span>)}
+        </Heading>
+      </div>
+      <div className="tc-photos" data-testid={`${id}-photos`}>
+        <Photo ref_={data.image} eager fill className="tc-photo tc-photo-1" sizes="(min-width: 961px) 36vw, 92vw" testid={`${id}-image`} ed={editable("image")} />
+        <Photo ref_={data.image2} eager fill className="tc-photo tc-photo-2" sizes="(min-width: 961px) 33vw, 84vw" testid={`${id}-image2`} ed={editable("image2")} />
+      </div>
+    </div>
+    {data.intro && <div className="tc-band">
+      <div className="tc-intro" data-testid={`${id}-intro`} {...editable("intro")}>
+        {data.intro.split(/\n\s*\n/).map((text, i) => <p key={i}>{text}</p>)}
+      </div>
+    </div>}
+  </div>;
+};
+
 export const TheatreHero = ({ data, first, id, editable }) => {
+  if (data.layout === "theatre-collage") return <TheatreCollageHero data={data} first={first} id={id} editable={editable} />;
   if (data.layout === "theatre-split") return <TheatreSplitHero data={data} first={first} id={id} editable={editable} />;
   const Heading = first ? "h1" : "h2";
   return <>
