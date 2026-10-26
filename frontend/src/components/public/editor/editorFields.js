@@ -9,7 +9,9 @@ export const setPath = (obj, path, value) => {
   current[keys[keys.length - 1]] = value;
   return root;
 };
-export const isLayoutField = (field) => field === "_section" || field === "_contact_card";
+// Boxes inside a section (a coloured band, a card): "_" + name. They are resized and coloured, not typed in.
+export const isLayoutField = (field) => /^_[a-z_]+$/.test(field || "");
+export const BOX_LABELS = { _section: "Whole section", _contact_card: "White contact card", _contact_hero: "Contact title box", _band: "Light band", _principles: "Principles box" };
 export const isImageField = (field) => /(^|\.)(image\d*|cover|poster)$|^collage\.\d+$/.test(field || ""); // image, image2, …
 // Styled in the live editor but filled from elsewhere (the Field Notes list shows each note's own words and photos).
 export const isFixedField = (field) => /^list\./.test(field || "");

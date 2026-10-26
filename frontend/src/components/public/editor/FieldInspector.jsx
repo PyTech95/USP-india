@@ -1,4 +1,4 @@
-import { editableFields, getPath, isImageField, isLayoutField, isFixedField } from "./editorFields";
+import { editableFields, getPath, isImageField, isLayoutField, isFixedField, BOX_LABELS } from "./editorFields";
 
 // Everything that can be clicked on the page, including elements whose words come from elsewhere.
 const pageFields = (id, listed) => {
@@ -21,9 +21,8 @@ export const FieldInspector = ({ sections, selected, onSelect, onChange, title, 
       {selected && path !== "_section" && !listed && <option value={`${selected.sec}|${path}`}>{path}</option>}
       {sections.map((s, i) => <optgroup key={s.id} label={`${i + 1}. ${s.data?.eyebrow || s.data?.heading || s.type}${s.hidden ? " (hidden)" : ""}`}>
         <option value={`${s.id}|_section`}>Whole section</option>
-        {s.data?.layout === "connect-form" && <option value={`${s.id}|_contact_card`}>White contact card</option>}
         {editableFields(s.data).map((f) => <option key={f.path} value={`${s.id}|${f.path}`}>{f.path}{f.kind === "image" ? " — image" : ""}</option>)}
-        {pageFields(s.id, new Set(editableFields(s.data).map((f) => f.path))).map((f) => <option key={f} value={`${s.id}|${f}`}>{f}{isImageField(f) ? " — image" : ""}{isFixedField(f) ? " (style only)" : ""}</option>)}
+        {pageFields(s.id, new Set(editableFields(s.data).map((f) => f.path))).filter((f) => f !== "_section").map((f) => <option key={f} value={`${s.id}|${f}`}>{BOX_LABELS[f] ? `${BOX_LABELS[f]} (box)` : f}{isImageField(f) ? " — image" : ""}{isFixedField(f) ? " (style only)" : ""}</option>)}
       </optgroup>)}
     </select></label>
     {section && path && !isLayoutField(path) && !isImageField(path) && !isFixedField(path) && <label className="live-field">{path.endsWith("_html") ? "Text / HTML" : "Text or link"}<textarea rows={path.endsWith("_html") ? 8 : 3} value={typeof value === "string" ? value : ""} onChange={(e) => onChange(section.id, path, e.target.value)} data-testid="live-field-value" /></label>}

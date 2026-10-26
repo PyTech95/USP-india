@@ -1,0 +1,23 @@
+/* Section changes made in the live editor that are not tied to one page's design.
+   (Space above / below a section is set on the section's own boxes by applySpace() in Blocks.jsx.) */
+
+/* A colour given to a section that is not one of the designs' coloured bands: painted as a band
+   behind the section (as wide as the site's coloured bands, or as the section itself when it is a
+   column or has its own width). Nothing inside the section moves. */
+html body #public-site#public-site main .hb.hb-paint { position: relative; z-index: 0; }
+html body #public-site#public-site main .hb.hb-paint::before {
+  content: ""; position: absolute; top: 0; bottom: 0; z-index: -1; pointer-events: none;
+  left: calc(50% - var(--box-w) / 2); width: var(--box-w);
+  background: var(--sec-bg); border-radius: var(--sec-radius, 0);
+}
+html body #public-site#public-site main :is(.about-intro-grid, .rak-use-grid) > .hb.hb-paint::before,
+html body #public-site#public-site main .hb.hb-paint[style*="--ed-w"]::before { left: 0; width: 100%; }
+
+/* Photos added to a section with the editor's "Add a photo" button (SectionExtras in Blocks.jsx).
+   Desktop design: free-standing on top of the section, placed from its top-left corner by the
+   editor's position and size. Tablets and phones: one after another under the section's content. */
+html body #public-site#public-site main .hb.has-extras { position: relative; }
+html.ed-design body #public-site#public-site main .hb-extras { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+html.ed-design body #public-site#public-site main .hb-extras > .hb-extra { position: absolute !important; left: 0 !important; top: 0 !important; width: calc(360px * var(--dz, 1)); max-width: none !important; margin: 0 !important; pointer-events: auto; }
+html.ed-fluid body #public-site#public-site main .hb-extras { display: grid; gap: 16px; padding: 0 var(--content-l, 20px) 32px; }
+html.ed-fluid body #public-site#public-site main .hb-extras > .hb-extra { width: 100% !important; max-width: 640px !important; margin: 0 auto; transform: none !important; }

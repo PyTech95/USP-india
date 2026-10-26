@@ -33,7 +33,7 @@ export const AboutApproach = ({ data, id, editable }) => <section className="abo
     <Title data={data} id={id} editable={editable} />
     <Copy html={data.body_html} id={`${id}-body`} ed={editable("body_html")} />
   </div>
-  <aside className="about-principles" aria-label="Our principles" data-testid="about-principles">
+  <aside className="about-principles" aria-label="Our principles" data-testid="about-principles" {...editable("_principles")}>
     <ul>{(data.values || []).map((value, i) => <li key={i}><span data-testid={`${id}-principle-${i}`} {...editable(`values.${i}.text`)}>{value.text}</span></li>)}</ul>
   </aside>
 </section>;

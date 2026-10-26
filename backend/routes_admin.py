@@ -97,6 +97,8 @@ STYLE_KEYS = {"fontFamily", "fontSize", "fontWeight", "fontStyle", "color", "bac
               "width", "height", "maxWidth", "lineHeight", "letterSpacing", "borderRadius", "opacity",
               "paddingTop", "paddingBottom", "paddingLeft", "paddingRight", "marginTop", "marginBottom", "marginLeft", "marginRight", "objectPosition",
               "translateX", "translateY", "zoom", "aspectRatio",
+              # space above / below a section's content (dragging its top or bottom edge)
+              "spaceTop", "spaceBottom",
               # lines: added above/below an element, and the built-in red lines / dividers
               "lineAbove", "lineBelow", "lineColor", "lineLength", "lineThickness", "lineGap",
               "accentLength", "accentThickness", "accentGap", "accentColor", "dividers"}

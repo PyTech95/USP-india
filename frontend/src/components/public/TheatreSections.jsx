@@ -54,7 +54,7 @@ export const TheatreCollageHero = ({ data, first, id, editable }) => {
         <Photo ref_={data.image2} eager fill className="tc-photo tc-photo-2" sizes="(min-width: 961px) 33vw, 84vw" testid={`${id}-image2`} ed={editable("image2")} />
       </div>
     </div>
-    {data.intro && <div className="tc-band">
+    {data.intro && <div className="tc-band" {...editable("_band")}>
       <div className="tc-intro" data-testid={`${id}-intro`} {...editable("intro")}>
         {data.intro.split(/\n\s*\n/).map((text, i) => <p key={i}>{text}</p>)}
       </div>

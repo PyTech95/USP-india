@@ -17,7 +17,7 @@ import { AboutHero, AboutIntroduction, AboutTeam, AboutApproach } from "./AboutS
 import { SplitHero, PlainHero, WorkRows, ConnectForm } from "./PageSections";
 import { HomeFieldNotes } from "./HomeFieldNotes";
 import { NotesListing } from "./NotesListing";
-import { isDesignMode, designTranslate } from "../../lib/designMode";
+import { isDesignMode, designTranslate, designZoom } from "../../lib/designMode";
 import { LINE_KINDS } from "./editor/lineKinds";
 
 export const fontStack = (f) => `"${f}", system-ui, sans-serif`;
@@ -147,6 +147,88 @@ export function sx(s, field) {
     },
     ...(isImageField(field) ? { captionEd: sx(s, `${field}.caption`), creditEd: sx(s, `${field}.credit`) } : {}),
   };
+}
+// Space above / below a section's content, changed in the live editor by dragging the section's
+// top or bottom edge or typing "Space above / below". Saved as design px added to (or taken from)
+// the section's own spacing, so the section really gets shorter or taller and the sections below
+// follow it (no gaps, no overlaps). That spacing sits in different places per layout: the padding
+// of the outermost padded box along the section's first (top) or last (bottom) child, plus the
+// minimum heights of the boxes around it (heroes keep their text in place inside them).
+function spaceTargets(node, top) {
+  const pad = top ? "paddingTop" : "paddingBottom";
+  const mins = [];
+  let el = node, owner = null, first = null;
+  for (let depth = 0; depth < 8 && el; depth += 1) {
+    const cs = getComputedStyle(el);
+    if (depth) {
+      if (cs.display === "inline" || el.hasAttribute("data-edit")) break;
+      if (parseFloat(cs.minHeight) > 0) mins.push(el);
+      if (parseFloat(cs[pad]) > 0.5) { owner = el; break; }
+      first = first || el;
+    }
+    const kids = [...el.children].filter((c) => { const k = getComputedStyle(c); return k.display !== "none" && !/^(absolute|fixed)$/.test(k.position) && c.tagName !== "STYLE" && !c.classList.contains("hb-extras"); });
+    const across = kids.length > 1 && ((/flex/.test(cs.display) && !/column/.test(cs.flexDirection)) || (/grid/.test(cs.display) && cs.gridTemplateColumns.trim().split(/\s+/).length > 1));
+    if (!kids.length || across) break;
+    el = top ? kids[0] : kids[kids.length - 1];
+  }
+  return { owner: owner || first || node, mins };
+}
+function clearSpace(node) {
+  if (!node) return;
+  (node.__space || []).forEach(([el, prop]) => el.style.removeProperty(prop));
+  node.__space = [];
+}
+function applySpace(node, raw) {
+  // like other sizes from the editor, spacing belongs to the desktop design: tablets and phones keep
+  // their own (much smaller) spacing
+  if (!node || !isDesignMode()) return;
+  const k = designZoom() || 1;
+  [[true, raw?.spaceTop], [false, raw?.spaceBottom]].forEach(([top, value]) => {
+    const delta = parseFloat(value) || 0;
+    if (!delta) return;
+    const { owner, mins } = spaceTargets(node, top);
+    const prop = top ? "padding-top" : "padding-bottom";
+    // design px, scaled with the page below 1440px (--dz) like every other saved size
+    const size = (px) => `max(0px, calc(${Math.round((px / k + delta) * 100) / 100}px * var(--dz, 1)))`;
+    owner.style.setProperty(prop, size(parseFloat(getComputedStyle(owner)[top ? "paddingTop" : "paddingBottom"]) || 0), "important");
+    node.__space.push([owner, prop]);
+    mins.forEach((el) => {
+      el.style.setProperty("min-height", size(parseFloat(getComputedStyle(el).minHeight) || 0), "important");
+      node.__space.push([el, "min-height"]);
+    });
+  });
+}
+// The least empty space a section can have above / below its content (screen px): measured with
+// all of its own spacing taken away, then the saved spacing is put back (no repaint in between).
+export function spaceLimits(node, raw) {
+  clearSpace(node);
+  applySpace(node, { ...raw, spaceTop: "-100000px", spaceBottom: "-100000px" });
+  const least = visibleSpace(node);
+  clearSpace(node);
+  applySpace(node, raw);
+  return least;
+}
+// Empty space above the first and below the last visible content of a section (screen px):
+// text, photos, form fields, and coloured boxes narrower than the section.
+export function visibleSpace(secEl) {
+  const r = secEl.getBoundingClientRect();
+  let top = Infinity, bottom = -Infinity;
+  const add = (x) => { if (x.width > 0.5 && x.height > 0.5) { top = Math.min(top, x.top); bottom = Math.max(bottom, x.bottom); } };
+  const walker = document.createTreeWalker(secEl, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT);
+  for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+    if (n.nodeType === 3) {
+      if (!n.textContent.trim()) continue;
+      const range = document.createRange(); range.selectNodeContents(n);
+      [...range.getClientRects()].forEach(add);
+    } else if (n.matches("img, video, svg, iframe, input, textarea, select, button, canvas, hr")) add(n.getBoundingClientRect());
+    else if (n !== secEl) {
+      const cs = getComputedStyle(n), b = n.getBoundingClientRect();
+      const painted = (cs.backgroundColor !== "rgba(0, 0, 0, 0)" && cs.backgroundColor !== "transparent") || parseFloat(cs.borderTopWidth) > 0 || parseFloat(cs.borderBottomWidth) > 0;
+      if (painted && b.width < 0.9 * r.width) add(b);
+    }
+  }
+  if (top === Infinity) return { top: 0, bottom: 0 };
+  return { top: Math.max(0, top - r.top), bottom: Math.max(0, r.bottom - bottom) };
 }
 // Section-wrapper style: visual props + free-form layout (translate -> transform).
 function secStyleOf(raw) {
@@ -303,15 +385,51 @@ export function Block(props) {
     }
   }
   const hasBg = !!secStyle?.backgroundColor;
-  const boxedBand = hasBg && !["transparent", "white", "#fff", "#ffffff"].includes(secStyle.backgroundColor.toLowerCase()) && !["hero", "contact_form"].includes(t);
-  return <div data-boxed-band={boxedBand || undefined} id={d.anchor || undefined} className={`hb hb-${t} ${d.band ? "band" : ""} ${hasBg ? "hb-bg" : ""}`} data-block-type={t} data-sec={props.s.id} style={style} ref={(node) => {
-    applyProps(node, style || {}, [...LAYOUT_PROPS, "backgroundColor", "borderRadius", "--section-pt", "--section-pb"]);
-    if (node) node.querySelectorAll(":scope > section, .hero-plain, .rak-hero, .workshops-hero, .craft-hero-intro, .about-hero").forEach((child) => {
-      if (hasBg) child.style.setProperty("background-color", "transparent", "important");
-      else child.style.removeProperty("background-color");
-    });
-  }} data-testid={`block-${props.i}-wrap`}>{el}</div>;
+  const bg = secStyle?.backgroundColor || "";
+  // Coloured bands that are part of the page designs ("boxed", saved with the colour they were
+  // designed with: their layout is drawn as a band) and the designs' own bands keep the colour on
+  // the section box. Any other section the owner colours keeps its layout exactly: the colour fills
+  // the section's own background panel when it has one (a hero's panel), otherwise a band is painted
+  // behind it (see section-edits.css). A designed band's hero panel shows a colour once it is changed.
+  const boxed = !!d.boxed, banded = boxed || !!d.band;
+  const boxedBand = banded && hasBg && !["transparent", "white", "#fff", "#ffffff"].includes(bg.toLowerCase()) && !["hero", "contact_form"].includes(t);
+  const panelColour = hasBg && (!boxed || typeof d.boxed !== "string" || d.boxed.toLowerCase() !== bg.toLowerCase()) ? bg : "";
+  if (hasBg && !banded) {
+    style["--sec-bg"] = style.backgroundColor;
+    if (style.borderRadius) style["--sec-radius"] = style.borderRadius;
+    delete style.backgroundColor; delete style.borderRadius;
+  }
+  const extras = (d.extras || []).some((x) => x?.image);
+  return <div data-boxed-band={boxedBand || undefined} id={d.anchor || undefined} className={`hb hb-${t} ${d.band ? "band" : ""} ${boxed ? "hb-bg" : ""} ${extras ? "has-extras" : ""}`} data-block-type={t} data-sec={props.s.id} style={style} ref={(node) => {
+    clearSpace(node);
+    applyProps(node, style || {}, [...LAYOUT_PROPS, "backgroundColor", "borderRadius", "--section-pt", "--section-pb", "--sec-bg", "--sec-radius"]);
+    if (node) {
+      // start from the stylesheet's colours, then apply the section colour
+      node.querySelectorAll(`${BAND_CLEAR}, ${SECTION_PANELS}`).forEach((child) => child.style.removeProperty("background-color"));
+      node.querySelectorAll(".about-approach").forEach((panel) => panel.style.removeProperty("--about-panel"));
+      if (hasBg && banded) node.querySelectorAll(BAND_CLEAR).forEach((child) => child.style.setProperty("background-color", "transparent", "important"));
+      let painted = false;
+      if (panelColour) {
+        node.querySelectorAll(SECTION_PANELS).forEach((panel) => { if (panel.closest("[data-sec]") === node) { panel.style.setProperty("background-color", panelColour, "important"); painted = true; } });
+        node.querySelectorAll(".about-approach").forEach((panel) => { panel.style.setProperty("--about-panel", panelColour); painted = true; });
+      }
+      node.classList.toggle("hb-paint", hasBg && !banded && !painted);
+    }
+    applySpace(node, secStyle);
+  }} data-testid={`block-${props.i}-wrap`}>{el}{extras && <SectionExtras s={props.s} />}</div>;
 }
+// Photos added to a section with the live editor's "Add a photo" button. On the desktop design they
+// sit where they were dragged (move, resize and crop them like any photo); tablets and phones show
+// them one after another under the section's content.
+function SectionExtras({ s }) {
+  return <div className="hb-extras" data-testid={`extras-${s.id}`}>
+    {(s.data?.extras || []).map((x, k) => x?.image ? <Photo key={k} ref_={x.image} sizes="(min-width: 1200px) 40vw, 100vw" className="hb-extra" testid={`extra-${s.id}-${k}`} ed={sx(s, `extras.${k}.image`)} /> : null)}
+  </div>;
+}
+// The boxes that are a section's own background (a hero's panel): a section colour fills them.
+const SECTION_PANELS = ".hero-plain, .ps-plain-hero, .tc-top, .hero-type, .craft-hero-intro";
+// Inside a coloured band from the page designs these boxes are see-through, so the band shows.
+const BAND_CLEAR = ":scope > section, .hero-plain, .rak-hero, .workshops-hero, .craft-hero-intro, .about-hero";
 
 function AmbitionBody({ d, s, id }) {
   const groupStyle = { ...sx(s, "body_html"), "data-edit": undefined };

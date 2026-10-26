@@ -4,13 +4,13 @@ import { toast } from "sonner";
 import {
   X, Save, Upload, Images, RotateCcw, AlignLeft, AlignCenter, AlignRight,
   Plus, Undo2, Redo2, Bold, Italic,
-  Monitor, Tablet, Smartphone, Type, Paintbrush, Square, LayoutGrid, GripVertical,
+  Monitor, Tablet, Smartphone, Type, Paintbrush, Square, LayoutGrid, GripVertical, ImagePlus,
 } from "lucide-react";
 import { api, errMsg } from "../../lib/api";
 import { MediaPicker } from "../admin/Kit";
 import { useLiveEditor } from "./editor/LiveEditorProvider";
 import { FieldInspector } from "./editor/FieldInspector";
-import { isImageField, isLayoutField, isFixedField } from "./editor/editorFields";
+import { isImageField, isLayoutField, isFixedField, BOX_LABELS } from "./editor/editorFields";
 import { SelectionToolbar } from "./editor/SelectionToolbar";
 import { ColorField, px } from "./editor/ColorField";
 import { normalizeReferenceContent } from "./editor/referenceGeometry";
@@ -19,10 +19,11 @@ import { SliderField } from "./editor/ColorField";
 import { LineControls } from "./editor/LineControls";
 import { CropControls, parsePos } from "./editor/CropControls";
 import { useFloatingPanel } from "./editor/useFloatingPanel";
+import { visibleSpace, spaceLimits } from "./Blocks";
 
 const LABELS = { eyebrow: "Small label", heading: "Heading", subheading: "Sub-heading", intro: "Intro text",
   body_html: "Body text", body_1_html: "Text box 1", body_2_html: "Text box 2", body_3_html: "Text box 3",
-  aside: "Side statement", text: "Text", image: "Image", _section: "Whole section", _contact_card: "White contact card" };
+  aside: "Side statement", text: "Text", image: "Image", ...BOX_LABELS };
 function labelFor(field) {
   if (!field) return "";
   if (LABELS[field]) return LABELS[field];
@@ -35,6 +36,8 @@ function labelFor(field) {
   }
   const f = field.match(/^feature\.(\w+)$/);
   if (f) return `Featured note — ${SUB[f[1]] || f[1]}`;
+  const ex = field.match(/^extras\.(\d+)\.image$/);
+  if (ex) return `Added photo ${Number(ex[1]) + 1}`;
   if (field === "more_label") return "Bottom link";
   if (field === "latest_label") return "Small label";
   // Field Notes list (styles only; the words and photos belong to each note)
@@ -67,6 +70,34 @@ const setPath = (obj, path, val) => {
   return root;
 };
 const findSecEl = (id) => (id ? document.querySelector(`main [data-sec="${CSS.escape(id)}"]`) : null);
+// "rgb(253, 247, 238)" -> "#fdf7ee" (the colour picker shows the box's current colour)
+const hexOf = (rgb) => {
+  const m = /^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)$/.exec(rgb || "");
+  if (!m || (m[4] !== undefined && parseFloat(m[4]) === 0)) return "";
+  return `#${[m[1], m[2], m[3]].map((v) => Number(v).toString(16).padStart(2, "0")).join("")}`;
+};
+// A photo added to a section is moved and resized within that section.
+const keepInSection = (el, field) => (el && /^extras\.\d+\.image$/.test(field || "") ? el.closest("[data-sec]")?.getBoundingClientRect() : null);
+// The space above / below a section's content when its top or bottom edge starts being dragged
+// (design px), and the saved changes it builds on.
+function sectionSpaceStart(el, st, z) {
+  const vis = visibleSpace(el);
+  const out = { top: Math.round(vis.top / z), bottom: Math.round(vis.bottom / z), dTop: parseFloat(st.spaceTop) || 0, dBottom: parseFloat(st.spaceBottom) || 0, patch: {} };
+  const prev = el.style.getPropertyValue("min-height"), prio = el.style.getPropertyPriority("min-height");
+  if (st.height) {
+    // an older "minimum height" becomes space below the content, so dragging up can shrink the section
+    const h = el.getBoundingClientRect().height;
+    el.style.setProperty("min-height", "0px", "important");
+    out.dBottom += Math.round((h - el.getBoundingClientRect().height) / z);
+    out.patch = { height: "" };
+  }
+  // how far each side can shrink before it would touch the content
+  const least = spaceLimits(el, st);
+  if (st.height) { if (prev) el.style.setProperty("min-height", prev, prio); else el.style.removeProperty("min-height"); }
+  out.minTop = Math.min(out.top, Math.round(least.top / z));
+  out.minBottom = Math.min(out.bottom, Math.round(least.bottom / z));
+  return out;
+}
 // A section can also own elements elsewhere on the page (data-sec-part), e.g. the related
 // notes under a Field Note.
 const findEl = (sel) => {
@@ -152,7 +183,11 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
   const [panelSide, setPanelSide] = useState("right");
   const fp = useFloatingPanel("page");
   const [guides, setGuides] = useState([]);
+  const [dragInfo, setDragInfo] = useState(null);
+  const [addPhoto, setAddPhoto] = useState(null); // section that gets a new photo (the "Add a photo" menu is open)
+  const [pickerFor, setPickerFor] = useState(null);
   const fileRef = useRef(null);
+  const extraFileRef = useRef(null);
   const inlineDraft = useRef(null);
   const dragging = useRef(null);
   const [narrow, setNarrow] = useState(() => typeof window !== "undefined" && window.innerWidth < 1440);
@@ -201,7 +236,8 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
       const styles = {};
       Object.entries(s.styles || {}).forEach(([f, v]) => {
         const next = { ...v };
-        ["translateX", "translateY", "width", "height"].forEach((k) => delete next[k]);
+        // photos added to the section have no standard place: they stay where they were put
+        if (!/^extras\./.test(f)) ["translateX", "translateY", "width", "height"].forEach((k) => delete next[k]);
         if (Object.keys(next).length) styles[f] = next;
       });
       return { ...s, styles };
@@ -264,6 +300,23 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
       if (!window.confirm("Delete this whole section, including its text and images?")) return;
       inlineDraft.current = null;
       commit(sections.filter((s) => s.id !== sel.sec));
+    } else if (/^extras\.\d+\.image$/.test(field)) {
+      // an added photo is taken off the section; the photos added after it keep their places
+      inlineDraft.current = null;
+      const n = Number(field.split(".")[1]);
+      patchSec(sel.sec, (s) => {
+        const extras = [...(s.data?.extras || [])]; extras.splice(n, 1);
+        const styles = {};
+        Object.entries(s.styles || {}).forEach(([f, v]) => {
+          const m = f.match(/^extras\.(\d+)\.(.+)$/);
+          if (!m) styles[f] = v;
+          else if (Number(m[1]) < n) styles[f] = v;
+          else if (Number(m[1]) > n) styles[`extras.${Number(m[1]) - 1}.${m[2]}`] = v;
+        });
+        const data = { ...(s.data || {}), extras };
+        if (!extras.length) delete data.extras;
+        return { ...s, data, styles };
+      });
     } else {
       inlineDraft.current = null;
       patchSec(sel.sec, (s) => ({ ...s, data: setPath(s.data, field, isImage ? { media_id: "", caption: "", credit: "" } : "") }));
@@ -439,8 +492,34 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
       toast.success("Saved on this site");
     } catch (e) { toast.error(errMsg(e)); } finally { setBusy(false); }
   };
+  const resolvedMedia = (m) => ({ ...m, src: m.preview, srcs: (m.derivs || []).map((d) => ({ w: d.w, url: `/api/admin/media/${m.id}/view/${d.w}?v=${m.version}` })) });
+  // "Add a photo": the photo is put on the section where it can be seen, then selected so it can
+  // be dragged into place and resized straight away.
+  const addExtra = (m, secId) => {
+    const secEl = findSecEl(secId);
+    const s0 = sections.find((x) => x.id === secId);
+    if (!secEl || !s0) return;
+    const r = secEl.getBoundingClientRect(), z = zoomOf(secEl) || 1;
+    const ratio = m.width && m.height ? m.height / m.width : 0.75;
+    const w = Math.round(Math.max(140, Math.min(360, (0.8 * r.height / z) / ratio)));
+    const top = Math.max(r.top, Math.min(window.innerHeight * 0.25, r.bottom - w * ratio * z));
+    const tx = Math.round((r.width / 2) / z - w / 2), ty = Math.max(0, Math.round((top - r.top) / z));
+    const k = (s0.data?.extras || []).length;
+    patchSec(secId, (s) => ({ ...s,
+      data: { ...(s.data || {}), extras: [...(s.data?.extras || []), { image: { media_id: m.id, media: resolvedMedia(m) } }] },
+      styles: { ...(s.styles || {}), [`extras.${k}.image`]: { width: `${w}px`, translateX: `${tx}px`, translateY: `${ty}px` } } }));
+    remount(); setBusy(false); setAddPhoto(null);
+    setTimeout(() => setSel({ sec: secId, field: `extras.${k}.image` }), 60);
+    toast.success("Photo added. Drag it into place and use the red handles to resize it.");
+  };
+  const uploadExtra = async (file, secId) => {
+    if (!file || !secId) return;
+    const fd = new FormData(); fd.append("file", file); fd.append("category", "live-editor");
+    try { setBusy(true); const r = await api.post("/admin/media", fd); addExtra(r.data, secId); }
+    catch (e) { toast.error(errMsg(e)); setBusy(false); }
+  };
   const setImage = (m) => {
-    const resolved = { ...m, src: m.preview, srcs: (m.derivs || []).map((d) => ({ w: d.w, url: `/api/admin/media/${m.id}/view/${d.w}?v=${m.version}` })) };
+    const resolved = resolvedMedia(m);
     patchSec(sel.sec, (s) => ({ ...s, data: setPath(s.data, field, { ...(getPath(s.data, field) || {}), media_id: m.id, media: resolved }) }));
     remount(); setBusy(false);
   };
@@ -491,16 +570,40 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
     const tx0 = num(st.translateX), ty0 = num(st.translateY);
     const z = zoomOf(el); // screen px -> design px when the page is scaled to fit
     const d = (v) => Math.round(v / z);
+    // A whole section's top and bottom edges change the space above / below its content: the
+    // section really gets shorter or taller and the sections below move with it.
+    const space = field === "_section" && el ? sectionSpaceStart(el, st, z) : null;
+    const inBox = keepInSection(el, field);
     const mv = (ev) => {
       let dx = ev.clientX - sx0, dy = ev.clientY - sy0;
       const gls = [];
       if (dir.includes("e")) { const s = nearest(r0.right + dx, xs); if (s != null) { dx += s - (r0.right + dx); gls.push({ x: s }); } }
       if (dir.includes("w")) { const s = nearest(r0.left + dx, xs); if (s != null) { dx += s - (r0.left + dx); gls.push({ x: s }); } }
-      if (dir.includes("s")) { const s = nearest(r0.bottom + dy, ys); if (s != null) { dy += s - (r0.bottom + dy); gls.push({ y: s }); } }
-      if (dir.includes("n")) { const s = nearest(r0.top + dy, ys); if (s != null) { dy += s - (r0.top + dy); gls.push({ y: s }); } }
+      if (!space && dir.includes("s")) { const s = nearest(r0.bottom + dy, ys); if (s != null) { dy += s - (r0.bottom + dy); gls.push({ y: s }); } }
+      if (!space && dir.includes("n")) { const s = nearest(r0.top + dy, ys); if (s != null) { dy += s - (r0.top + dy); gls.push({ y: s }); } }
       const patch = {};
+      if (inBox) {
+        if (dir.includes("e")) dx = Math.min(dx, inBox.right - r0.right);
+        if (dir.includes("w")) dx = Math.max(dx, inBox.left - r0.left);
+        if (dir.includes("s")) dy = Math.min(dy, inBox.bottom - r0.bottom);
+        if (dir.includes("n")) dy = Math.max(dy, inBox.top - r0.top);
+        // a photo without a set height grows taller as it gets wider: keep its bottom in the section too
+        if (!st.height && !/[ns]/.test(dir) && h0 > 0) {
+          const most = w0 * (inBox.bottom - r0.top) / h0 - w0;
+          if (dir.includes("e")) dx = Math.min(dx, most); else dx = Math.max(dx, -most);
+        }
+      }
       if (dir.includes("e")) patch.width = `${Math.max(40, d(w0 + dx))}px`;
       if (dir.includes("w")) { const nw = Math.max(40 * z, w0 - dx); patch.width = `${d(nw)}px`; patch.translateX = `${tx0 + d(w0 - nw)}px`; }
+      if (space && /[ns]/.test(dir)) {
+        const top = dir.includes("n"), least = top ? space.minTop : space.minBottom;
+        const now = Math.max(least, (top ? space.top : space.bottom) + d(dy));
+        const delta = (top ? space.dTop : space.dBottom) + now - (top ? space.top : space.bottom);
+        Object.assign(patch, space.patch, { [top ? "spaceTop" : "spaceBottom"]: delta ? `${delta}px` : "" });
+        setDragInfo({ x: ev.clientX, y: ev.clientY, text: `Space ${top ? "above" : "below"}: ${now}px${now === least && dy < 0 ? " (smallest)" : ""}` });
+        setStyles(patch); setGuides(gls);
+        return;
+      }
       if (dir.includes("s")) patch.height = `${Math.max(20, d(h0 + dy))}px`;
       if (dir.includes("n")) { const nh = Math.max(20 * z, h0 - dy); patch.height = `${d(nh)}px`; patch.translateY = `${ty0 + d(h0 - nh)}px`; }
       // Keep the opposite edge fixed when flex alignment repositions a resized action.
@@ -516,10 +619,53 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
       }
       setStyles(patch); setGuides(gls);
     };
-    const up = () => { endDrag(); setGuides([]); window.removeEventListener("pointermove", mv); window.removeEventListener("pointerup", up); checkOverlap(); };
+    const up = () => { endDrag(); setGuides([]); setDragInfo(null); window.removeEventListener("pointermove", mv); window.removeEventListener("pointerup", up); checkOverlap(); };
+    window.addEventListener("pointermove", mv); window.addEventListener("pointerup", up);
+  };
+  // Whole sections are moved up or down the page (put before or after another section) — never
+  // pushed out of the page flow, which would leave a gap above them and cover the next one.
+  const reorderDrag = (e) => {
+    e.preventDefault(); e.stopPropagation();
+    e.target.setPointerCapture?.(e.pointerId);
+    const id = sel.sec;
+    const order = () => [...document.querySelectorAll("main [data-sec]")].filter((n) => !n.parentElement.closest("[data-sec]"));
+    let target = null, px = e.clientX, py = e.clientY, raf = 0;
+    const update = () => {
+      const list = order(), ids = list.map((n) => n.dataset.sec);
+      const next = list.find((n) => { const r = n.getBoundingClientRect(); return py < r.top + r.height / 2; });
+      const line = next ? next.getBoundingClientRect().top : list.length ? list[list.length - 1].getBoundingClientRect().bottom : null;
+      target = next ? next.dataset.sec : "";
+      const at = next ? ids.indexOf(target) : ids.length, mine = ids.indexOf(id);
+      const same = at === mine || at === mine + 1;
+      setGuides(line != null && !same ? [{ y: line }] : []);
+      setDragInfo({ x: px, y: py, text: same ? "Drag up or down to move this section" : next ? "Drop to move the section here" : "Drop to move the section to the end" });
+    };
+    // near the top or bottom of the window the page scrolls, so a section can go anywhere
+    const scroll = () => {
+      const edge = 70, vh = window.innerHeight;
+      const step = py < edge ? -Math.ceil((edge - py) / 3) : py > vh - edge ? Math.ceil((py - (vh - edge)) / 3) : 0;
+      if (step) { window.scrollBy(0, step); update(); }
+      raf = requestAnimationFrame(scroll);
+    };
+    raf = requestAnimationFrame(scroll);
+    const mv = (ev) => { px = ev.clientX; py = ev.clientY; update(); };
+    const up = () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("pointermove", mv); window.removeEventListener("pointerup", up);
+      setGuides([]); setDragInfo(null);
+      if (target == null || target === id) return;
+      const without = sections.filter((s) => s.id !== id), moved = sections.find((s) => s.id === id);
+      const at = target ? without.findIndex((s) => s.id === target) : without.length;
+      if (at < 0 || !moved) return;
+      const nextList = [...without.slice(0, at), moved, ...without.slice(at)];
+      if (nextList.every((s, i) => s.id === sections[i].id)) return;
+      commit(nextList); remount();
+      toast.success("Section moved. Ctrl/⌘+Z undoes it.");
+    };
     window.addEventListener("pointermove", mv); window.addEventListener("pointerup", up);
   };
   const moveDrag = (e) => {
+    if (field === "_section") { reorderDrag(e); return; }
     e.preventDefault(); e.stopPropagation();
     dragging.current = "start";
     e.target.setPointerCapture?.(e.pointerId);
@@ -528,6 +674,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
     const { xs, ys } = gatherSnaps(el);
     const sx0 = e.clientX, sy0 = e.clientY, tx0 = num(st.translateX), ty0 = num(st.translateY);
     const z = zoomOf(el);
+    const box = keepInSection(el, field);
     const mv = (ev) => {
       let dx = ev.clientX - sx0, dy = ev.clientY - sy0;
       const gls = [];
@@ -536,6 +683,11 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
         if (xc.length) { xc.sort((a, b) => Math.abs(a[0] - a[1]) - Math.abs(b[0] - b[1])); dx += xc[0][0] - xc[0][1]; gls.push({ x: xc[0][0] }); }
         const yc = [[r0.top + dy], [r0.bottom + dy], [r0.top + r0.height / 2 + dy]].map(([v]) => [nearest(v, ys), v]).filter((c) => c[0] != null);
         if (yc.length) { yc.sort((a, b) => Math.abs(a[0] - a[1]) - Math.abs(b[0] - b[1])); dy += yc[0][0] - yc[0][1]; gls.push({ y: yc[0][0] }); }
+        // a photo added to a section stays inside that section
+        if (box) {
+          dx = Math.min(Math.max(dx, box.left - r0.left), Math.max(box.left - r0.left, box.right - r0.right));
+          dy = Math.min(Math.max(dy, box.top - r0.top), Math.max(box.top - r0.top, box.bottom - r0.bottom));
+        }
       }
       setStyles({ translateX: `${tx0 + Math.round(dx / z)}px`, translateY: `${ty0 + Math.round(dy / z)}px` }); setGuides(gls);
     };
@@ -575,6 +727,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
       const mod = e.metaKey || e.ctrlKey;
       const k = e.key.toLowerCase();
       const typing = !!e.target.closest?.("input, textarea, select, [contenteditable=true]");
+      if (k === "escape" && addPhoto && !picker) { e.preventDefault(); setAddPhoto(null); return; }
       if (e.target.closest?.("[role=dialog]")) return;
       if (mod && k === "s") { e.preventDefault(); if (dirty && !busy) save(); return; }
       const nativeUndo = typing && !(e.target.closest?.("[contenteditable=true]") && !inlineDraft.current);
@@ -582,7 +735,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
       if (mod && !nativeUndo && k === "z") { e.preventDefault(); if (e.shiftKey) redo(); else undo(); return; }
       if (mod && !nativeUndo && k === "y") { e.preventDefault(); redo(); return; }
       if (k === "escape" && sel) { e.preventDefault(); if (typing) e.target.blur?.(); selectField(null); return; }
-      if (!typing && sel && !isText && k.startsWith("arrow")) {
+      if (!typing && sel && !isText && field !== "_section" && k.startsWith("arrow")) {
         e.preventDefault();
         const step = e.shiftKey ? 10 : 1;
         const dx = k === "arrowleft" ? -step : k === "arrowright" ? step : 0;
@@ -607,12 +760,13 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
       {guides.map((g, i) => (
         <div key={i} className={`live-ui live-guide ${g.x != null ? "live-guide-v" : "live-guide-h"}`} style={g.x != null ? { left: g.x } : { top: g.y }} data-testid="live-guide" />
       ))}
+      {dragInfo && <div className="live-ui live-drag-info" style={{ left: dragInfo.x + 14, top: dragInfo.y + 14 }} data-testid="live-drag-info">{dragInfo.text}</div>}
       {rect && (
         <div className={`live-ui live-box ${field === "_section" ? "live-box-sec" : ""}`} style={{ top: rect.top, left: rect.left, width: rect.width, height: rect.height }} data-testid="live-selection-box">
           {isImage && <div className="live-pan" onPointerDown={panDrag} title="Drag to choose which part of the photo shows" data-testid="live-crop-pan"><span>Drag to reposition</span></div>}
-          <span className="live-move-grip" onPointerDown={moveDrag} title="Drag to move anywhere" data-testid="live-move-grip"><GripVertical size={13} /></span>
-          <span className="live-handle live-h-n" onPointerDown={resize("n")} data-testid="live-resize-n" />
-          <span className="live-handle live-h-s" onPointerDown={resize("s")} data-testid="live-resize-s" />
+          <span className="live-move-grip" onPointerDown={moveDrag} title={field === "_section" ? "Drag up or down to move this section on the page" : "Drag to move anywhere"} data-testid="live-move-grip"><GripVertical size={13} /></span>
+          <span className="live-handle live-h-n" onPointerDown={resize("n")} title={field === "_section" ? "Drag to change the space above the content" : undefined} data-testid="live-resize-n" />
+          <span className="live-handle live-h-s" onPointerDown={resize("s")} title={field === "_section" ? "Drag up to make the section shorter, down to make it taller" : undefined} data-testid="live-resize-s" />
           <span className="live-handle live-h-e" onPointerDown={resize("e")} data-testid="live-resize-e" />
           <span className="live-handle live-h-w" onPointerDown={resize("w")} data-testid="live-resize-w" />
           <span className="live-handle live-h-ne" onPointerDown={resize("ne")} data-testid="live-resize-ne" />
@@ -623,7 +777,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
             <SelectionToolbar section={sec} wholeSection={field === "_section"} container={(isLayout && field !== "_section") || fixed} locked={lockedSection}
               onMove={(direction) => field === "_section" ? move(sec.id, direction) : setStyles({ translateY: `${num(st.translateY) + direction * 10}px` })}
               onDuplicate={() => dup(sec.id)} onHide={() => toggleHide(sec.id)} onDelete={remove}
-              onAdd={() => setAddAt(idx(sec.id) + 1)} onSelectSection={() => selectField({ sec: sec.id, field: "_section" })}
+              onAdd={() => setAddAt(idx(sec.id) + 1)} onSelectSection={() => selectField({ sec: sec.id, field: "_section" })} onAddPhoto={() => setAddPhoto(sec.id)}
               lines={{ above: !!st.lineAbove, below: !!st.lineBelow }}
               onLine={(where) => { const k = where === "above" ? "lineAbove" : "lineBelow"; setStyles({ [k]: st[k] ? "" : (field === "_section" ? "divider" : "accent") }); }} />
           )}
@@ -700,6 +854,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
                   Object.keys(f).forEach((k) => (f[k] === "" || f[k] == null) && delete f[k]);
                   return { ...s, styles: { ...(s.styles || {}), _section: f } };
                 })} />
+                <div className="live-row"><button type="button" className="live-btn" onClick={() => setAddPhoto(sec.id)} data-testid="live-sec-add-photo"><ImagePlus size={14} /> Add a photo</button></div>
                 <TidyButton onClick={() => resetSectionLayout(sec.id)} />
               </Group>
             ) : isText ? (<>
@@ -737,7 +892,13 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
                 </div>
                 <label className="live-field">Corner radius (px)<input type="number" min="0" max="80" value={px(st.borderRadius)} placeholder="0" onChange={(e) => setStyles({ borderRadius: e.target.value ? `${e.target.value}px` : "" })} data-testid="live-font-radius" /></label>
               </Group>
-            </>) : <p className="live-hint" data-testid="live-container-hint">Resize the white contact card using its handles or Size &amp; position below.</p>}
+            </>) : <Group title="Box colour" open testid="live-group-box">
+              <div className="live-row">
+                <ColorField label={<span className="live-color-cap"><Square size={12} /> Background</span>} value={st.backgroundColor || ""} onChange={(v) => setStyles({ backgroundColor: v })} testid="live-box-bg" fallback={hexOf(cstyle?.backgroundColor) || "#ffffff"} />
+              </div>
+              <label className="live-field">Corner radius (px)<input type="number" min="0" max="80" value={px(st.borderRadius)} placeholder="0" onChange={(e) => setStyles({ borderRadius: e.target.value ? `${e.target.value}px` : "" })} data-testid="live-box-radius" /></label>
+              <p className="live-hint live-hint-small" data-testid="live-container-hint">Resize or move this box with its handles or Size &amp; position below.</p>
+            </Group>}
 
             <Group title={field === "_section" ? "Lines (red lines & dividers)" : "Lines"} open={field === "_section"} testid="live-group-lines">
               <LineControls st={st} setStyles={setStyles} el={selEl} section={field === "_section"} />
@@ -752,11 +913,12 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
                 </div>
                 <div className="live-row">
                   <label className="live-field">Move X (px)<input type="number" value={px(st.translateX)} placeholder="0" onChange={(e) => setStyles({ translateX: e.target.value ? `${e.target.value}px` : "" })} data-testid="live-move-x" /></label>
-                  <label className="live-field">Move Y (px)<input type="number" value={px(st.translateY)} placeholder="0" onChange={(e) => setStyles({ translateY: e.target.value ? `${e.target.value}px` : "" })} data-testid="live-move-y" /></label>
+                  {/* a whole section is moved up/down the page with its grip; its height with Space above/below */}
+                  {(field !== "_section" || st.translateY) && <label className="live-field">Move Y (px)<input type="number" value={px(st.translateY)} placeholder="0" onChange={(e) => setStyles({ translateY: e.target.value ? `${e.target.value}px` : "" })} data-testid="live-move-y" /></label>}
                 </div>
                 <p className="live-label" style={{ marginTop: 4 }}>Padding inside (px)</p>
                 <div className="live-row live-row-4">
-                  {[["paddingTop", "Top"], ["paddingBottom", "Bottom"], ["paddingLeft", "Left"], ["paddingRight", "Right"]].map(([k, l]) => <label key={k} className="live-field">{l}<input type="number" value={px(st[k])} placeholder={padPH(k)} onChange={(e) => setStyles({ [k]: e.target.value ? `${e.target.value}px` : "" })} data-testid={`live-pad-${l.toLowerCase()}`} /></label>)}
+                  {[["paddingTop", "Top"], ["paddingBottom", "Bottom"], ["paddingLeft", "Left"], ["paddingRight", "Right"]].filter(([k]) => field !== "_section" || !/Top|Bottom/.test(k) || st[k]).map(([k, l]) => <label key={k} className="live-field">{l}<input type="number" value={px(st[k])} placeholder={padPH(k)} onChange={(e) => setStyles({ [k]: e.target.value ? `${e.target.value}px` : "" })} data-testid={`live-pad-${l.toLowerCase()}`} /></label>)}
                 </div>
                 <p className="live-label" style={{ marginTop: 4 }}>Margin outside (px)</p>
                 <div className="live-row live-row-4">
@@ -803,7 +965,18 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
         </div>
       )}
 
-      <MediaPicker open={picker} onClose={() => setPicker(false)} onPick={setImage} />
+      <MediaPicker open={picker} onClose={() => { setPicker(false); setPickerFor(null); }} onPick={(m) => (pickerFor ? addExtra(m, pickerFor) : setImage(m))} />
+      <input ref={extraFileRef} type="file" accept="image/*" hidden onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; uploadExtra(f, addPhoto); }} data-testid="live-add-photo-input" />
+      {addPhoto && (
+        <div className="live-ui live-add-menu" data-testid="live-add-photo-menu" role="dialog" aria-label="Add a photo">
+          <div className="live-add-head"><strong>Add a photo to this section</strong><button type="button" className="live-btn" onClick={() => setAddPhoto(null)} data-testid="live-add-photo-close"><X size={14} /></button></div>
+          <div className="live-add-grid live-add-grid-2">
+            <button type="button" className="live-add-item" disabled={busy} onClick={() => extraFileRef.current?.click()} data-testid="live-add-photo-upload"><Upload size={20} /><span>{busy ? "Uploading…" : "Upload from computer"}</span></button>
+            <button type="button" className="live-add-item" onClick={() => { setPickerFor(addPhoto); setPicker(true); }} data-testid="live-add-photo-library"><Images size={20} /><span>Choose from the library</span></button>
+          </div>
+          <p className="live-hint live-hint-small" style={{ marginTop: 10 }}>The photo appears on the section; drag it where you want it and resize it with the red handles. On phones it shows under the section’s text.</p>
+        </div>
+      )}
 
       {device !== "desktop" && createPortal(
         <div className="live-ui live-preview" data-testid="live-preview-overlay">
@@ -842,24 +1015,49 @@ function Group({ title, open = false, testid, children }) {
   );
 }
 
+// Space above / below the section's content, in design px as it looks now. Typing a number makes
+// the section exactly that much shorter or taller; the sections below move with it.
 function SectionStyle({ sec, onChange }) {
   const s = (sec.styles || {})._section || {};
-  const [placeholders, setPlaceholders] = useState({});
+  const [space, setSpace] = useState(null);
+  const [draft, setDraft] = useState({});
+  const start = useRef(null);
   useEffect(() => {
-    const root = document.querySelector(`[data-sec="${CSS.escape(sec.id)}"]`);
-    const inner = sec.data?.layout === "rakhigarhi-ambition-aligned" ? root?.querySelector(":scope > section") : root;
-    if (!inner) return undefined;
+    const root = document.querySelector(`main [data-sec="${CSS.escape(sec.id)}"]`);
+    if (!root) return undefined;
+    let raf = 0;
     const measure = () => {
-      const computed = window.getComputedStyle(inner);
-      setPlaceholders({ paddingTop: String(Math.round(parseFloat(computed.paddingTop) || 0)), paddingBottom: String(Math.round(parseFloat(computed.paddingBottom) || 0)) });
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const z = zoomOf(root) || 1, v = visibleSpace(root);
+        setSpace((o) => { const n = { top: Math.round(v.top / z), bottom: Math.round(v.bottom / z) }; return o && o.top === n.top && o.bottom === n.bottom ? o : n; });
+      });
     };
     measure();
     const observer = new ResizeObserver(measure);
-    observer.observe(inner);
+    observer.observe(root);
     window.addEventListener("resize", measure);
-    return () => { observer.disconnect(); window.removeEventListener("resize", measure); };
+    return () => { cancelAnimationFrame(raf); observer.disconnect(); window.removeEventListener("resize", measure); };
   }, [sec]);
-  const placeholder = (key) => placeholders[key] || "0";
+  const field = (key, side, label, testid) => {
+    const shown = draft[side] ?? (space ? String(space[side]) : "");
+    return <label className="live-field">{label}<input type="number" min="0" value={shown}
+      onFocus={() => {
+        const root = document.querySelector(`main [data-sec="${CSS.escape(sec.id)}"]`);
+        start.current = root ? sectionSpaceStart(root, s, zoomOf(root) || 1) : null;
+      }}
+      onChange={(e) => {
+        const value = e.target.value;
+        setDraft((d) => ({ ...d, [side]: value }));
+        const st0 = start.current;
+        if (!st0 || value === "" || Number.isNaN(Number(value))) return;
+        const least = side === "top" ? st0.minTop : st0.minBottom;
+        const delta = (side === "top" ? st0.dTop : st0.dBottom) + Math.max(least, Math.round(Number(value))) - st0[side];
+        onChange({ ...st0.patch, [key]: delta ? `${delta}px` : "" });
+      }}
+      onBlur={() => setDraft((d) => ({ ...d, [side]: undefined }))} data-testid={testid} /></label>;
+  };
+  const changed = !!(s.spaceTop || s.spaceBottom || s.paddingTop || s.paddingBottom);
   return (
     <>
       <div className="live-row">
@@ -867,9 +1065,11 @@ function SectionStyle({ sec, onChange }) {
         <button type="button" className="live-btn" onClick={() => onChange({ backgroundColor: "" })} data-testid="live-sec-bg-clear" title="Clear background"><RotateCcw size={14} /></button>
       </div>
       <div className="live-row">
-        <label className="live-field">Space top (px)<input type="number" value={px(s.paddingTop)} placeholder={placeholder("paddingTop")} onChange={(e) => onChange({ paddingTop: e.target.value ? `${e.target.value}px` : "" })} data-testid="live-sec-pad-top" /></label>
-        <label className="live-field">Space bottom (px)<input type="number" value={px(s.paddingBottom)} placeholder={placeholder("paddingBottom")} onChange={(e) => onChange({ paddingBottom: e.target.value ? `${e.target.value}px` : "" })} data-testid="live-sec-pad-bottom" /></label>
+        {field("spaceTop", "top", "Space above (px)", "live-sec-pad-top")}
+        {field("spaceBottom", "bottom", "Space below (px)", "live-sec-pad-bottom")}
+        {changed && <button type="button" className="live-btn" onClick={() => onChange({ spaceTop: "", spaceBottom: "", paddingTop: "", paddingBottom: "" })} title="Back to the standard spacing" data-testid="live-sec-space-reset"><RotateCcw size={14} /></button>}
       </div>
+      <p className="live-hint live-hint-small">Empty space above and below the section’s content. You can also drag the section’s top or bottom handle; the sections below move up or down with it.</p>
     </>
   );
 }
