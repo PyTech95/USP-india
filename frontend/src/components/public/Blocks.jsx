@@ -98,7 +98,8 @@ export function layoutStyle(raw, field) {
     // a section's place across the page is its width and sideways position (side margins could
     // push it off the page); the space between sections never goes below nothing (no overlaps)
     if (section && /^margin(Left|Right)$/.test(k)) return;
-    o[k] = section && /^margin/.test(k) ? `max(0px, ${raw[k]})` : raw[k];
+    // (a section's gaps are design px like its spacing; a negative one is applied by fitMargins)
+    o[k] = section && /^margin/.test(k) ? `max(0px, calc(${raw[k]} * var(--dz, 1)))` : raw[k];
   });
   Object.assign(o, lineStyle(raw));
   return o;
@@ -189,8 +190,28 @@ function spaceTargets(node, top) {
 }
 function clearSpace(node) {
   if (!node) return;
-  (node.__space || []).forEach(([el, prop]) => el.style.removeProperty(prop));
+  // put back what was there before (a section's own margin from the editor stays)
+  (node.__space || []).reverse().forEach(([el, prop, value, prio]) => { if (value) el.style.setProperty(prop, value, prio); else el.style.removeProperty(prop); });
   node.__space = [];
+  node.__pull = { top: 0, bottom: 0 };
+}
+const keepSpace = (node, el, prop) => node.__space.push([el, prop, el.style.getPropertyValue(prop), el.style.getPropertyPriority(prop)]);
+// Empty room outside a section (screen px), above or below it: up to whatever comes next on the page
+// (the section before / after it, or the footer; above the first one, the top of the page content),
+// across page wrappers and their padding. Nothing is ever there, so a section can be pulled into it
+// without covering anything.
+export function outsideGap(node, top) {
+  const r = node.getBoundingClientRect(), main = node.closest("main");
+  const shown = (el) => el.getClientRects().length && !/^(absolute|fixed)$/.test(getComputedStyle(el).position);
+  let edge = null;
+  for (let el = node; el && el !== document.body && edge === null; el = el.parentElement) {
+    let near = top ? el.previousElementSibling : el.nextElementSibling;
+    while (near && !shown(near)) near = top ? near.previousElementSibling : near.nextElementSibling;
+    if (near) { const n = near.getBoundingClientRect(); edge = top ? n.bottom : n.top; }
+    else if (top && el === main) edge = main.getBoundingClientRect().top;
+  }
+  if (edge === null) return 0;
+  return Math.max(0, top ? r.top - edge : edge - r.bottom);
 }
 // The design scale at an element (--dz): the page's, or inside a narrowed section the section's (see fitSection).
 const dzAt = (el) => zoomOf(el) || 1;
@@ -198,6 +219,7 @@ function applySpace(node, raw) {
   // like other sizes from the editor, spacing belongs to the desktop design: tablets and phones keep
   // their own (much smaller) spacing
   if (!node || !isDesignMode()) return;
+  node.__space = node.__space || []; node.__pull = node.__pull || { top: 0, bottom: 0 };
   const page = designZoom() || 1;
   [[true, raw?.spaceTop], [false, raw?.spaceBottom]].forEach(([top, value]) => {
     const delta = parseFloat(value) || 0;
@@ -207,12 +229,37 @@ function applySpace(node, raw) {
     // design px, scaled with the page below 1440px (--dz) like every other saved size; inside a
     // narrowed section the boxes have their own scale, the change itself stays the page's
     const size = (el, px) => { const k = dzAt(el); return `max(0px, calc(${Math.round(((px + delta * page) / k) * 100) / 100}px * var(--dz, 1)))`; };
-    owner.style.setProperty(prop, size(owner, parseFloat(getComputedStyle(owner)[top ? "paddingTop" : "paddingBottom"]) || 0), "important");
-    node.__space.push([owner, prop]);
+    const pad = parseFloat(getComputedStyle(owner)[top ? "paddingTop" : "paddingBottom"]) || 0;
+    keepSpace(node, owner, prop);
+    owner.style.setProperty(prop, size(owner, pad), "important");
     mins.forEach((el) => {
+      keepSpace(node, el, "min-height");
       el.style.setProperty("min-height", size(el, parseFloat(getComputedStyle(el).minHeight) || 0), "important");
-      node.__space.push([el, "min-height"]);
     });
+    // less space than the section has of its own (negative): it is pulled into the empty room
+    // outside it — never further, so it never covers what is above or below it
+    const more = -(pad + delta * page);
+    if (more > 0.5) {
+      const pull = Math.min(more, outsideGap(node, top));
+      if (pull > 0.5) {
+        const side = top ? "margin-top" : "margin-bottom", now = parseFloat(getComputedStyle(node)[top ? "marginTop" : "marginBottom"]) || 0;
+        keepSpace(node, node, side);
+        node.style.setProperty(side, `calc(${Math.round(((now - pull) / page) * 100) / 100}px * var(--dz, 1))`, "important");
+        node.__pull[top ? "top" : "bottom"] = pull;
+      }
+    }
+  });
+}
+// A section's gap above / below set below 0 (Gap above / below in the editor): it is pulled into the
+// empty room outside it, as far as that room goes and never further, so it covers nothing.
+function fitMargins(node, raw) {
+  if (!node || !isDesignMode() || !raw) return;
+  const page = designZoom() || 1;
+  [[true, raw.marginTop], [false, raw.marginBottom]].forEach(([top, value]) => {
+    const m = parseFloat(value) || 0;
+    if (m >= 0) return;
+    const pull = Math.min(-m * page, outsideGap(node, top));
+    if (pull > 0.5) node.style.setProperty(top ? "margin-top" : "margin-bottom", `calc(${Math.round((-pull / page) * 100) / 100}px * var(--dz, 1))`, "important");
   });
 }
 // A section's width and place across the page, as the stylesheets give it (without the editor's).
@@ -278,7 +325,8 @@ export function previewSectionBox(node, raw, keep = true) {
 export function spaceLimits(node, raw) {
   clearSpace(node);
   applySpace(node, { ...raw, spaceTop: "-100000px", spaceBottom: "-100000px" });
-  const least = visibleSpace(node);
+  // and how far it can then still be pulled into the empty room outside it
+  const least = { ...visibleSpace(node), roomTop: node.__pull.top, roomBottom: node.__pull.bottom };
   clearSpace(node);
   applySpace(node, raw);
   return least;
@@ -495,6 +543,7 @@ export function Block(props) {
       node.classList.toggle("hb-paint", hasBg && !banded && !painted);
     }
     fitSection(node, secStyle);
+    fitMargins(node, secStyle);
     applySpace(node, secStyle);
   }} data-testid={`block-${props.i}-wrap`}>{el}{extras && <SectionExtras s={props.s} />}</div>;
 }
