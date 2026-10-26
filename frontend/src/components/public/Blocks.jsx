@@ -17,7 +17,7 @@ import { AboutHero, AboutIntroduction, AboutTeam, AboutApproach } from "./AboutS
 import { SplitHero, PlainHero, WorkRows, ConnectForm } from "./PageSections";
 import { HomeFieldNotes } from "./HomeFieldNotes";
 import { NotesListing } from "./NotesListing";
-import { isDesignMode, designTranslate, designZoom } from "../../lib/designMode";
+import { isDesignMode, designTranslate, designZoom, zoomOf } from "../../lib/designMode";
 import { LINE_KINDS } from "./editor/lineKinds";
 import { sentences } from "../../lib/utils";
 
@@ -60,11 +60,18 @@ export function layoutStyle(raw, field) {
   const o = {};
   const design = isDesignMode();
   const image = isImageField(field);
+  const section = field === "_section";
   const scaled = (v) => `calc(${v} * var(--dz, 1))`;
-  const tx = design ? raw.translateX : "", ty = design ? raw.translateY : "";
+  // A whole section stays in the page flow: it moves up or down by being put before or after
+  // another section (never by an offset that would leave a gap and cover its neighbour).
+  const tx = design ? raw.translateX : "", ty = design && !section ? raw.translateY : "";
   if (raw.width && design) {
     o["--ed-w"] = raw.width;
-    o.width = scaled(raw.width); o.maxWidth = "none"; o.minWidth = "0"; o.flex = "0 0 auto";
+    // a text or a box is never narrower than its longest word (its text would run out of it)
+    o.width = scaled(raw.width); o.minWidth = image || section ? "0" : "min-content"; o.flex = "0 0 auto";
+    // a section is never wider than the page, and sits in the middle of it unless moved sideways
+    if (section) { o.maxWidth = scaled("1440px"); o.marginLeft = "auto"; o.marginRight = "auto"; }
+    else o.maxWidth = "none";
   }
   if (raw.height) {
     if (design) {
@@ -86,7 +93,13 @@ export function layoutStyle(raw, field) {
   if (tx || ty) { o["--ed-t"] = designTranslate(tx, ty); o.transform = designTranslate(tx, ty); o["--ed-y"] = ty || "0px"; o.zIndex = 5; }
   // positioned so a moved block can sit above its neighbours; it stays where the design puts it
   if (design && (raw.width || raw.height || tx || ty)) o.position = "relative";
-  ["paddingTop", "paddingBottom", "paddingLeft", "paddingRight", "marginTop", "marginBottom", "marginLeft", "marginRight"].forEach((k) => { if (raw[k]) o[k] = raw[k]; });
+  ["paddingTop", "paddingBottom", "paddingLeft", "paddingRight", "marginTop", "marginBottom", "marginLeft", "marginRight"].forEach((k) => {
+    if (!raw[k]) return;
+    // a section's place across the page is its width and sideways position (side margins could
+    // push it off the page); the space between sections never goes below nothing (no overlaps)
+    if (section && /^margin(Left|Right)$/.test(k)) return;
+    o[k] = section && /^margin/.test(k) ? `max(0px, ${raw[k]})` : raw[k];
+  });
   Object.assign(o, lineStyle(raw));
   return o;
 }
@@ -179,25 +192,86 @@ function clearSpace(node) {
   (node.__space || []).forEach(([el, prop]) => el.style.removeProperty(prop));
   node.__space = [];
 }
+// The design scale at an element (--dz): the page's, or inside a narrowed section the section's (see fitSection).
+const dzAt = (el) => zoomOf(el) || 1;
 function applySpace(node, raw) {
   // like other sizes from the editor, spacing belongs to the desktop design: tablets and phones keep
   // their own (much smaller) spacing
   if (!node || !isDesignMode()) return;
-  const k = designZoom() || 1;
+  const page = designZoom() || 1;
   [[true, raw?.spaceTop], [false, raw?.spaceBottom]].forEach(([top, value]) => {
     const delta = parseFloat(value) || 0;
     if (!delta) return;
     const { owner, mins } = spaceTargets(node, top);
     const prop = top ? "padding-top" : "padding-bottom";
-    // design px, scaled with the page below 1440px (--dz) like every other saved size
-    const size = (px) => `max(0px, calc(${Math.round((px / k + delta) * 100) / 100}px * var(--dz, 1)))`;
-    owner.style.setProperty(prop, size(parseFloat(getComputedStyle(owner)[top ? "paddingTop" : "paddingBottom"]) || 0), "important");
+    // design px, scaled with the page below 1440px (--dz) like every other saved size; inside a
+    // narrowed section the boxes have their own scale, the change itself stays the page's
+    const size = (el, px) => { const k = dzAt(el); return `max(0px, calc(${Math.round(((px + delta * page) / k) * 100) / 100}px * var(--dz, 1)))`; };
+    owner.style.setProperty(prop, size(owner, parseFloat(getComputedStyle(owner)[top ? "paddingTop" : "paddingBottom"]) || 0), "important");
     node.__space.push([owner, prop]);
     mins.forEach((el) => {
-      el.style.setProperty("min-height", size(parseFloat(getComputedStyle(el).minHeight) || 0), "important");
+      el.style.setProperty("min-height", size(el, parseFloat(getComputedStyle(el).minHeight) || 0), "important");
       node.__space.push([el, "min-height"]);
     });
   });
+}
+// A section's width and place across the page, as the stylesheets give it (without the editor's).
+const BOX_PROPS = ["width", "--ed-w", "max-width", "min-width", "flex", "margin-left", "margin-right", "padding-left", "padding-right"];
+export function naturalWidth(node) {
+  const kept = BOX_PROPS.map((p) => [p, node.style.getPropertyValue(p), node.style.getPropertyPriority(p)]);
+  BOX_PROPS.forEach((p) => node.style.removeProperty(p));
+  const box = node.getBoundingClientRect(), cs = getComputedStyle(node);
+  const out = { left: box.left, width: box.width, inner: box.width - (parseFloat(cs.paddingLeft) || 0) - (parseFloat(cs.paddingRight) || 0) };
+  kept.forEach(([p, v, prio]) => { if (v) node.style.setProperty(p, v, prio); });
+  return out;
+}
+// A section made narrower (or wider) in the live editor: its content is laid out as the desktop
+// design at the section's width. Inner sizes, columns and spacing scale with it (--sec-r: the
+// section's width / its standard width; see section-edits.css) while text keeps its size and wraps,
+// so everything stays inside the section. Ratios, not pixels: they hold on any screen width.
+// And a section never leaves the page: one moved too far sideways is kept inside the page's width.
+const ratio = (v) => String(Math.round(v * 10000) / 10000);
+function fitSection(node, raw, keep = true) {
+  if (!node) return;
+  node.removeAttribute("data-fit"); node.style.removeProperty("--sec-r"); node.style.removeProperty("--sec-rb");
+  if (!isDesignMode() || !raw) return;
+  if (raw.width || raw.paddingLeft || raw.paddingRight) {
+    const natural = naturalWidth(node).inner, cs = getComputedStyle(node);
+    const now = node.getBoundingClientRect().width - (parseFloat(cs.paddingLeft) || 0) - (parseFloat(cs.paddingRight) || 0);
+    if (natural > 1 && now > 1 && Math.abs(now - natural) > 0.5) {
+      // the site's band width (--box-w) inside it: the page's, scaled the same, and never wider than the section
+      const page = node.closest("main")?.getBoundingClientRect().width || natural;
+      const box = Math.min(page - 2 * Math.max(24, 0.035 * page), 1339.2);
+      node.style.setProperty("--sec-r", ratio(now / natural));
+      node.style.setProperty("--sec-rb", ratio(Math.min(now / natural, now / box)));
+      node.setAttribute("data-fit", "");
+    }
+  }
+  if (keep && (raw.width || raw.translateX)) keepOnPage(node, raw, designZoom() || 1);
+}
+function keepOnPage(node, raw, k) {
+  const page = node.closest("main")?.getBoundingClientRect(), box = node.getBoundingClientRect();
+  if (!page) return;
+  let shift = 0;
+  if (box.right > page.right + 0.5) shift = page.right - box.right;
+  if (box.left + shift < page.left - 0.5) shift = page.left - box.left;
+  if (Math.abs(shift) < 0.5) return;
+  const t = designTranslate(`${Math.round(((parseFloat(raw.translateX) || 0) + shift / k) * 100) / 100}px`, "0px");
+  const set = node.__edProps || (node.__edProps = new Set());
+  [["--ed-t", t], ["transform", t], ["position", "relative"], ["z-index", "5"]].forEach(([p, v]) => { node.style.setProperty(p, v, "important"); set.add(p); });
+}
+// The live editor shows a whole section's new width and place straight away while it is dragged
+// (keep = false: exactly where the values put it, so the editor can measure it).
+const SECTION_BOX = ["--ed-w", "width", "maxWidth", "minWidth", "flex", "marginLeft", "marginRight", "--ed-t", "transform", "--ed-y", "zIndex", "position"];
+export function previewSectionBox(node, raw, keep = true) {
+  if (!node) return;
+  const o = layoutStyle(raw, "_section"), set = node.__edProps || (node.__edProps = new Set());
+  SECTION_BOX.forEach((p) => {
+    const k = toKebab(p), v = o[p];
+    if (v !== undefined && v !== null && v !== "") { node.style.setProperty(k, String(v), "important"); set.add(k); }
+    else if (OWNED.has(p) || k.startsWith("--") || set.has(k)) { node.style.removeProperty(k); set.delete(k); }
+  });
+  fitSection(node, raw, keep);
 }
 // The least empty space a section can have above / below its content (screen px): measured with
 // all of its own spacing taken away, then the saved spacing is put back (no repaint in between).
@@ -420,6 +494,7 @@ export function Block(props) {
       }
       node.classList.toggle("hb-paint", hasBg && !banded && !painted);
     }
+    fitSection(node, secStyle);
     applySpace(node, secStyle);
   }} data-testid={`block-${props.i}-wrap`}>{el}{extras && <SectionExtras s={props.s} />}</div>;
 }

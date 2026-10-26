@@ -65,6 +65,10 @@ export function useDesignMode(editing) {
   return mode;
 }
 
+// A section made narrower or wider in the live editor lays its content out at its own width: the
+// boxes inside it have its scale (--sec-r, set by fitSection in Blocks.jsx) on top of the page's.
+export const fitRatio = (section) => (section?.hasAttribute?.("data-fit") ? parseFloat(section.style.getPropertyValue("--sec-r")) || 1 : 1);
 // Scale between design pixels and screen pixels for saved geometry (1 when not scaled).
-// Screen distances divided by this give the design-pixel values the editor saves.
-export const zoomOf = () => (current.design ? current.k : 1);
+// Screen distances divided by this give the design-pixel values the editor saves. An element inside
+// a narrowed section has that section's scale too (the section itself has the page's).
+export const zoomOf = (el) => (current.design ? current.k * fitRatio(el?.parentElement?.closest?.("[data-fit]")) : 1);
