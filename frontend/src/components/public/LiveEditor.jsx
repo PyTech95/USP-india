@@ -19,7 +19,7 @@ import { SliderField } from "./editor/ColorField";
 import { LineControls } from "./editor/LineControls";
 import { CropControls, parsePos } from "./editor/CropControls";
 import { useFloatingPanel } from "./editor/useFloatingPanel";
-import { visibleSpace, spaceLimits, naturalWidth, previewSectionBox } from "./Blocks";
+import { visibleSpace, spaceLimits, naturalWidth, previewSectionBox, outsideGap } from "./Blocks";
 
 const LABELS = { eyebrow: "Small label", heading: "Heading", subheading: "Sub-heading", intro: "Intro text",
   body_html: "Body text", body_1_html: "Text box 1", body_2_html: "Text box 2", body_3_html: "Text box 3",
@@ -104,8 +104,9 @@ const keepInSection = (el, field) => (el && /^extras\.\d+\.image$/.test(field ||
 // The space above / below a section's content when its top or bottom edge starts being dragged
 // (design px), and the saved changes it builds on.
 function sectionSpaceStart(el, st, z) {
-  const vis = visibleSpace(el);
-  const out = { top: Math.round(vis.top / z), bottom: Math.round(vis.bottom / z), dTop: parseFloat(st.spaceTop) || 0, dBottom: parseFloat(st.spaceBottom) || 0, patch: {} };
+  // (a section pulled into the empty room outside it shows that as less than none)
+  const vis = visibleSpace(el), pull = el.__pull || { top: 0, bottom: 0 };
+  const out = { top: Math.round((vis.top - pull.top) / z), bottom: Math.round((vis.bottom - pull.bottom) / z), dTop: parseFloat(st.spaceTop) || 0, dBottom: parseFloat(st.spaceBottom) || 0, patch: {} };
   const prev = el.style.getPropertyValue("min-height"), prio = el.style.getPropertyPriority("min-height");
   if (st.height) {
     // an older "minimum height" becomes space below the content, so dragging up can shrink the section
@@ -117,8 +118,8 @@ function sectionSpaceStart(el, st, z) {
   // how far each side can shrink before it would touch the content
   const least = spaceLimits(el, st);
   if (st.height) { if (prev) el.style.setProperty("min-height", prev, prio); else el.style.removeProperty("min-height"); }
-  out.minTop = Math.min(out.top, Math.round(least.top / z));
-  out.minBottom = Math.min(out.bottom, Math.round(least.bottom / z));
+  out.minTop = Math.min(out.top, Math.round((least.top - least.roomTop) / z));
+  out.minBottom = Math.min(out.bottom, Math.round((least.bottom - least.roomBottom) / z));
   return out;
 }
 // Width and place of a whole section across the page (desktop design). The page is <main>; the
@@ -1126,10 +1127,10 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
                 <div className="live-row live-row-4">
                   {[["paddingTop", "Top"], ["paddingBottom", "Bottom"], ["paddingLeft", "Left"], ["paddingRight", "Right"]].filter(([k]) => field !== "_section" || !/Top|Bottom/.test(k) || st[k]).map(([k, l]) => <label key={k} className="live-field">{l}<input type="number" min={field === "_section" ? 0 : undefined} value={px(st[k])} placeholder={padPH(k)} onChange={(e) => setStyles({ [k]: e.target.value ? `${field === "_section" ? Math.max(0, Number(e.target.value) || 0) : e.target.value}px` : "" })} data-testid={`live-pad-${l.toLowerCase()}`} /></label>)}
                 </div>
-                <p className="live-label" style={{ marginTop: 4 }}>{field === "_section" ? "Extra space outside, above and below (px)" : "Margin outside (px)"}</p>
+                <p className="live-label" style={{ marginTop: 4 }}>{field === "_section" ? "Space outside, above and below (px; below 0 closes the gap)" : "Margin outside (px)"}</p>
                 <div className={`live-row ${field === "_section" ? "" : "live-row-4"}`}>
-                  {/* sections: never less than nothing (no overlaps); across the page they have their width and place */}
-                  {[["marginTop", "Top"], ["marginBottom", "Bottom"], ["marginLeft", "Left"], ["marginRight", "Right"]].filter(([k]) => field !== "_section" || /Top|Bottom/.test(k)).map(([k, l]) => <label key={k} className="live-field">{l}<input type="number" min={field === "_section" ? 0 : undefined} value={px(st[k])} placeholder={padPH(k)} onChange={(e) => setStyles({ [k]: e.target.value ? `${field === "_section" ? Math.max(0, Number(e.target.value) || 0) : e.target.value}px` : "" })} data-testid={`live-mar-${l.toLowerCase()}`} /></label>)}
+                  {/* sections: below 0 only as far as the empty room outside (no overlaps); across the page they have their width and place */}
+                  {[["marginTop", "Top"], ["marginBottom", "Bottom"], ["marginLeft", "Left"], ["marginRight", "Right"]].filter(([k]) => field !== "_section" || /Top|Bottom/.test(k)).map(([k, l]) => <label key={k} className="live-field">{l}<input type="number" value={px(st[k])} placeholder={padPH(k)} onChange={(e) => setStyles({ [k]: e.target.value ? `${e.target.value}px` : "" })} data-testid={`live-mar-${l.toLowerCase()}`} /></label>)}
                 </div>
                 <div className="live-row" style={{ marginBottom: 0 }}>
                   <button type="button" className="live-btn" onClick={() => setStyles({ width: "", height: "" })} data-testid="live-reset-size"><RotateCcw size={14} /> Size</button>
@@ -1305,8 +1306,12 @@ function SectionStyle({ sec, onChange }) {
     const measure = () => {
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(() => {
-        const z = zoomOf(root) || 1, v = visibleSpace(root);
-        setSpace((o) => { const n = { top: Math.round(v.top / z), bottom: Math.round(v.bottom / z) }; return o && o.top === n.top && o.bottom === n.bottom ? o : n; });
+        const z = zoomOf(root) || 1, v = visibleSpace(root), pull = root.__pull || { top: 0, bottom: 0 };
+        setSpace((o) => {
+          const n = { top: Math.round((v.top - pull.top) / z), bottom: Math.round((v.bottom - pull.bottom) / z),
+            gapTop: Math.round(outsideGap(root, true) / z), gapBottom: Math.round(outsideGap(root, false) / z) };
+          return o && Object.keys(n).every((k) => o[k] === n[k]) ? o : n;
+        });
       });
     };
     measure();
@@ -1317,7 +1322,7 @@ function SectionStyle({ sec, onChange }) {
   }, [sec]);
   const field = (key, side, label, testid) => {
     const shown = draft[side] ?? (space ? String(space[side]) : "");
-    return <label className="live-field">{label}<input type="number" min="0" value={shown}
+    return <label className="live-field">{label}<input type="number" value={shown}
       onFocus={() => {
         const root = document.querySelector(`main [data-sec="${CSS.escape(sec.id)}"]`);
         start.current = root ? sectionSpaceStart(root, s, zoomOf(root) || 1) : null;
@@ -1333,6 +1338,23 @@ function SectionStyle({ sec, onChange }) {
       }}
       onBlur={() => setDraft((d) => ({ ...d, [side]: undefined }))} data-testid={testid} /></label>;
   };
+  // The empty gap outside the section (e.g. the white strip before the footer): typing 0 closes it,
+  // a bigger number opens it; it never goes below 0, so the section never covers its neighbour.
+  const gapField = (key, side, label, testid) => {
+    const gap = side === "top" ? "gapTop" : "gapBottom";
+    const shown = draft[gap] ?? (space ? String(space[gap]) : "");
+    return <label className="live-field">{label}<input type="number" min="0" value={shown}
+      onFocus={() => { start.current = { gap: space ? space[gap] : 0, margin: parseFloat(s[key]) || 0 }; }}
+      onChange={(e) => {
+        const value = e.target.value;
+        setDraft((d) => ({ ...d, [gap]: value }));
+        const st0 = start.current;
+        if (!st0 || value === "" || Number.isNaN(Number(value))) return;
+        const m = Math.round(st0.margin + Math.max(0, Number(value)) - st0.gap);
+        onChange({ [key]: m ? `${m}px` : "" });
+      }}
+      onBlur={() => setDraft((d) => ({ ...d, [gap]: undefined }))} data-testid={testid} /></label>;
+  };
   const changed = !!(s.spaceTop || s.spaceBottom || s.paddingTop || s.paddingBottom);
   return (
     <>
@@ -1345,7 +1367,13 @@ function SectionStyle({ sec, onChange }) {
         {field("spaceBottom", "bottom", "Space below (px)", "live-sec-pad-bottom")}
         {changed && <button type="button" className="live-btn" onClick={() => onChange({ spaceTop: "", spaceBottom: "", paddingTop: "", paddingBottom: "" })} title="Back to the standard spacing" data-testid="live-sec-space-reset"><RotateCcw size={14} /></button>}
       </div>
-      <p className="live-hint live-hint-small">Empty space above and below the section’s content. You can also drag the section’s top or bottom handle; the sections below move up or down with it.</p>
+      <p className="live-hint live-hint-small">Empty space above and below the section’s content. You can also drag the section’s top or bottom handle; the sections below move up or down with it. Below 0 the section moves into the empty gap outside it, as far as that gap goes.</p>
+      <div className="live-row">
+        {gapField("marginTop", "top", "Gap above (px)", "live-sec-gap-top")}
+        {gapField("marginBottom", "bottom", "Gap below (px)", "live-sec-gap-bottom")}
+        {(s.marginTop || s.marginBottom) && <button type="button" className="live-btn" onClick={() => onChange({ marginTop: "", marginBottom: "" })} title="Back to the standard gaps" data-testid="live-sec-gap-reset"><RotateCcw size={14} /></button>}
+      </div>
+      <p className="live-hint live-hint-small">Empty gap outside the section, between it and the section (or footer) next to it — for example a white strip before the footer. 0 closes it; the section keeps its own spacing inside.</p>
     </>
   );
 }
