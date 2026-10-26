@@ -21,3 +21,24 @@ html.ed-design body #public-site#public-site main .hb-extras { position: absolut
 html.ed-design body #public-site#public-site main .hb-extras > .hb-extra { position: absolute !important; left: 0 !important; top: 0 !important; width: calc(360px * var(--dz, 1)); max-width: none !important; margin: 0 !important; pointer-events: auto; }
 html.ed-fluid body #public-site#public-site main .hb-extras { display: grid; gap: 16px; padding: 0 var(--content-l, 20px) 32px; }
 html.ed-fluid body #public-site#public-site main .hb-extras > .hb-extra { width: 100% !important; max-width: 640px !important; margin: 0 auto; transform: none !important; }
+
+/* A section given its own width in the live editor (desktop design) lays its content out as the
+   design at that width. fitSection() in Blocks.jsx sets --sec-r (the section's width / its standard
+   width) and --sec-rb (the same for the site's band width inside it); the design's sizes, columns
+   and spacing inside scale with it (--dz), boxes as wide as the site's bands (--box-w) take the
+   section's width, and the page's content edges (--gutter, --inset) shrink with it. Text keeps its
+   size and wraps, so it stays inside the section. Worked out from ratios here, so it holds at any
+   screen width without the page being drawn again. */
+html.ed-design body #public-site#public-site main .hb[data-fit] {
+  --sec-dz: calc(var(--dz, 1) * var(--sec-r, 1));
+  --sec-box: calc(var(--box-w) * var(--sec-rb, 1));
+  --sec-gutter: calc(var(--gutter, 0px) * var(--sec-r, 1));
+}
+html.ed-design body #public-site#public-site main .hb[data-fit] > * {
+  --dz: var(--sec-dz) !important;
+  --box-w: var(--sec-box);
+  --gutter: var(--sec-gutter);
+  --inset: calc(100px * var(--dz));
+  --band-pad: var(--inset);
+  --content-l: calc(var(--gutter) + var(--inset));
+}

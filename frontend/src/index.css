@@ -1693,3 +1693,14 @@ html.ed-fluid #public-site figure.photo[style*="--ed-ar"] > .photo-frame > img {
 
 /* Whole-site font chosen in Admin → Appearance */
 .site, .site *:not(code):not(pre):not(kbd):not(samp):not([class*="live-"]):not([class*="live-"] *):not([class*="header-editor"]):not([class*="header-editor"] *) { font-family: var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif) !important; }
+
+/* Width and place of a whole section (live editor panel) */
+.live-secbox { border-top: 1px dashed #e3e3e3; padding-top: 10px; margin-top: 2px; }
+.live-secbox-row { display: grid; grid-template-columns: minmax(0, 1fr) 72px; gap: 8px; align-items: center; }
+.live-secbox-row input[type=range] { height: 24px; padding: 0; border: 0; accent-color: #D41445; }
+.live-secbox-place { gap: 4px; }
+.live-secbox-place .live-btn { flex: 1; justify-content: center; padding: 6px 4px; }
+/* side handles sit at the middle of the part of the selection that is on screen */
+.live-box .live-h-e, .live-box .live-h-w { top: var(--live-hy, 50%); }
+/* while something is dragged the panel turns see-through, so the page under it shows */
+body.live-dragging .live-panel { opacity: .15 !important; pointer-events: none !important; transition: opacity .12s ease; }
