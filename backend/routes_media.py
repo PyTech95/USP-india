@@ -32,6 +32,8 @@ async def store_file(media_id, data, filename, version):
         path = await put_object(f"{APP_NAME}/files/{media_id}/v{version}.pdf", data, "application/pdf")
         return {"kind": "file", "original_path": path, "content_type": "application/pdf", "width": None, "height": None, "derivs": [], "format": "PDF"}
     info = process_image(data)
+    if info.get("converted"):   # a phone/camera format kept as JPEG or PNG
+        data, ext = info["converted"], {"JPEG": "jpg", "PNG": "png"}[info["format"]]
     ctype = {"JPEG": "image/jpeg", "PNG": "image/png", "WEBP": "image/webp"}[info["format"]]
     orig = await put_object(f"{APP_NAME}/originals/{media_id}/v{version}.{ext}", data, ctype)
     derivs = []

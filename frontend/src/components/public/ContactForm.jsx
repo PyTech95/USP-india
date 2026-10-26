@@ -54,7 +54,7 @@ export function ContactForm({ compact = false }) {
       ) : (
         <input id={`f-${k}`} type={opts.type || "text"} value={f[k]} onChange={set(k)} autoComplete={opts.auto} aria-invalid={!!errors[k]} aria-describedby={errors[k] ? `e-${k}` : undefined} data-testid={`contact-${k}`} />
       )}
-      {errors[k] && <span id={`e-${k}`} className="field-error" data-testid={`contact-${k}-error`}>{errors[k]}</span>}
+      {errors[k] && <span id={`e-${k}`} className="field-error" data-site-edit={`ui_text.error_${k}`} data-testid={`contact-${k}-error`}>{errors[k]}</span>}
     </div>
   );
 
@@ -80,8 +80,9 @@ export function ContactForm({ compact = false }) {
     return (
       <div className="form-field">
         <label htmlFor={`f-${k}`}><SiteText name={`contact_${k}`} fallback={label} />{opts.optional ? <span className="cf-optional">(<SiteText name="optional" />)</span> : " *"}</label>
-        <Tag id={`f-${k}`} type={opts.textarea ? undefined : opts.type || "text"} rows={opts.textarea ? 5 : undefined} placeholder={opts.placeholder} value={f[k]} onChange={set(k)} autoComplete={opts.auto} aria-invalid={!!errors[k]} aria-describedby={errors[k] ? `e-${k}` : undefined} data-testid={`contact-${k}`} />
-        {errors[k] && <span id={`e-${k}`} className="field-error" data-testid={`contact-${k}-error`}>{errors[k]}</span>}
+        {/* the grey example text in the box is a site text too (click the box in the live editor) */}
+        <Tag id={`f-${k}`} type={opts.textarea ? undefined : opts.type || "text"} rows={opts.textarea ? 5 : undefined} placeholder={opts.placeholder ? textFor(site, `placeholder_${k}`) : undefined} data-site-edit={opts.placeholder ? `ui_text.placeholder_${k}` : undefined} value={f[k]} onChange={set(k)} autoComplete={opts.auto} aria-invalid={!!errors[k]} aria-describedby={errors[k] ? `e-${k}` : undefined} data-testid={`contact-${k}`} />
+        {errors[k] && <span id={`e-${k}`} className="field-error" data-site-edit={`ui_text.error_${k}`} data-testid={`contact-${k}-error`}>{errors[k]}</span>}
       </div>
     );
   };
@@ -89,11 +90,11 @@ export function ContactForm({ compact = false }) {
     <form onSubmit={submit} noValidate className="cf-compact" data-testid="contact-form">
       {notices}
       <div className="cf-row">
-        {input("name", "Name", { auto: "name", placeholder: "Your name" })}
-        {input("email", "Email", { type: "email", auto: "email", placeholder: "Your email address" })}
+        {input("name", "Name", { auto: "name", placeholder: true })}
+        {input("email", "Email", { type: "email", auto: "email", placeholder: true })}
       </div>
-      {input("phone", "Phone", { optional: true, type: "tel", auto: "tel", placeholder: "Phone number" })}
-      {input("message", "Message", { textarea: true, placeholder: "Your message" })}
+      {input("phone", "Phone", { optional: true, type: "tel", auto: "tel", placeholder: true })}
+      {input("message", "Message", { textarea: true, placeholder: true })}
       {honeypot}
       <button type="submit" className="cf-submit" disabled={state.status === "sending"} data-testid="contact-submit">
         <span><SiteText name={state.status === "sending" ? "sending" : "send_message"} /></span><ArrowUpRight size={14} aria-hidden="true" />
@@ -112,7 +113,7 @@ export function ContactForm({ compact = false }) {
           <option value="">{textFor(site, "choose_topic")}</option>
           {TOPICS.map((t, i) => <option key={t} value={t}>{textFor(site, ["topic_general", "topic_collaboration", "topic_volunteer", "topic_craft", "topic_theatre", "topic_workshops"][i])}</option>)}
         </select>
-        {errors.topic && <span className="field-error" data-testid="contact-topic-error">{errors.topic}</span>}
+        {errors.topic && <span className="field-error" data-site-edit="ui_text.error_topic" data-testid="contact-topic-error">{errors.topic}</span>}
       </div>
       {field("message", "Message", { textarea: true })}
       {field("phone", "Phone", { optional: true, type: "tel", auto: "tel" })}

@@ -132,7 +132,9 @@ export default function PageEditor() {
   };
   const openPreview = async (resp) => { if (dirty && !(await save(true))) return; resp ? setPreview(true) : window.open(`/admin/preview/page/${key}`, "_blank"); };
   const addSection = () => {
-    upd({ sections: [...draft.sections, { id: newId(), type: addType, hidden: false, data: Object.fromEntries(SCHEMAS[addType][1].map(([k]) => [k, DEFAULTS[k] ?? (k === "image" || k === "poster" ? { media_id: "" } : "")])) }] });
+    const data = Object.fromEntries(SCHEMAS[addType][1].map(([k]) => [k, DEFAULTS[k] ?? (k === "image" || k === "poster" ? { media_id: "" } : "")]));
+    if (addType === "hero") data.layout = "image-hero"; // a new hero shows its photo on every page
+    upd({ sections: [...draft.sections, { id: newId(), type: addType, hidden: false, data }] });
   };
 
   return (

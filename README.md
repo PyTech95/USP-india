@@ -68,10 +68,13 @@ sudo certbot --nginx -d uspindia.org -d www.uspindia.org
 
 HTTPS is required in production (login cookies are marked secure).
 
+Browsers: current Chrome, Safari (Safari 16 / iOS 16 and newer), Firefox and Edge, on computers, tablets and phones. The site avoids JavaScript that older Safari versions cannot read, so it never shows a blank page there.
+
 **Before going live:** in Admin → Settings, turn on search-engine indexing. Until then every page sends `noindex` and `robots.txt` blocks crawlers.
 
-**Updating the site:** copy the new code, `yarn build` in `frontend/`, then `sudo systemctl restart uspindia`.
+**Updating the site:** copy the new code, run `.venv/bin/pip install -r requirements.txt` in `backend/` (new versions can add a package, e.g. iPhone photo support), `yarn build` in `frontend/`, then `sudo systemctl restart uspindia`.
 The page shell is never cached and the built CSS/JS files have new names on every build, so visitors get the new design straight away (no old CSS left in browsers).
+Everything edited on the server is kept when a new version is deployed — texts, colours, fonts, photos, sizes, positions, section spacing and added photos. On start the new version's content (`backend/content_release.json`) is merged in; where the server and the new version changed the same thing, the server's edit wins. A full backup is taken first (Admin → Import / Export → Content backups).
 
 **Fresh install vs. moving the old database:** a new, empty MongoDB gets exactly the content in `backend/content_release.json` (this version's pages, fonts, colours and photos).
 If you restore the database of the old site instead, its saved edits (texts, font sizes, colours, photos) are kept, and the positions/sizes that the old live editor saved
@@ -84,6 +87,7 @@ are cleared once on the first start (they were measured on another layout and ma
 Every page uses one grid (`frontend/src/styles/layout-grid.css`): all sections start and end on the same two lines, so text, photos and divider lines stay lined up and centred on any screen. On tablets and phones text inside and outside the coloured bands starts on the same edge.
 
 On desktop, each page follows the owner's approved page designs section by section (`frontend/src/styles/design-1440.css`: positions, column widths and spacing for Home, Who We Are, Theatre, Craft & Livelihood, Workshops & Learning, Field Notes and Connect). Those rules only apply to the desktop design; sizes typed in the live editor still win.
+The Theatre page's top section follows the October 2026 design (`frontend/src/styles/theatre-collage.css`): two overlapping rehearsal photos, the title at the bottom left with a short orange line, and the introduction in a light band. Both photos, the texts and the line can be changed, cropped, resized and moved in the live editor.
 
 ## Responsive layout (how sizes and positions work)
 
@@ -98,13 +102,26 @@ On desktop, each page follows the owner's approved page designs section by secti
 - **Edit Header** (bottom toolbar, or point at the header and click “Edit header colours & layout”): five one-click colour schemes (Original, Clean white, Warm sand, Charcoal, USP red), then brand & logo, navigation, and *Style & spacing* — header background, the line under the header, brand and subtitle colours, menu-bar background, menu text, hover/current colour, the lines between menu items, hover background, current-page underline, dropdown (and dropdown hover) and mobile-menu colours, a shadow, fonts, letter case and spacing, header height and the space below it. Sizes have sliders; every colour field offers the site colours and your recently used colours, and × returns it to the default. Changes show immediately; **Save header** publishes them on every page.
 - The editor panels open beside the page. Drag the title to move a panel, drag its left/right/bottom edges or corners to resize it; it never leaves the screen and remembers where you put it. The dock button puts it back on the right.
 - Click text on the page and type. Click a photo to replace it, or to **crop** it: pick a shape (Original, Square, 4:3, 3:2, 16:9, 3:4, 4:5), zoom with the slider, and drag the photo to choose what shows.
-- Drag the dark grip to move an element, the red handles to resize it; arrow keys nudge (Shift = 10px). Every text, photo and section on every page can be resized and moved this way (or with *Size & position* in the panel), and every text's size, weight, colour and spacing can be changed. Photos keep filling their new size.
+- Drag the dark grip to move an element, the red handles to resize it; arrow keys nudge (Shift = 10px). Every text and photo on every page can be resized and moved this way (or with *Size & position* in the panel), and every text's size, weight, colour and spacing can be changed. Photos keep filling their new size.
+- **Section height:** select a section (click an empty part of it, or the grid button in the toolbar). Drag its **bottom** handle up to make it shorter or down to make it taller; drag its **top** handle to change the space above its content. The sections below always move up or down with it — no gaps, no overlaps — and a section never gets smaller than its content. *Space above / below* in the panel shows the empty space in pixels and can be typed; the ↺ button returns to the standard spacing. These spacings apply to the desktop design; tablets and phones keep their own.
+- **Moving a section:** drag a selected section's dark grip up or down to put it before or after another section (the page scrolls when you reach the top or bottom of the window); the arrows in the toolbar move it one place.
+- **Colours:** every section has *Background* under *Section background & spacing*. Nothing in the section moves when it gets a colour: a hero panel takes the colour, other sections get a coloured band behind them (as wide as the site's other coloured bands). The coloured bands that are part of the page designs keep their own layout. Boxes inside a section — the Theatre page's light band, the *Our principles* box, the Connect title box and the white contact card — have their own *Box colour* and corner radius (click the box, or pick it in *All page fields*). Any text can also get a background colour (*Line spacing & highlight*).
+- **Links:** select a button or linked text; the **Link** group shows *Where it goes* — a page of this site (e.g. `/connect`, suggestions are offered), a full `https://` address, `mailto:` or `tel:`. Unsafe addresses are refused. In the footer, click the Facebook or Instagram icon to set its page address.
+- **Site-wide texts** — the footer (email, ©, privacy text), contact details, the contact form's labels, the grey example texts inside its boxes, its error messages and button, Field Notes labels and the "page not found" page: click them in the live editor to change the words, size and colour (*Text & typography* panel).
+- **New sections:** *Add a new section* (panel) or the + in a section's toolbar: text, image + text, big image, gallery, quote, call to action or hero banner (a heading with a full-width photo). A photo is chosen straight away; the new section can then be moved up or down the page like any other.
+- **Hidden sections:** the eye button in a section's toolbar hides it; with nothing selected the editor panel lists *Hidden sections* with a *Show* button for each.
+- **Adding a photo to a section:** select anything in the section and click the photo-with-plus button in the toolbar (or *Add a photo* in the section panel), then upload a photo or choose one from the library. It appears inside that section, selected: drag it where you want it, resize it with the red handles, crop or zoom it, or delete it with the bin. On tablets and phones added photos are shown one after another under the section's text.
 - **Field Notes page:** the list of notes is a section of the page. Its titles, summaries, captions and photos can be resized, moved, cropped and restyled like any other element; the words and photos themselves come from each note, so they are changed with *Edit story & image* under the note. On a Field Note's own page the related-notes photos can be resized too.
 - Elements hidden behind others can be picked from *All page fields* in the panel. If the panel covers what you want to click, use *Panel left/right*.
 - **Lines:** select any text, photo or section. The toolbar has *add line above* and *add line below*; the **Lines** panel chooses a short red line or a thin line across, and sets its length, thickness, space from the text and colour (or deletes it). The red lines that are part of the design can be made longer, shorter, thicker, recoloured or removed for one text or a whole section, and a section's thin grey dividers can be hidden. Site-wide red-line defaults are in Edit Header → *Red lines*.
 - **Logo:** Edit Header → *Brand & logo* — replace the logo, set its height, and choose whether the name shows next to it (hidden automatically when a logo is set). The official 2026 logo files (horizontal, stacked, and the USP mark used as the browser-tab icon) are in Media.
 - **Footer colours:** point at the footer and click *Edit footer colours* (or Edit Header → *Style & spacing* → Colours → Footer): the footer background (default `#E4CDAE`) and the strip along its bottom with © and Privacy Policy (default `#e5dad4`).
 - `Ctrl/⌘+S` saves and publishes, `Ctrl/⌘+Z` undoes, `Esc` deselects.
+
+## Photos
+
+Photos can be uploaded in the live editor and under Admin → Media, up to 20 MB each. JPEG, PNG and WebP are kept as they are; photos straight from phones and cameras — iPhone/Mac HEIC, multi-picture JPEG (MPO), TIFF, BMP, GIF — are turned into a JPEG (PNG when transparent) that every browser shows. Location data (GPS) is removed from the display copies.
+If uploads fail on the server, check that the web server allows 20 MB requests (`client_max_body_size 25m;` in `deploy/nginx.conf`) and that the service user can write to `backend/storage/` (`sudo chown -R www-data backend/storage`).
 
 ## Enquiry form and email
 

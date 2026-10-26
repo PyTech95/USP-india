@@ -1,0 +1,92 @@
+/* =====================================================================
+   Theatre hero — owner's October 2026 design (layout "theatre-collage"):
+   two overlapping rehearsal photos at the top right, the title at the
+   bottom left with a short orange line under it, and the introduction
+   in a light band below. Measured from the supplied artwork; on the
+   1440px desktop design the hero is the boxed area (1339px wide), and
+   every distance shrinks with the page below 1440px (--dz). Text sizes
+   are set in the live editor (never scaled).
+   Tablets and phones: photos first, then the title, then the band.
+   ===================================================================== */
+
+/* --- every screen --- */
+html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage {
+  --tc-ink: #0c2b3a; --tc-accent: #ea5c2f;
+  position: relative; width: var(--box-w) !important; max-width: none !important; box-sizing: border-box !important;
+  margin: 0 0 0 calc(50% - var(--box-w) / 2) !important; color: var(--tc-ink);
+}
+html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .tc-top {
+  position: relative; z-index: 2; display: flex; flex-direction: column; background: #ebe7e4;
+  padding: 24px var(--band-pad, 20px) 36px; box-sizing: border-box;
+}
+html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .tc-photos {
+  order: -1; position: relative; width: min(100%, 660px); aspect-ratio: 943 / 1006; margin: 0 0 32px auto;
+}
+html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .tc-photo {
+  position: absolute; margin: 0 !important; padding: 0; overflow: hidden; max-width: none !important; box-shadow: none !important;
+}
+html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .tc-photo-1 { left: 0; top: 0; width: 56.31%; height: 54.17%; z-index: 1; }
+html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .tc-photo-2 { left: 48.25%; top: 40.26%; width: 51.75%; height: 59.74%; z-index: 2; }
+html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .tc-photo > .photo-frame {
+  width: 100%; height: 100%; aspect-ratio: auto !important; margin: 0 !important; border: 0 !important; border-radius: 0 !important; background: #d9d4cf;
+}
+html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .tc-photo > .photo-frame > img {
+  display: block; width: 100%; height: 100%; max-width: none; aspect-ratio: auto; object-fit: cover;
+}
+html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .tc-photo :is(figcaption, .photo-original, .photo-flag) { display: none !important; }
+
+html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .tc-eyebrow {
+  color: #334654 !important; font-family: var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif) !important; font-weight: 500 !important;
+  font-size: 15.5px !important; letter-spacing: .2em !important; line-height: 1.3 !important; text-transform: uppercase !important; margin: 0 0 13.8px !important; padding: 0 !important;
+}
+html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage :is(.tc-eyebrow, .tc-heading)::before,
+html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .tc-eyebrow::after { content: none !important; display: none !important; }
+html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .tc-heading {
+  /* the short line under the title: length / thickness / space / colour can be changed in the editor (Lines) */
+  --accent-line-w: 61px; --accent-line: 2px; --accent-line-gap: 24px;
+  color: var(--tc-ink) !important; font-family: var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif) !important; font-weight: 400 !important;
+  font-size: clamp(30px, calc(2.4cqw + 20px), 44.5px) !important; line-height: 1.177 !important; letter-spacing: -.02em !important;
+  text-transform: none !important; margin: 0 !important; padding: 0 !important; max-width: none !important;
+}
+html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .tc-heading::after {
+  content: "" !important; display: block !important; position: static !important; width: var(--accent-line-w) !important; height: var(--accent-line) !important;
+  margin: var(--accent-line-gap) 0 0 !important; background: var(--tc-accent); border: 0 !important;
+}
+html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .tc-band {
+  position: relative; z-index: 1; background: #fdf7ee; padding: 28px var(--band-pad, 20px) 40px; box-sizing: border-box;
+}
+html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .tc-intro { max-width: 1015px; margin: 0 !important; }
+html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .tc-intro p {
+  color: #2a3e50 !important; font-family: var(--site-font, "Helvetica Neue", Helvetica, Arial, sans-serif) !important; font-weight: 400 !important;
+  font-size: 20px !important; line-height: 1.5 !important; letter-spacing: 0 !important; margin: 0 0 12px !important; max-width: none !important;
+}
+html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .tc-intro p:last-child { margin-bottom: 0 !important; }
+@media (max-width: 760px) {
+  html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .tc-photos { width: 100%; margin: 0 0 28px; }
+  html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .theatre-hero-line { white-space: normal; }
+  html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .tc-eyebrow { font-size: 13px !important; }
+  html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .tc-intro p { font-size: 17px !important; }
+}
+
+/* --- the design's composition (box-relative, so it is the measured 1440px layout on desktop and
+   keeps its proportions on laptops and large tablets). Measured on the 1440px design, in px:
+   top area 945.49 high; photo 1 at 374.32,39.76 (514.93 x 528.5); photo 2 at 815.54,432.5 (473.23 x 582.81);
+   title block 52.37 from the left, its line 56.19 above the band; band padding 68 / 52.37 / 56; text width 1015. --- */
+@media (min-width: 901px) {
+  html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .tc-top { display: block; height: calc(var(--box-w) * 0.70601); padding: 0; }
+  html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .tc-photos { position: absolute; inset: 0; width: auto; aspect-ratio: auto; margin: 0; }
+  html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .tc-photo-1 { left: calc(var(--box-w) * 0.27951); top: calc(var(--box-w) * 0.02969); width: calc(var(--box-w) * 0.38451); height: calc(var(--box-w) * 0.39464); }
+  html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .tc-photo-2 { left: calc(var(--box-w) * 0.60898); top: calc(var(--box-w) * 0.32295); width: calc(var(--box-w) * 0.35337); height: calc(var(--box-w) * 0.43519); }
+  html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .tc-copy { position: absolute; z-index: 3; left: calc(var(--box-w) * 0.03911); bottom: calc(var(--box-w) * 0.04196); margin: 0; }
+  html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .tc-band { padding: calc(var(--box-w) * 0.05078) calc(var(--box-w) * 0.03911) calc(var(--box-w) * 0.04182); }
+  html body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .tc-intro { max-width: calc(var(--box-w) * 0.75792); }
+}
+/* while editing (always the desktop design) */
+html.ed-design body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .tc-top { display: block; height: calc(var(--box-w) * 0.70601); padding: 0; }
+html.ed-design body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .tc-photos { position: absolute; inset: 0; width: auto; aspect-ratio: auto; margin: 0; }
+html.ed-design body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .tc-photo-1 { left: calc(var(--box-w) * 0.27951); top: calc(var(--box-w) * 0.02969); width: calc(var(--box-w) * 0.38451); height: calc(var(--box-w) * 0.39464); }
+html.ed-design body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .tc-photo-2 { left: calc(var(--box-w) * 0.60898); top: calc(var(--box-w) * 0.32295); width: calc(var(--box-w) * 0.35337); height: calc(var(--box-w) * 0.43519); }
+html.ed-design body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .tc-copy { position: absolute; z-index: 3; left: calc(var(--box-w) * 0.03911); bottom: calc(var(--box-w) * 0.04196); margin: 0; }
+html.ed-design body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .tc-band { padding: calc(var(--box-w) * 0.05078) calc(var(--box-w) * 0.03911) calc(var(--box-w) * 0.04182); }
+html.ed-design body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .tc-intro { max-width: calc(var(--box-w) * 0.75792); }
+html.ed-design body #public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site#public-site main#main .theatre-collage .tc-heading { font-size: 44.5px !important; }

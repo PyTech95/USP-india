@@ -125,13 +125,15 @@ function Footer({ site }) {
         <div className="usp-footer-social">
           {SOCIALS.map(({ key, label, Icon }) => {
             const url = (site?.social || []).find((s) => `${s.label} ${s.url}`.toLowerCase().includes(key))?.url || "#";
-            return <a key={key} href={url} target={url === "#" ? undefined : "_blank"} rel="noopener noreferrer" aria-label={label} data-testid={`footer-social-${key}`}><Icon /></a>;
+            // in the live editor a click on the icon opens its link address (Text & typography panel)
+            return <a key={key} href={url} target={url === "#" ? undefined : "_blank"} rel="noopener noreferrer" aria-label={label} data-site-edit={`social_link.${key}`} data-testid={`footer-social-${key}`}><Icon /></a>;
           })}
         </div>
       </div>
       <div className="usp-footer-row usp-footer-meta">
         <span data-site-style="display.copyright" data-testid="footer-copyright">© {new Date().getFullYear()} <SiteText path="full_name" fallback="Urban Suburban Perspectives" data-testid="footer-copyright-name" /></span>
-        <details data-testid="footer-privacy" className="footer-privacy">
+        {/* open while editing, so the privacy text can be clicked and changed */}
+        <details data-testid="footer-privacy" className="footer-privacy" open={liveOn || undefined}>
           <summary data-testid="footer-privacy-toggle"><SiteText name="privacy_policy" /></summary>
           <HtmlDiv data-site-edit="privacy_html" data-testid="footer-privacy-body" html={site?.privacy_html || ""} />
         </details>

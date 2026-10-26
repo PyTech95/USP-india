@@ -1,8 +1,9 @@
 import { Photo } from "./Photo";
+import { sentences } from "../../lib/utils";
 
 export const CraftHero = ({ data, first, id, editable }) => {
   const Heading = first ? "h1" : "h2";
-  const lines = (data.heading || "").split(/(?<=\.)\s+|\n+/).filter(Boolean);
+  const lines = sentences(data.heading, true);
 
   return (
     <div className="craft-reference-hero" data-testid="craft-reference-hero">

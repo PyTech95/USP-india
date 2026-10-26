@@ -55,7 +55,7 @@ export const ConnectForm = ({ data, id, editable }) => {
   const phone = contact.phone || "";
   return <section className="ps-connect-page" data-testid={id}>
     <div className="pcc-card" data-testid="contact-white-card" {...editable("_contact_card")}>
-    <div className="pcc-hero">
+    <div className="pcc-hero" {...editable("_contact_hero")}>
       <h1 className="pcc-title" data-testid={`${id}-heading`} {...editable("card_title")}>{data.card_title ?? "Connect"}</h1>
       <p className="pcc-intro" data-testid={`${id}-intro`} {...editable("card_intro")}>{data.card_intro ?? "For questions about our work, ideas for collaboration, or ways to contribute, please get in touch."}</p>
     </div>

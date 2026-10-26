@@ -22,7 +22,8 @@ html body #public-site#public-site main :is(.hb.band, .hb.hb-bg, .craft-hero-int
 }
 
 /* ===== Connect page ===== */
-html body #public-site#public-site .page-connect .hb.hb-hero { display: none !important; }
+/* the Connect page shows its card instead of its original (plain) hero; hero banners added later still show */
+html body #public-site#public-site .page-connect .hb.hb-hero:has(.ps-plain-hero) { display: none !important; }
 #public-site .ps-connect-page { --pcc-pad: clamp(20px, 5.8%, 72px); color: #2b2926; }
 html body #public-site#public-site main .pcc-hero {
   width: var(--box-w); margin: 5px 0 0 calc(50% - var(--box-w) / 2); box-sizing: border-box;

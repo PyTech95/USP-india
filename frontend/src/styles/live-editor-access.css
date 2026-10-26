@@ -81,3 +81,7 @@ body.live-panning .live-pan span { opacity: 0; }
 .photo-caption-empty { display: none; }
 body.live-editing .photo-caption-empty { display: block; }
 body.live-editing .photo-caption-empty span:empty::before { content: "Add a caption"; opacity: .5; }
+
+/* While editing, the page can scroll a little further so nothing at the very bottom (footer texts)
+   stays hidden behind the editor's toolbar. */
+body.live-editing #public-site { padding-bottom: 84px; }

@@ -17,7 +17,7 @@ export default function NotFound() {
   if (!checked) return <div className="wrap section" style={{ minHeight: "50vh" }} />;
   return (
     <div className="wrap hero-type" data-testid="not-found">
-      <p className="eyebrow">404</p>
+      <SiteText as="p" className="eyebrow" name="not_found_code" />
       <SiteText name="not_found" as="h1" className="h1" />
       <SiteText name="not_found_body" as="p" className="lede" />
       <div className="hero-actions">
