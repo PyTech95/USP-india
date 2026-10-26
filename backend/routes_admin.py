@@ -456,22 +456,47 @@ async def site_live_patch(body: SiteLivePatch, user=Depends(require("config"))):
     """Patch public copy only; never accept arbitrary settings or Mongo paths."""
     path = body.path
     plain = {"brand_label", "site_name", "full_name", "tagline", "privacy_html", "logo_media_id", "contact.email", "contact.phone", "contact.address"}
-    menu = re.fullmatch(r"menus\.(main|footer)\.\d+(?:\.children\.\d+){0,2}\.label", path)
+    menu = re.fullmatch(r"menus\.(main|footer)\.\d+(?:\.children\.\d+){0,2}\.(label|href)", path)
     ui = re.fullmatch(r"ui_text\.[a-z][a-z0-9_]{0,79}", path)
-    social = re.fullmatch(r"social\.\d+\.label", path)
+    social = re.fullmatch(r"social\.\d+\.(label|url)", path)
     display = re.fullmatch(r"display\.[a-z][a-z0-9_-]{0,79}", path)
-    if path not in plain and not (menu or ui or social or display):
+    network = re.fullmatch(r"social_link\.(facebook|instagram)", path)
+    if path not in plain and not (menu or ui or social or display or network):
         raise HTTPException(400, "This setting is not editable as public copy")
     s = await db.settings.find_one({"key": "site"}, {"_id": 0})
+    if network:
+        # the footer's Facebook / Instagram icon: set, change or remove its entry in the social links
+        key, url = network.group(1), body.value.strip()
+        if url and (not url.startswith("https://") or not valid_header_link(url)):
+            raise HTTPException(400, "Use the full https:// address of the page")
+        items = [x for x in (s.get("social") or []) if isinstance(x, dict)]
+        at = next((i for i, x in enumerate(items) if key in f"{x.get('label', '')} {x.get('url', '')}".lower()), None)
+        if not url:
+            if at is not None:
+                items.pop(at)
+        elif at is None:
+            items.append({"label": key.capitalize(), "url": url[:300]})
+        else:
+            items[at] = {**items[at], "url": url[:300]}
+        await db.settings.update_one({"key": "site"}, {"$set": {"social": items, "updated_at": now()}})
+        await snapshot("settings", "site", {"path": path, "value": url}, "public copy live edit", user)
+        return {"path": path, "value": url}
     if menu or social:
         current = s
         try:
-            for part in path.split("."):
+            for part in path.split(".")[:-1]:
                 current = current[int(part)] if isinstance(current, list) else current[part]
+            if not isinstance(current, dict):
+                raise TypeError()
         except (KeyError, IndexError, ValueError, TypeError):
             raise HTTPException(400, "That menu or social item no longer exists")
         if not body.value.strip():
-            raise HTTPException(400, "Link labels cannot be empty")
+            raise HTTPException(400, "Links need a label and an address")
+        # where a menu or social link goes: a page of this site (/…) or a full https:// address
+        if path.endswith((".href", ".url")):
+            body.value = body.value.strip()
+            if not valid_header_link(body.value) or (social and not body.value.startswith("https://")):
+                raise HTTPException(400, "Use a page address starting with / (e.g. /connect) or a full https:// address")
     if path == "logo_media_id" and body.value:
         logo = await db.media.find_one({"id": body.value}, {"_id": 0})
         if not logo or not media_public_ok(logo):

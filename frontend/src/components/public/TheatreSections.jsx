@@ -2,6 +2,7 @@ import { HtmlDiv } from "./editor/HtmlDiv";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { Photo } from "./Photo";
+import { sentences } from "../../lib/utils";
 
 const TheatreLink = ({ data, id, editable }) => {
   if (!data.link_href || !data.link_label) return null;
@@ -25,7 +26,7 @@ export const TheatreSplitHero = ({ data, first, id, editable }) => {
     <div className="theatre-split-copy" data-testid="theatre-hero-copy">
       <p className="eyebrow" data-testid={`${id}-eyebrow`} {...editable("eyebrow")}>{data.eyebrow}</p>
       <Heading className="h1" data-testid={`${id}-heading`} {...editable("heading")}>
-        {(data.heading || "").split(/(?<=\.)\s+|\n+/).filter(Boolean).map((line, i) => <span className="theatre-hero-line" key={i}>{line}</span>)}
+        {sentences(data.heading, true).map((line, i) => <span className="theatre-hero-line" key={i}>{line}</span>)}
       </Heading>
       {data.intro_heading && <p className="theatre-split-lead" data-testid={`${id}-intro-heading`} {...editable("intro_heading")}>{data.intro_heading}</p>}
       <div className="theatre-split-intro" data-testid={`${id}-intro`} {...editable("intro")}>
@@ -46,7 +47,7 @@ export const TheatreCollageHero = ({ data, first, id, editable }) => {
       <div className="tc-copy" data-testid="theatre-hero-copy">
         {data.eyebrow && <p className="eyebrow tc-eyebrow" data-testid={`${id}-eyebrow`} {...editable("eyebrow")}>{data.eyebrow}</p>}
         <Heading className="h1 tc-heading" data-testid={`${id}-heading`} {...editable("heading")}>
-          {(data.heading || "").split(/(?<=\.)\s+|\n+/).filter(Boolean).map((line, i) => <span className="theatre-hero-line" key={i}>{line}</span>)}
+          {sentences(data.heading, true).map((line, i) => <span className="theatre-hero-line" key={i}>{line}</span>)}
         </Heading>
       </div>
       <div className="tc-photos" data-testid={`${id}-photos`}>
@@ -72,7 +73,7 @@ export const TheatreHero = ({ data, first, id, editable }) => {
       <div className="theatre-hero-copy" data-testid="theatre-hero-copy">
         <p className="eyebrow" data-testid={`${id}-eyebrow`} {...editable("eyebrow")}>{data.eyebrow}</p>
         <Heading className="h1" data-testid={`${id}-heading`} {...editable("heading")}>
-          {(data.heading || "").split(/(?<=\.)\s+|\n+/).filter(Boolean).map((line, i) => <span className="theatre-hero-line" key={i}>{line}</span>)}
+          {sentences(data.heading, true).map((line, i) => <span className="theatre-hero-line" key={i}>{line}</span>)}
         </Heading>
       </div>
     </div>

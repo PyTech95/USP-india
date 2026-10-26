@@ -4,7 +4,7 @@ import { Upload } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../../components/ui/dialog";
-import { api, errMsg, media, fmtDateTime } from "../../lib/api";
+import { api, errMsg, media, fmtDateTime, uploadProblem } from "../../lib/api";
 import { useAuth } from "../../lib/auth";
 import { PageHead, Tag, TextIn, AreaIn, SelectIn, CheckIn, PERM_LABEL, AUTH_LABEL, EDIT_LABEL } from "../../components/admin/Kit";
 
@@ -90,11 +90,11 @@ function Detail({ id, onClose, onChanged }) {
         {m.archived_sources?.length > 0 && <p className="text-xs mt-2" data-testid="media-archived-sources">Identical uploads linked to this record: {m.archived_sources.map((a) => a.filename).join(", ")}</p>}
         {can("media.edit") && (
           <div className="mt-4 space-y-2 border-t pt-3">
-            <input ref={rep} type="file" accept="image/jpeg,image/png,image/webp,application/pdf" hidden onChange={(e) => e.target.files[0] && upload("replace", e.target.files[0])} />
+            <input ref={rep} type="file" accept="image/*,.heic,.heif,application/pdf" hidden onChange={(e) => e.target.files[0] && upload("replace", e.target.files[0])} />
             <Button size="sm" variant="outline" onClick={() => rep.current.click()} data-testid="media-replace-btn">Replace file (keeps placements)</Button>
             {m.kind === "image" && !m.derived_from && (<div className="flex flex-wrap gap-2 items-center">
               <Input placeholder="Edit log, e.g. 'straightened 1°, lifted roof shadow'" value={log} onChange={(e) => setLog(e.target.value)} className="flex-1 min-w-[200px]" aria-label="Edit log" />
-              <input ref={der} type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={(e) => e.target.files[0] && upload("derivative", e.target.files[0], { edit_log: log })} />
+              <input ref={der} type="file" accept="image/*,.heic,.heif" hidden onChange={(e) => e.target.files[0] && upload("derivative", e.target.files[0], { edit_log: log })} />
               <Button size="sm" variant="outline" onClick={() => der.current.click()} data-testid="media-derivative-btn">Upload edited version</Button></div>)}
           </div>
         )}
@@ -142,6 +142,7 @@ export default function MediaLibrary() {
   const upload = async (files) => {
     setBusy(true);
     for (const f of files) {
+      if (uploadProblem(f)) { toast.error(uploadProblem(f)); continue; }
       const fd = new FormData(); fd.append("file", f); fd.append("category", cat);
       try { const r = await api.post("/admin/media", fd); toast[r.data.duplicate ? "info" : "success"](r.data.duplicate ? `${f.name} is identical to ${r.data.filename}; linked to that record.` : `${f.name} uploaded — ready to use`); }
       catch (e) { toast.error(`${f.name}: ${errMsg(e)}`); }
@@ -153,7 +154,7 @@ export default function MediaLibrary() {
       <PageHead title="Media Library" desc="Originals are preserved untouched. Uploaded images can be used on the site straight away.">
         {can("media.edit") && (<>
           <Input aria-label="Category for new uploads" value={cat} onChange={(e) => setCat(e.target.value)} className="w-44" />
-          <input ref={file} type="file" multiple accept="image/jpeg,image/png,image/webp,application/pdf" hidden onChange={(e) => upload([...e.target.files])} data-testid="media-upload-input" />
+          <input ref={file} type="file" multiple accept="image/*,.heic,.heif,application/pdf" hidden onChange={(e) => upload([...e.target.files])} data-testid="media-upload-input" />
           <Button onClick={() => file.current.click()} disabled={busy} data-testid="media-upload-btn"><Upload size={16} /> {busy ? "Uploading…" : "Upload"}</Button>
         </>)}
       </PageHead>

@@ -19,6 +19,7 @@ import { HomeFieldNotes } from "./HomeFieldNotes";
 import { NotesListing } from "./NotesListing";
 import { isDesignMode, designTranslate, designZoom } from "../../lib/designMode";
 import { LINE_KINDS } from "./editor/lineKinds";
+import { sentences } from "../../lib/utils";
 
 export const fontStack = (f) => `"${f}", system-ui, sans-serif`;
 const LAYOUT_PROPS = ["--ed-w", "--ed-h", "--ed-ar", "--ed-crop", "--ed-zoom", "aspectRatio", "overflow", "--ed-t", "--ed-y", "position", "alignSelf", "justifySelf", "zIndex",
@@ -270,8 +271,12 @@ function AreaStrip() {
   );
 }
 
-function Hero({ d, s, first, i, home, pageKey }) {
+function Hero({ d, s, first, i, home: homePage, pageKey: page }) {
   const hasImg = !!d.image?.media;
+  // A hero banner added in the live editor ("image-hero") is the same on every page: its text and a
+  // full-width photo. The pages' own heroes keep their designs.
+  const added = d.layout === "image-hero";
+  const home = homePage && !added, pageKey = added ? "" : page;
   if (pageKey === "about" && d.layout === "about-hero") {
     return <AboutHero data={d} first={first} id={`block-${i}`} editable={(field) => sx(s, field)} />;
   }
@@ -304,8 +309,8 @@ function Hero({ d, s, first, i, home, pageKey }) {
     </div>
   );
   if (home) {
-    const lines = (d.heading || "").split(/(?<=\.)\s+/).filter(Boolean);
-    const tagline = d.tagline ?? ((d.intro || "").split(/(?<=\.)\s+/)[0] || "").trim();
+    const lines = sentences(d.heading);
+    const tagline = d.tagline ?? (sentences(d.intro)[0] || "");
     return (
       <div className="hero-home hero-plain" data-testid="hero-section">
         <div className="wrap hero-text">
@@ -340,7 +345,7 @@ function RelatedWork({ d, s, i, home }) {
             {!home && <Photo ref_={it.image} crop="4/5" sizes="(min-width: 860px) 24vw, 90vw" testid={`work-item-${k}-image`} ed={sx(s, `items.${k}.image`)} />}
             <div className="work-card-body">
               <span className="work-num" data-testid={`work-item-${k}-number-row`} {...sx(s, `items.${k}.number`)}><span className="wn-n" data-testid={`work-item-${k}-number`}>{it.number || String(k + 1).padStart(2, "0")}</span></span><span className="wn-t" data-testid={`work-item-${k}-category`} {...sx(s, `items.${k}.title`)}>{it.title}</span>
-              <h3 className="h3"><Link to={it.href || "#"} data-testid={`work-item-${k}-link`}><span data-testid={`work-item-${k}-title`} {...sx(s, `items.${k}.subtitle`)}>{home ? (it.subtitle ?? it.title).split(/(?<=\.)\s+/).map((line, n) => <span className="work-title-line" key={n}>{line}</span>) : it.subtitle ?? it.title}</span></Link></h3>
+              <h3 className="h3"><Link to={it.href || "#"} data-testid={`work-item-${k}-link`}><span data-testid={`work-item-${k}-title`} {...sx(s, `items.${k}.subtitle`)}>{home ? sentences(it.subtitle ?? it.title).map((line, n) => <span className="work-title-line" key={n}>{line}</span>) : it.subtitle ?? it.title}</span></Link></h3>
               <p data-testid={`work-item-${k}-description`} {...sx(s, `items.${k}.text`)}>{it.text}</p>
               {(!home || it.link_label !== "") && <Link to={it.href || "/our-work"} className="more-link more-link-icon" aria-label={`Explore ${it.title || ""}`.trim()} data-testid={`work-item-${k}-explore`} {...(home ? { ...sx(s, `items.${k}.link_label`), "data-edit-group": "action" } : {})}>{home && <span className="work-explore-label" data-edit-text data-testid={`work-item-${k}-explore-label`}>{it.link_label ?? `Explore ${it.title || ""}`.trim()}</span>}<ArrowRight size={18} aria-hidden="true" /></Link>}
             </div>

@@ -1,5 +1,6 @@
 import os
 import io
+import re
 import uuid
 import logging
 import hashlib
@@ -111,9 +112,19 @@ def sanitize(htmltext):
                      url_schemes={"http", "https", "mailto"}, link_rel="noopener noreferrer")
 
 
+_UNSAFE_LINK = re.compile(r"^(javascript|data|vbscript):", re.I)
+
+
+def safe_link(value):
+    """Link addresses typed in the editors: script/data addresses are dropped (empty = no link)."""
+    return "" if _UNSAFE_LINK.match(re.sub(r"[\s\x00-\x1f]", "", value)) else value
+
+
 def sanitize_tree(obj):
     if isinstance(obj, dict):
-        return {k: (sanitize(v) if k.endswith("_html") and isinstance(v, str) else sanitize_tree(v)) for k, v in obj.items()}
+        return {k: (sanitize(v) if k.endswith("_html") and isinstance(v, str)
+                    else safe_link(v) if isinstance(v, str) and (k.endswith("href") or k == "url")
+                    else sanitize_tree(v)) for k, v in obj.items()}
     if isinstance(obj, list):
         return [sanitize_tree(x) for x in obj]
     return obj
@@ -166,16 +177,37 @@ MAX_UPLOAD = 20 * 1024 * 1024
 
 
 def process_image(data: bytes):
-    """Validate by content; return original format info and EXIF/GPS-free display derivatives (never upscaled)."""
+    """Validate by content; return original format info and EXIF/GPS-free display derivatives (never upscaled).
+    Photos straight from phones and cameras are accepted: HEIC (iPhone / Mac Photos), MPO (multi-picture
+    JPEG), TIFF, BMP, GIF and AVIF are kept as a JPEG (PNG when transparent) that every browser shows."""
     from PIL import Image, ImageOps
+    try:
+        from pillow_heif import register_heif_opener  # optional: HEIC / HEIF photos
+        register_heif_opener()
+    except Exception:
+        pass
     try:
         Image.open(io.BytesIO(data)).verify()
         img = Image.open(io.BytesIO(data))
+        img.load()
+    except Image.DecompressionBombError:
+        raise HTTPException(400, "This photo is extremely large. Please upload a smaller copy (for example exported at 4000 pixels wide).")
     except Exception:
-        raise HTTPException(400, "File is not a valid image")
-    fmt = img.format
+        raise HTTPException(400, "This file is not a photo the website can read. Use a JPEG, PNG, WebP or iPhone (HEIC) photo.")
+    fmt = "JPEG" if img.format == "MPO" else img.format
+    converted = None
     if fmt not in ("JPEG", "PNG", "WEBP"):
-        raise HTTPException(400, "Only JPEG, PNG or WebP images are accepted")
+        img = ImageOps.exif_transpose(img)
+        alpha = img.mode in ("RGBA", "LA", "PA") or (img.mode == "P" and "transparency" in img.info)
+        buf = io.BytesIO()
+        if alpha:
+            img.convert("RGBA").save(buf, "PNG", optimize=True)
+            fmt = "PNG"
+        else:
+            img.convert("RGB").save(buf, "JPEG", quality=92, optimize=True, progressive=True)
+            fmt = "JPEG"
+        converted = buf.getvalue()
+        img = Image.open(io.BytesIO(converted))
     img = ImageOps.exif_transpose(img)
     has_alpha = img.mode in ("RGBA", "LA", "P") and fmt == "PNG"
     w, h = img.size
@@ -192,7 +224,7 @@ def process_image(data: bytes):
         else:
             im.convert("RGB").save(buf, "JPEG", quality=86, optimize=True, progressive=True)
         derivs.append({"w": im.width, "h": im.height, "bytes": buf.getvalue(), "ctype": "image/png" if has_alpha else "image/jpeg"})
-    return {"format": fmt, "width": w, "height": h, "derivs": derivs}
+    return {"format": fmt, "width": w, "height": h, "derivs": derivs, "converted": converted}
 
 
 def media_public_ok(m):

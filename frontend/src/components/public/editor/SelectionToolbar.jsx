@@ -6,7 +6,7 @@ export const SelectionToolbar = ({ section, wholeSection, container, locked, onM
     <button type="button" title={wholeSection ? "Move section down" : "Move selected element down 10px"} aria-label={wholeSection ? "Move section down" : "Move selected element down"} onClick={() => onMove(1)} data-testid="live-sec-down"><ArrowDown size={14} /></button>
     {wholeSection && !locked && <>
       <button type="button" title="Duplicate whole section" aria-label="Duplicate whole section" onClick={onDuplicate} data-testid="live-sec-duplicate"><Copy size={14} /></button>
-      <button type="button" title={section.hidden ? "Show whole section" : "Hide whole section"} aria-label={section.hidden ? "Show whole section" : "Hide whole section"} onClick={onHide} data-testid="live-sec-hide">{section.hidden ? <EyeOff size={14} /> : <Eye size={14} />}</button>
+      <button type="button" title={section.hidden ? "Show whole section" : "Hide whole section (show it again from the editor panel: Hidden sections)"} aria-label={section.hidden ? "Show whole section" : "Hide whole section"} onClick={onHide} data-testid="live-sec-hide">{section.hidden ? <EyeOff size={14} /> : <Eye size={14} />}</button>
     </>}
     {!container && !(wholeSection && locked) && <button type="button" title={wholeSection ? "Delete whole section, including images" : "Delete selected element only"} aria-label={wholeSection ? "Delete whole section" : "Delete selected element only"} onClick={onDelete} data-testid="live-sec-delete"><Trash2 size={14} /></button>}
     {onLine && <>

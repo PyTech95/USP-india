@@ -1054,6 +1054,9 @@ body.live-editing main [data-sec]:hover { outline: 1px dashed rgba(52,76,64,.4);
 .live-add-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
 .live-add-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .live-add-grid.live-add-grid-2 { grid-template-columns: repeat(2, 1fr); }
+.live-hint.live-warn { color: #b3261e; }
+.live-hidden-row { justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 6px; }
+.live-hidden-row span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .live-add-item:disabled { opacity: .6; cursor: progress; }
 .live-add-item { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 18px 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 12px; color: #2d302b; transition: all .15s; }
 .live-add-item:hover { border-color: #D41445; color: #D41445; transform: translateY(-2px); }
@@ -1490,8 +1493,8 @@ body.live-editing .header { z-index: 1; }
 .site .page-home .hb-text:not(.band) .text-cols-head{ position:static !important; }
 .site .page-home .hb-text:not(.band) .text-cols-head .h2{ max-width:16ch; }
 
-/* Wide image feature — hidden (not in mockup; also hidden in data) */
-.site .page-home .hb-image{ display:none !important; }
+/* (Image sections on the home page are shown: the old wide-image feature is hidden in the page data,
+   and image sections added in the live editor must appear.) */
 
 /* Our Work — numbered editorial grid, NO photos */
 .site .page-home .hb-related_work .sec-head{ display:grid; grid-template-columns:minmax(0,5fr) minmax(0,7fr); gap:1.5rem clamp(2.5rem,5vw,5.5rem); align-items:start; margin-bottom:clamp(2.5rem,4.5vw,4rem); }

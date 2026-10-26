@@ -18,6 +18,9 @@ export const UI_TEXT = {
   error_name: "Please enter your name.", error_email: "Please enter a valid email address.", error_topic: "Please choose a topic.", error_message: "Please write a message of at least 10 characters.", error_phone: "Phone may contain digits, spaces and + ( ) - only.",
   not_found: "Page not found", not_found_body: "This address does not exist on the USP India website.", go_home: "Go to Home", read_notes: "Read Field Notes",
   film_pending: "Film link pending", four_areas: "Four areas of work", watch_video: "Watch the video", transcript: "Transcript",
+  not_found_code: "404", empty_notes_short: "No field notes yet.", close: "Close", reader_crumb_site: "USP", loading: "Loading…",
+  note_load_error: "This field note could not be loaded.", questions_answers: "Questions & answers",
+  placeholder_name: "Your name", placeholder_email: "Your email address", placeholder_phone: "Phone number", placeholder_message: "Your message",
 };
 export const textFor = (site, key) => site?.ui_text?.[key] ?? UI_TEXT[key] ?? key;
 export function SiteText({ path, name, fallback, as: Tag = "span", children, ...props }) {

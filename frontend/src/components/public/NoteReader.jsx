@@ -84,7 +84,7 @@ function Card({ n, onOpen, variant, ed, k }) {
 
 // ed / label are given when the list is a page section (live editor styles per position).
 export function NoteGrid({ items, onOpen, featured = true, ed, label }) {
-  if (!items.length) return <p data-testid="notes-empty">No field notes yet.</p>;
+  if (!items.length) return <SiteText as="p" name="empty_notes_short" data-testid="notes-empty" />;
   const [first, ...rest] = featured ? items : [null, ...items];
   const groups = [];
   for (let i = 0; i < rest.length; i += 3) groups.push(rest.slice(i, i + 3));
@@ -120,19 +120,21 @@ export function NoteReader({ slug, onClose }) {
     <div className="fn-overlay" onMouseDown={(e) => e.target === e.currentTarget && onClose()} data-testid="note-reader-overlay">
       <div className="fn-dialog" role="dialog" aria-modal="true" aria-labelledby="fn-reader-title" data-testid="note-reader">
         <div className="fn-dialog-bar">
-          <span className="fn-crumb">USP <span aria-hidden="true">/</span> Field Notes</span>
-          <button type="button" ref={closeRef} className="fn-close" onClick={onClose} data-testid="note-reader-close">Close <X size={16} aria-hidden="true" /></button>
+          <span className="fn-crumb"><SiteText name="reader_crumb_site" /> <span aria-hidden="true">/</span> <SiteText name="field_notes" /></span>
+          <button type="button" ref={closeRef} className="fn-close" onClick={onClose} data-testid="note-reader-close"><SiteText name="close" /> <X size={16} aria-hidden="true" /></button>
         </div>
         <div className="fn-dialog-body">
-          {!data && <p className="fn-loading" aria-busy="true">Loading…</p>}
-          {data?.error && <p data-testid="note-reader-error">This field note could not be loaded.</p>}
+          {!data && <SiteText as="p" className="fn-loading" aria-busy="true" name="loading" />}
+          {data?.error && <SiteText as="p" data-testid="note-reader-error" name="note_load_error" />}
           {data && !data.error && <>
+            {/* the words and photos of a note are edited on the note's own page */}
+            <EditLink n={{ slug }} />
             {data.category && <p className="fn-cat" data-testid="note-reader-category">{data.category}</p>}
             <h2 id="fn-reader-title" className="fn-reader-title" data-testid="note-reader-title">{data.title.replace(/\.$/, "")}</h2>
             {data.standfirst && <p className="fn-standfirst" data-testid="note-reader-standfirst">{data.standfirst}</p>}
             <span className="fn-rule" aria-hidden="true" data-testid="note-reader-accent-line" />
             <div className="fn-body" data-testid="note-reader-body" dangerouslySetInnerHTML={{ __html: data.body_html }} />
-            {data.seo?.faq?.length > 0 && <section className="fn-faq" data-testid="note-reader-faq"><h3>Questions &amp; answers</h3>
+            {data.seo?.faq?.length > 0 && <section className="fn-faq" data-testid="note-reader-faq"><SiteText as="h3" name="questions_answers" />
               {data.seo.faq.map((f, i) => <details key={i}><summary>{f.q}</summary><p>{f.a}</p></details>)}</section>}
           </>}
         </div>

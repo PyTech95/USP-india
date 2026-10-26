@@ -4,9 +4,9 @@ import { toast } from "sonner";
 import {
   X, Save, Upload, Images, RotateCcw, AlignLeft, AlignCenter, AlignRight,
   Plus, Undo2, Redo2, Bold, Italic,
-  Monitor, Tablet, Smartphone, Type, Paintbrush, Square, LayoutGrid, GripVertical, ImagePlus,
+  Monitor, Tablet, Smartphone, Type, Paintbrush, Square, LayoutGrid, GripVertical, ImagePlus, Eye,
 } from "lucide-react";
-import { api, errMsg } from "../../lib/api";
+import { api, errMsg, uploadProblem } from "../../lib/api";
 import { MediaPicker } from "../admin/Kit";
 import { useLiveEditor } from "./editor/LiveEditorProvider";
 import { FieldInspector } from "./editor/FieldInspector";
@@ -76,6 +76,29 @@ const hexOf = (rgb) => {
   if (!m || (m[4] !== undefined && parseFloat(m[4]) === 0)) return "";
   return `#${[m[1], m[2], m[3]].map((v) => Number(v).toString(16).padStart(2, "0")).join("")}`;
 };
+// Where a selected button / link text goes: the link address saved next to it in the section
+// (buttons.0.label -> buttons.0.href, link_label -> link_href, button_label -> href, a card's title -> its href).
+function linkFieldOf(data, field) {
+  if (!data || !field) return null;
+  const i = field.lastIndexOf("."), prefix = i >= 0 ? field.slice(0, i + 1) : "", key = field.slice(i + 1);
+  const cands = [];
+  if (key.endsWith("_label")) cands.push(`${prefix}${key.replace(/_label$/, "_href")}`);
+  if (key === "button_label" || key === "label" || key === "link_label" || key === "title") cands.push(`${prefix}href`, `${prefix}url`);
+  return cands.find((c) => typeof getPath(data, c) === "string") || null;
+}
+const isSafeLink = (v) => !String(v || "").trim() || /^(\/(?!\/)|#|https?:\/\/\S+$|mailto:\S+$|tel:[0-9+()\-\s]+$)/i.test(String(v).trim());
+const SITE_PAGES = ["/", "/about", "/our-work/rakhigarhi", "/our-work/theatre", "/our-work/craft-livelihood", "/our-work/workshops-learning", "/field-notes", "/connect"];
+function LinkField({ value, onChange }) {
+  const [draft, setDraft] = useState(value);
+  useEffect(() => setDraft(value), [value]);
+  const ok = isSafeLink(draft);
+  return <label className="live-field">Where it goes
+    <input value={draft} list="live-site-pages" placeholder="/connect or https://…" onChange={(e) => { setDraft(e.target.value); if (isSafeLink(e.target.value)) onChange(e.target.value.trim()); }} aria-invalid={!ok} data-testid="live-link" />
+    <datalist id="live-site-pages">{SITE_PAGES.map((p) => <option key={p} value={p} />)}</datalist>
+    {ok ? <span className="live-hint live-hint-small">A page of this site (e.g. /connect), a full https:// address, mailto: or tel:. Empty = no link.</span>
+      : <span className="live-hint live-hint-small live-warn" role="alert" data-testid="live-link-error">Not saved: start with / for a page of this site, or use https://, mailto: or tel:.</span>}
+  </label>;
+}
 // A photo added to a section is moved and resized within that section.
 const keepInSection = (el, field) => (el && /^extras\.\d+\.image$/.test(field || "") ? el.closest("[data-sec]")?.getBoundingClientRect() : null);
 // The space above / below a section's content when its top or bottom edge starts being dragged
@@ -145,7 +168,7 @@ const DEFAULTS = {
   gallery: { heading: "Gallery", items: [] },
   quote: { quote: "A short, approved quotation.", attribution: "", approved: true },
   contact_invite: { heading: "Work with us", text: "A short invitation to get in touch.", button_label: "Connect with Us", href: "/connect", buttons: [] },
-  hero: { eyebrow: "", heading: "New heading", intro: "Short introduction text.", image: { media_id: "" }, buttons: [] },
+  hero: { layout: "image-hero", eyebrow: "", heading: "New heading", intro: "Short introduction text.", image: { media_id: "" }, buttons: [] },
 };
 const makeSection = (type) => ({ id: newId(), type, hidden: false, data: clone(DEFAULTS[type] || {}), styles: {} });
 const stripMedia = (o) => {
@@ -215,6 +238,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
   const isText = !!field && !isLayout && !isImage;
   // Field Notes list elements: style, size and position only (the words and photos belong to each note)
   const fixed = isFixedField(field);
+  const linkField = sec && isText && !fixed ? linkFieldOf(sec.data, field) : null;
   const lockedSection = sec?.type === "notes_list";
   const selEl = on && sel ? findEl(sel) : null;
   const cstyle = selEl ? window.getComputedStyle(selEl) : null;
@@ -514,6 +538,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
   };
   const uploadExtra = async (file, secId) => {
     if (!file || !secId) return;
+    if (uploadProblem(file)) { toast.error(uploadProblem(file)); return; }
     const fd = new FormData(); fd.append("file", file); fd.append("category", "live-editor");
     try { setBusy(true); const r = await api.post("/admin/media", fd); addExtra(r.data, secId); }
     catch (e) { toast.error(errMsg(e)); setBusy(false); }
@@ -525,6 +550,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
   };
   const upload = async (file) => {
     if (!file) return;
+    if (uploadProblem(file)) { toast.error(uploadProblem(file)); return; }
     const fd = new FormData(); fd.append("file", file); fd.append("category", "live-editor");
     try { setBusy(true); const r = await api.post("/admin/media", fd); setImage(r.data); }
     catch (e) { toast.error(errMsg(e)); setBusy(false); }
@@ -776,7 +802,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
           {sec && !noteId && (
             <SelectionToolbar section={sec} wholeSection={field === "_section"} container={(isLayout && field !== "_section") || fixed} locked={lockedSection}
               onMove={(direction) => field === "_section" ? move(sec.id, direction) : setStyles({ translateY: `${num(st.translateY) + direction * 10}px` })}
-              onDuplicate={() => dup(sec.id)} onHide={() => toggleHide(sec.id)} onDelete={remove}
+              onDuplicate={() => dup(sec.id)} onHide={() => { const hiding = !sec.hidden; toggleHide(sec.id); if (hiding) { setSel(null); toast("Section hidden. Show it again from the editor panel: Hidden sections."); } }} onDelete={remove}
               onAdd={() => setAddAt(idx(sec.id) + 1)} onSelectSection={() => selectField({ sec: sec.id, field: "_section" })} onAddPhoto={() => setAddPhoto(sec.id)}
               lines={{ above: !!st.lineAbove, below: !!st.lineBelow }}
               onLine={(where) => { const k = where === "above" ? "lineAbove" : "lineBelow"; setStyles({ [k]: st[k] ? "" : (field === "_section" ? "divider" : "accent") }); }} />
@@ -817,6 +843,13 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
             <Group title="Page title & list of all fields" testid="live-group-fields">
               <FieldInspector sections={sections} selected={sel} onSelect={selectField} title={content.title} onTitleChange={noteId ? undefined : (title) => { setHist((h) => ({ past: [...h.past, content].slice(-50), future: [] })); setContent((c) => ({ ...c, title })); setDirty(true); }} onChange={(id, path, value) => { inlineDraft.current = null; patchSec(id, (s) => ({ ...s, data: setPath(s.data, path, value) })); }} />
             </Group>
+            {/* hidden sections are not on the page, so they are shown again from here */}
+            {!noteId && sections.some((s) => s.hidden) && <Group title={`Hidden sections (${sections.filter((s) => s.hidden).length})`} testid="live-group-hidden">
+              {sections.map((s, i) => s.hidden && <div key={s.id} className="live-row live-hidden-row">
+                <span>{i + 1}. {s.data?.eyebrow || s.data?.heading || s.data?.card_title || s.type.replace(/_/g, " ")}</span>
+                <button type="button" className="live-btn" onClick={() => toggleHide(s.id)} data-testid={`live-show-${s.id}`}><Eye size={14} /> Show</button>
+              </div>)}
+            </Group>}
           </>
         ) : (
           <div data-testid="live-controls">
@@ -841,14 +874,14 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
                 <div className="live-row" style={{ marginBottom: 0 }}>
                   <button type="button" className="live-btn" onClick={() => setPicker(true)} data-testid="live-choose-image"><Images size={14} /> From library</button>
                   <button type="button" className="live-btn" onClick={() => fileRef.current?.click()} disabled={busy} data-testid="live-upload-image"><Upload size={14} /> Upload new</button>
-                  <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => upload(e.target.files?.[0])} data-testid="live-upload-input" />
+                  <input ref={fileRef} type="file" accept="image/*,.heic,.heif" hidden onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; upload(f); }} data-testid="live-upload-input" />
                 </div>
               </Group>
               <Group title="Description & caption" testid="live-group-image-text">
                 {[["alt", "Description for screen readers"], ["caption", "Caption"], ["credit", "Credit"]].map(([name, label]) => <label key={name} className="live-field">{label}<input type="text" value={getPath(sec.data, `${field}.${name}`) ?? getPath(sec.data, `${field}.media.${name}`) ?? ""} onChange={(e) => patchSec(sec.id, (s) => ({ ...s, data: setPath(s.data, `${field}.${name}`, e.target.value) }))} data-testid={`live-image-${name}`} /></label>)}
               </Group>
             </>) : field === "_section" ? (
-              <Group title="Section background & spacing" open testid="live-group-section">
+              <Group title="Section background colour & spacing" open testid="live-group-section">
                 <SectionStyle sec={sec} onChange={(patch) => patchSec(sec.id, (s) => {
                   const f = { ...((s.styles || {})._section || {}), ...patch };
                   Object.keys(f).forEach((k) => (f[k] === "" || f[k] == null) && delete f[k]);
@@ -879,18 +912,22 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
                 <div className="live-row">
                   <ColorField label={<span className="live-color-cap"><Paintbrush size={12} /> Colour</span>} value={st.color || ""} onChange={(v) => setStyles({ color: v })} testid="live-font-color" fallback="#2b2b2b" />
                 </div>
+                <div className="live-row">
+                  <ColorField label={<span className="live-color-cap"><Square size={12} /> Background behind this text</span>} value={st.backgroundColor || ""} onChange={(v) => setStyles({ backgroundColor: v })} testid="live-font-bg" fallback="#ffffff" />
+                  {st.backgroundColor && <button type="button" className="live-btn" onClick={() => setStyles({ backgroundColor: "", borderRadius: "" })} title="Clear background" data-testid="live-font-bg-clear"><RotateCcw size={14} /></button>}
+                </div>
+                {sec && !noteId && <button type="button" className="live-link-btn" onClick={() => selectField({ sec: sec.id, field: "_section" })} data-testid="live-goto-section-bg">Change the whole section's background colour →</button>}
                 <p className="live-hint live-hint-small" data-testid="live-font-note">The font itself is set for the whole website in Admin → Appearance.</p>
               </Group>
-              <Group title="Line spacing & highlight" testid="live-group-text-more">
+              {linkField && <Group title="Link" open testid="live-group-link">
+                <LinkField value={getPath(sec.data, linkField) || ""} onChange={(v) => { inlineDraft.current = null; patchSec(sec.id, (x) => ({ ...x, data: setPath(x.data, linkField, v) })); }} />
+              </Group>}
+              <Group title="Line spacing & corners" testid="live-group-text-more">
                 <div className="live-row">
                   <label className="live-field">Line height<input type="number" step="0.1" min="0.8" max="3" value={st.lineHeight || ""} placeholder="auto" onChange={(e) => setStyles({ lineHeight: e.target.value })} data-testid="live-line-height" /></label>
                   <label className="live-field">Letter spacing<input type="text" value={st.letterSpacing || ""} placeholder="e.g. 1px" onChange={(e) => setStyles({ letterSpacing: e.target.value })} data-testid="live-letter-spacing" /></label>
                 </div>
-                <div className="live-row">
-                  <ColorField label={<span className="live-color-cap"><Square size={12} /> Background</span>} value={st.backgroundColor || ""} onChange={(v) => setStyles({ backgroundColor: v })} testid="live-font-bg" fallback="#ffffff" />
-                  <button type="button" className="live-btn" onClick={() => setStyles({ backgroundColor: "", borderRadius: "" })} title="Clear background" data-testid="live-font-bg-clear"><RotateCcw size={14} /></button>
-                </div>
-                <label className="live-field">Corner radius (px)<input type="number" min="0" max="80" value={px(st.borderRadius)} placeholder="0" onChange={(e) => setStyles({ borderRadius: e.target.value ? `${e.target.value}px` : "" })} data-testid="live-font-radius" /></label>
+                <label className="live-field">Corner radius of the text background (px)<input type="number" min="0" max="80" value={px(st.borderRadius)} placeholder="0" onChange={(e) => setStyles({ borderRadius: e.target.value ? `${e.target.value}px` : "" })} data-testid="live-font-radius" /></label>
               </Group>
             </>) : <Group title="Box colour" open testid="live-group-box">
               <div className="live-row">
@@ -933,7 +970,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
             )}
 
             {field !== "_section" && (
-              <Group title="Section background & spacing" testid="live-group-sec-style">
+              <Group title="Section background colour & spacing" testid="live-group-sec-style">
                 <SectionStyle sec={sec} onChange={(patch) => patchSec(sec.id, (s) => {
                   const f = { ...((s.styles || {})._section || {}), ...patch };
                   Object.keys(f).forEach((k) => (f[k] === "" || f[k] == null) && delete f[k]);
@@ -966,7 +1003,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
       )}
 
       <MediaPicker open={picker} onClose={() => { setPicker(false); setPickerFor(null); }} onPick={(m) => (pickerFor ? addExtra(m, pickerFor) : setImage(m))} />
-      <input ref={extraFileRef} type="file" accept="image/*" hidden onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; uploadExtra(f, addPhoto); }} data-testid="live-add-photo-input" />
+      <input ref={extraFileRef} type="file" accept="image/*,.heic,.heif" hidden onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; uploadExtra(f, addPhoto); }} data-testid="live-add-photo-input" />
       {addPhoto && (
         <div className="live-ui live-add-menu" data-testid="live-add-photo-menu" role="dialog" aria-label="Add a photo">
           <div className="live-add-head"><strong>Add a photo to this section</strong><button type="button" className="live-btn" onClick={() => setAddPhoto(null)} data-testid="live-add-photo-close"><X size={14} /></button></div>

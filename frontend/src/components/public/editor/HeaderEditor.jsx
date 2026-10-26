@@ -13,7 +13,7 @@ import { LogoHandles } from "./LogoHandles";
 
 const fromSite = (site) => ({ ...site, brand_label: site.brand_label ?? "USP", full_name: site.full_name || "",
   logo_media_id: site.logo?.id || "", mobile_menu_label: site.ui_text?.menu || "Menu",
-  header_styles: { ...site.header_styles }, menus: structuredClone(site.menus || { main: [], footer: [] }) });
+  header_styles: { ...site.header_styles }, menus: JSON.parse(JSON.stringify(site.menus || { main: [], footer: [] })) });
 
 export const HeaderEditor = () => {
   const { enabled, scope } = useLiveEditor();
@@ -69,7 +69,7 @@ const HeaderEditorPanel = ({ site }) => {
     return () => document.removeEventListener("click", select, true);
   }, [draft.menus, on]);
   const changeMenu = (path, key, value) => {
-    const menus = structuredClone(draft.menus);
+    const menus = JSON.parse(JSON.stringify(draft.menus));
     let item = { menus };
     for (const part of path.split(".")) item = item[part];
     item[key] = value; change({ menus });
