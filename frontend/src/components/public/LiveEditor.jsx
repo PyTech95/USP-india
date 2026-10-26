@@ -14,12 +14,12 @@ import { isImageField, isLayoutField, isFixedField, BOX_LABELS } from "./editor/
 import { SelectionToolbar } from "./editor/SelectionToolbar";
 import { ColorField, px } from "./editor/ColorField";
 import { normalizeReferenceContent } from "./editor/referenceGeometry";
-import { zoomOf, designTranslate } from "../../lib/designMode";
+import { zoomOf, fitRatio, designTranslate } from "../../lib/designMode";
 import { SliderField } from "./editor/ColorField";
 import { LineControls } from "./editor/LineControls";
 import { CropControls, parsePos } from "./editor/CropControls";
 import { useFloatingPanel } from "./editor/useFloatingPanel";
-import { visibleSpace, spaceLimits } from "./Blocks";
+import { visibleSpace, spaceLimits, naturalWidth, previewSectionBox } from "./Blocks";
 
 const LABELS = { eyebrow: "Small label", heading: "Heading", subheading: "Sub-heading", intro: "Intro text",
   body_html: "Body text", body_1_html: "Text box 1", body_2_html: "Text box 2", body_3_html: "Text box 3",
@@ -120,6 +120,81 @@ function sectionSpaceStart(el, st, z) {
   out.minTop = Math.min(out.top, Math.round(least.top / z));
   out.minBottom = Math.min(out.bottom, Math.round(least.bottom / z));
   return out;
+}
+// Width and place of a whole section across the page (desktop design). The page is <main>; the
+// "rails" are the edges the site's coloured bands, header and footer line up on (--box-w).
+const SECTION_MIN = 320; // design px: narrower than this, a section's text has no room
+function pageGeometry(el) {
+  const page = (el?.closest("main") || document.querySelector("main"))?.getBoundingClientRect();
+  if (!page) return null;
+  const box = Math.min(page.width - 2 * Math.max(24, 0.035 * page.width), 1339.2), side = (page.width - box) / 2;
+  return { page, left: page.left + side, right: page.right - side };
+}
+// The sideways position (design px) that puts a section with this width at this left edge (screen
+// px). Measured with the section really at that width, wherever its layout centres it.
+function sectionTx(el, st, width, left, z) {
+  previewSectionBox(el, { ...st, width, translateX: "" }, false);
+  const at = el.getBoundingClientRect().left;
+  previewSectionBox(el, st);
+  return Math.round((left - at) / z);
+}
+// How far (screen px) the text inside a box sticks out of it on the left or right.
+function overflowX(el) {
+  const r = el.getBoundingClientRect();
+  let most = 0;
+  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+  for (let t = walker.nextNode(); t; t = walker.nextNode()) {
+    if (!t.textContent.trim()) continue;
+    const range = document.createRange(); range.selectNodeContents(t);
+    for (const x of range.getClientRects()) if (x.width > 0) most = Math.max(most, r.left - x.left, x.right - r.right);
+  }
+  return most;
+}
+// The narrowest a text or box can be without its words running out of it (screen px).
+function minContentWidth(el) {
+  const kept = ["width", "min-width", "max-width"].map((p) => [p, el.style.getPropertyValue(p), el.style.getPropertyPriority(p)]);
+  el.style.setProperty("width", "min-content", "important"); el.style.setProperty("min-width", "0px", "important"); el.style.setProperty("max-width", "none", "important");
+  const w = el.getBoundingClientRect().width;
+  kept.forEach(([p, v, prio]) => { if (v) el.style.setProperty(p, v, prio); else el.style.removeProperty(p); });
+  return w;
+}
+// How far (design px) a section can be moved sideways and still be on the page.
+function sectionRange(el, st, z) {
+  previewSectionBox(el, { ...st, translateX: "" }, false);
+  const r = el.getBoundingClientRect();
+  previewSectionBox(el, st);
+  const page = pageGeometry(el)?.page || r;
+  return { min: Math.ceil((page.left - r.left) / z), max: Math.floor((page.right - r.right) / z) };
+}
+// A new width keeps the section where it is: on the left or right edge it was put against, or
+// otherwise around its middle — and always on the page.
+function keepPlace(el, st, width, z) {
+  const r = el.getBoundingClientRect(), g = pageGeometry(el), w = parseFloat(width) * z;
+  const near = (a, b) => Math.abs(a - b) < 2;
+  let left = r.left + r.width / 2 - w / 2;
+  if (g && (near(r.left, g.left) || near(r.left, g.page.left))) left = r.left;
+  else if (g && (near(r.right, g.right) || near(r.right, g.page.right))) left = r.right - w;
+  if (g) left = Math.min(Math.max(left, g.page.left), g.page.right - w);
+  return sectionTx(el, st, width, left, z);
+}
+// The selection outline. Its side handles sit at the middle of the part that is on screen, and they
+// are kept clear of the editor panel, which floats over the page, so both sides of a section or a
+// box can always be grabbed (the outline stops at the panel; while a handle is dragged the panel
+// turns see-through and the outline shows the real edges).
+function drawnBox(r, section) {
+  const vh = window.innerHeight, vw = document.documentElement.clientWidth;
+  const top = Math.max(r.top, 0), bottom = Math.min(r.bottom, vh);
+  const mid = bottom - top > 40 ? (top + bottom) / 2 : r.top + r.height / 2;
+  let left = r.left, right = r.right;
+  if (!document.body.classList.contains("live-dragging")) {
+    if (section) { left = Math.max(left, 10); right = Math.min(right, vw - 10); }
+    const p = document.querySelector("[data-testid=live-editor-panel]")?.getBoundingClientRect();
+    if (p && p.width && mid > p.top - 16 && mid < p.bottom + 16) {
+      if (right > p.left - 10 && right < p.right + 14 && p.left - 10 - left > 160) right = p.left - 10;
+      else if (left < p.right + 10 && left > p.left - 14 && right - (p.right + 10) > 160) left = p.right + 10;
+    }
+  }
+  return { top: r.top, left, width: right - left, height: r.height, hy: Math.round(mid - r.top) };
 }
 // A section can also own elements elsewhere on the page (data-sec-part), e.g. the related
 // notes under a Field Note.
@@ -478,8 +553,9 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
     if (!on || !sel) { setRect(null); return undefined; }
     let raf;
     const tick = () => {
-      const r = findEl(sel)?.getBoundingClientRect();
-      setRect((o) => (r && (!o || o.top !== r.top || o.left !== r.left || o.width !== r.width || o.height !== r.height) ? { top: r.top, left: r.left, width: r.width, height: r.height } : r ? o : null));
+      const found = findEl(sel)?.getBoundingClientRect();
+      const r = found ? drawnBox(found, sel.field === "_section") : null;
+      setRect((o) => (r && (!o || ["top", "left", "width", "height", "hy"].some((k) => o[k] !== r[k])) ? r : r ? o : null));
       raf = requestAnimationFrame(tick);
     };
     tick();
@@ -523,7 +599,8 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
     const secEl = findSecEl(secId);
     const s0 = sections.find((x) => x.id === secId);
     if (!secEl || !s0) return;
-    const r = secEl.getBoundingClientRect(), z = zoomOf(secEl) || 1;
+    // the photo sits inside the section: in a narrowed section it has the section's scale
+    const r = secEl.getBoundingClientRect(), z = (zoomOf(secEl) || 1) * fitRatio(secEl);
     const ratio = m.width && m.height ? m.height / m.width : 0.75;
     const w = Math.round(Math.max(140, Math.min(360, (0.8 * r.height / z) / ratio)));
     const top = Math.max(r.top, Math.min(window.innerHeight * 0.25, r.bottom - w * ratio * z));
@@ -574,7 +651,16 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
     for (const c of cands) { const d = Math.abs(val - c); if (d <= bd) { bd = d; best = c; } }
     return best;
   };
-  const endDrag = () => { dragging.current = null; };
+  // While something is dragged the panel turns see-through (it floats over the page), so the page
+  // under it shows; one drag is one undo step.
+  // (the panel always comes back, even when the mouse button is let go outside the window)
+  const fadePanel = () => {
+    document.body.classList.add("live-dragging");
+    const back = () => document.body.classList.remove("live-dragging");
+    ["pointerup", "pointercancel", "blur"].forEach((type) => window.addEventListener(type, back, { once: true }));
+  };
+  const startDrag = () => { dragging.current = "start"; fadePanel(); };
+  const endDrag = () => { dragging.current = null; document.body.classList.remove("live-dragging"); };
   // After a move/resize: warn (with one-click undo) when the item now covers another one.
   const checkOverlap = () => {
     const at = selRef.current;
@@ -586,7 +672,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
   };
   const resize = (dir) => (e) => {
     e.preventDefault(); e.stopPropagation();
-    dragging.current = "start";
+    startDrag();
     e.target.setPointerCapture?.(e.pointerId);
     const el = findEl(sel);
     const r0 = el?.getBoundingClientRect() || rect;
@@ -599,6 +685,16 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
     // A whole section's top and bottom edges change the space above / below its content: the
     // section really gets shorter or taller and the sections below move with it.
     const space = field === "_section" && el ? sectionSpaceStart(el, st, z) : null;
+    // Its left and right edges change its width: the dragged edge follows the pointer, the other
+    // edge stays where it is, the section stays on the page and its content wraps to the new width.
+    const across = field === "_section" && el ? pageGeometry(el) : null;
+    if (across) [across.left, across.right, across.page.left, across.page.right].forEach((x) => xs.push(x));
+    const narrowest = Math.min(w0, SECTION_MIN * z);
+    // a text or a box is never made narrower than its longest word (its text would run out of it),
+    // and a box stops getting narrower where the text in its columns would start to stick out
+    const fewest = !across && !isImage && el ? Math.min(w0, minContentWidth(el)) : 0;
+    const over0 = fewest ? overflowX(el) : 0;
+    let good = fewest ? { width: `${d(w0)}px`, ...(dir.includes("w") ? { translateX: `${tx0}px` } : {}) } : null;
     const inBox = keepInSection(el, field);
     const mv = (ev) => {
       let dx = ev.clientX - sx0, dy = ev.clientY - sy0;
@@ -607,7 +703,16 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
       if (dir.includes("w")) { const s = nearest(r0.left + dx, xs); if (s != null) { dx += s - (r0.left + dx); gls.push({ x: s }); } }
       if (!space && dir.includes("s")) { const s = nearest(r0.bottom + dy, ys); if (s != null) { dy += s - (r0.bottom + dy); gls.push({ y: s }); } }
       if (!space && dir.includes("n")) { const s = nearest(r0.top + dy, ys); if (s != null) { dy += s - (r0.top + dy); gls.push({ y: s }); } }
-      const patch = {};
+      const patch = {}, info = [];
+      if (across && /[ew]/.test(dir)) {
+        if (dir.includes("e")) dx = Math.max(narrowest - w0, Math.min(dx, across.page.right - r0.right));
+        else dx = Math.min(w0 - narrowest, Math.max(dx, across.page.left - r0.left));
+        const nw = dir.includes("e") ? w0 + dx : w0 - dx;
+        patch.width = `${d(nw)}px`;
+        const t = sectionTx(el, st, patch.width, dir.includes("e") ? r0.left : r0.right - nw, z);
+        patch.translateX = t ? `${t}px` : "";
+        info.push(`Width: ${d(nw)}px${nw <= narrowest + 0.5 && narrowest < w0 ? " (narrowest)" : ""}`);
+      }
       if (inBox) {
         if (dir.includes("e")) dx = Math.min(dx, inBox.right - r0.right);
         if (dir.includes("w")) dx = Math.max(dx, inBox.left - r0.left);
@@ -619,14 +724,22 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
           if (dir.includes("e")) dx = Math.min(dx, most); else dx = Math.max(dx, -most);
         }
       }
-      if (dir.includes("e")) patch.width = `${Math.max(40, d(w0 + dx))}px`;
-      if (dir.includes("w")) { const nw = Math.max(40 * z, w0 - dx); patch.width = `${d(nw)}px`; patch.translateX = `${tx0 + d(w0 - nw)}px`; }
+      if (!across && dir.includes("e")) patch.width = `${Math.max(40, Math.ceil(fewest / z), d(w0 + dx))}px`;
+      if (!across && dir.includes("w")) { const nw = Math.max(40 * z, fewest, w0 - dx); patch.width = `${d(nw)}px`; patch.translateX = `${tx0 + d(w0 - nw)}px`; }
+      if (fewest && patch.width) {
+        el.style.setProperty("--ed-w", patch.width); el.style.setProperty("width", `calc(${patch.width} * var(--dz, 1))`, "important");
+        if (good && parseFloat(patch.width) < parseFloat(good.width) && overflowX(el) > over0 + 1) Object.assign(patch, good);
+        else good = { width: patch.width, ...(dir.includes("w") ? { translateX: patch.translateX } : {}) };
+      }
       if (space && /[ns]/.test(dir)) {
         const top = dir.includes("n"), least = top ? space.minTop : space.minBottom;
         const now = Math.max(least, (top ? space.top : space.bottom) + d(dy));
         const delta = (top ? space.dTop : space.dBottom) + now - (top ? space.top : space.bottom);
         Object.assign(patch, space.patch, { [top ? "spaceTop" : "spaceBottom"]: delta ? `${delta}px` : "" });
-        setDragInfo({ x: ev.clientX, y: ev.clientY, text: `Space ${top ? "above" : "below"}: ${now}px${now === least && dy < 0 ? " (smallest)" : ""}` });
+        info.push(`Space ${top ? "above" : "below"}: ${now}px${now === least && dy < 0 ? " (smallest)" : ""}`);
+      }
+      if (across) {
+        setDragInfo({ x: ev.clientX, y: ev.clientY, text: info.join(" · ") });
         setStyles(patch); setGuides(gls);
         return;
       }
@@ -650,12 +763,29 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
   };
   // Whole sections are moved up or down the page (put before or after another section) — never
   // pushed out of the page flow, which would leave a gap above them and cover the next one.
+  // A section narrower than the page is also moved left or right by dragging its grip sideways
+  // (it stays on the page, and snaps to the band edges and the middle).
   const reorderDrag = (e) => {
     e.preventDefault(); e.stopPropagation();
     e.target.setPointerCapture?.(e.pointerId);
-    const id = sel.sec;
+    const id = sel.sec, el = findEl(sel), g = pageGeometry(el), r0 = el?.getBoundingClientRect(), z = zoomOf(el) || 1;
+    const x0 = e.clientX, y0 = e.clientY;
+    const roomy = !!(el && g && r0 && g.page.width - r0.width > 2);
+    let mode = null, txAt = 0;
     const order = () => [...document.querySelectorAll("main [data-sec]")].filter((n) => !n.parentElement.closest("[data-sec]"));
     let target = null, px = e.clientX, py = e.clientY, raf = 0;
+    fadePanel();
+    const sideways = (ev) => {
+      let left = Math.min(Math.max(r0.left + ev.clientX - x0, g.page.left), g.page.right - r0.width);
+      const snaps = [g.left, g.right - r0.width, g.page.left + (g.page.width - r0.width) / 2];
+      const lines = [g.left, g.right, g.page.left + g.page.width / 2];
+      const hit = snaps.findIndex((s) => Math.abs(s - left) <= SNAP && s >= g.page.left - 0.5 && s + r0.width <= g.page.right + 0.5);
+      if (hit >= 0) left = snaps[hit];
+      const t = Math.round(txAt + (left - r0.left) / z);
+      setStyles({ translateX: t ? `${t}px` : "" });
+      setGuides(hit >= 0 ? [{ x: lines[hit] }] : []);
+      setDragInfo({ x: ev.clientX, y: ev.clientY, text: "Move left or right · drag up or down to move it to another place" });
+    };
     const update = () => {
       const list = order(), ids = list.map((n) => n.dataset.sec);
       const next = list.find((n) => { const r = n.getBoundingClientRect(); return py < r.top + r.height / 2; });
@@ -673,12 +803,23 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
       if (step) { window.scrollBy(0, step); update(); }
       raf = requestAnimationFrame(scroll);
     };
-    raf = requestAnimationFrame(scroll);
-    const mv = (ev) => { px = ev.clientX; py = ev.clientY; update(); };
+    const mv = (ev) => {
+      if (!mode) {
+        // which way: sideways (a narrower section) or up/down (another place on the page)
+        if (Math.hypot(ev.clientX - x0, ev.clientY - y0) < 6) return;
+        mode = roomy && Math.abs(ev.clientX - x0) > Math.abs(ev.clientY - y0) ? "x" : "y";
+        if (mode === "x") { startDrag(); txAt = sectionTx(el, st, st.width || "", r0.left, z); }
+        else raf = requestAnimationFrame(scroll);
+      }
+      if (mode === "x") { sideways(ev); return; }
+      px = ev.clientX; py = ev.clientY; update();
+    };
     const up = () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("pointermove", mv); window.removeEventListener("pointerup", up);
       setGuides([]); setDragInfo(null);
+      endDrag();
+      if (mode !== "y") return;
       if (target == null || target === id) return;
       const without = sections.filter((s) => s.id !== id), moved = sections.find((s) => s.id === id);
       const at = target ? without.findIndex((s) => s.id === target) : without.length;
@@ -693,7 +834,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
   const moveDrag = (e) => {
     if (field === "_section") { reorderDrag(e); return; }
     e.preventDefault(); e.stopPropagation();
-    dragging.current = "start";
+    startDrag();
     e.target.setPointerCapture?.(e.pointerId);
     const el = findEl(sel);
     const r0 = el?.getBoundingClientRect() || rect;
@@ -731,7 +872,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
     const fit = cs.objectFit === "cover" ? Math.max(fw / nw, fh / nh) : Math.min(fw / nw, fh / nh);
     const ox = Math.max(0, nw * fit * z - fw), oy = Math.max(0, nh * fit * z - fh);
     if (ox < 1 && oy < 1) { toast("Pick a shape or zoom in first — then drag to choose what shows."); return; }
-    dragging.current = "start";
+    startDrag();
     e.currentTarget.setPointerCapture?.(e.pointerId);
     const [x0, y0] = parsePos(st.objectPosition || cs.objectPosition);
     const sx0 = e.clientX, sy0 = e.clientY;
@@ -761,6 +902,18 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
       if (mod && !nativeUndo && k === "z") { e.preventDefault(); if (e.shiftKey) redo(); else undo(); return; }
       if (mod && !nativeUndo && k === "y") { e.preventDefault(); redo(); return; }
       if (k === "escape" && sel) { e.preventDefault(); if (typing) e.target.blur?.(); selectField(null); return; }
+      // a whole section: left / right moves it sideways (on the page); it is moved up or down with its grip
+      if (!typing && sel && field === "_section" && (k === "arrowleft" || k === "arrowright")) {
+        e.preventDefault();
+        const el = findEl(sel), g = pageGeometry(el);
+        if (!el || !g) return;
+        const r = el.getBoundingClientRect(), z = zoomOf(el) || 1;
+        const left = Math.min(Math.max(r.left + (k === "arrowleft" ? -1 : 1) * (e.shiftKey ? 10 : 1) * z, g.page.left), g.page.right - r.width);
+        if (Math.abs(left - r.left) < 0.5) return;
+        const t = sectionTx(el, st, st.width || "", left, z);
+        setStyles({ translateX: t ? `${t}px` : "" });
+        return;
+      }
       if (!typing && sel && !isText && field !== "_section" && k.startsWith("arrow")) {
         e.preventDefault();
         const step = e.shiftKey ? 10 : 1;
@@ -788,13 +941,13 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
       ))}
       {dragInfo && <div className="live-ui live-drag-info" style={{ left: dragInfo.x + 14, top: dragInfo.y + 14 }} data-testid="live-drag-info">{dragInfo.text}</div>}
       {rect && (
-        <div className={`live-ui live-box ${field === "_section" ? "live-box-sec" : ""}`} style={{ top: rect.top, left: rect.left, width: rect.width, height: rect.height }} data-testid="live-selection-box">
+        <div className={`live-ui live-box ${field === "_section" ? "live-box-sec" : ""}`} style={{ top: rect.top, left: rect.left, width: rect.width, height: rect.height, "--live-hy": `${rect.hy}px` }} data-testid="live-selection-box">
           {isImage && <div className="live-pan" onPointerDown={panDrag} title="Drag to choose which part of the photo shows" data-testid="live-crop-pan"><span>Drag to reposition</span></div>}
-          <span className="live-move-grip" onPointerDown={moveDrag} title={field === "_section" ? "Drag up or down to move this section on the page" : "Drag to move anywhere"} data-testid="live-move-grip"><GripVertical size={13} /></span>
+          <span className="live-move-grip" onPointerDown={moveDrag} title={field === "_section" ? "Drag up or down to move this section on the page (a narrower section also left or right)" : "Drag to move anywhere"} data-testid="live-move-grip"><GripVertical size={13} /></span>
           <span className="live-handle live-h-n" onPointerDown={resize("n")} title={field === "_section" ? "Drag to change the space above the content" : undefined} data-testid="live-resize-n" />
           <span className="live-handle live-h-s" onPointerDown={resize("s")} title={field === "_section" ? "Drag up to make the section shorter, down to make it taller" : undefined} data-testid="live-resize-s" />
-          <span className="live-handle live-h-e" onPointerDown={resize("e")} data-testid="live-resize-e" />
-          <span className="live-handle live-h-w" onPointerDown={resize("w")} data-testid="live-resize-w" />
+          <span className="live-handle live-h-e" onPointerDown={resize("e")} title={field === "_section" ? "Drag to make the section narrower or wider (its text wraps to fit)" : undefined} data-testid="live-resize-e" />
+          <span className="live-handle live-h-w" onPointerDown={resize("w")} title={field === "_section" ? "Drag to make the section narrower or wider (its text wraps to fit)" : undefined} data-testid="live-resize-w" />
           <span className="live-handle live-h-ne" onPointerDown={resize("ne")} data-testid="live-resize-ne" />
           <span className="live-handle live-h-nw" onPointerDown={resize("nw")} data-testid="live-resize-nw" />
           <span className="live-handle live-h-se" onPointerDown={resize("se")} data-testid="live-resize-se" />
@@ -881,12 +1034,13 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
                 {[["alt", "Description for screen readers"], ["caption", "Caption"], ["credit", "Credit"]].map(([name, label]) => <label key={name} className="live-field">{label}<input type="text" value={getPath(sec.data, `${field}.${name}`) ?? getPath(sec.data, `${field}.media.${name}`) ?? ""} onChange={(e) => patchSec(sec.id, (s) => ({ ...s, data: setPath(s.data, `${field}.${name}`, e.target.value) }))} data-testid={`live-image-${name}`} /></label>)}
               </Group>
             </>) : field === "_section" ? (
-              <Group title="Section background colour & spacing" open testid="live-group-section">
+              <Group title="Section background colour, width & spacing" open testid="live-group-section">
                 <SectionStyle sec={sec} onChange={(patch) => patchSec(sec.id, (s) => {
                   const f = { ...((s.styles || {})._section || {}), ...patch };
                   Object.keys(f).forEach((k) => (f[k] === "" || f[k] == null) && delete f[k]);
                   return { ...s, styles: { ...(s.styles || {}), _section: f } };
                 })} />
+                <SectionBox secId={sec.id} st={st} setStyles={setStyles} onSlide={(on) => { dragging.current = on ? "start" : null; }} />
                 <div className="live-row"><button type="button" className="live-btn" onClick={() => setAddPhoto(sec.id)} data-testid="live-sec-add-photo"><ImagePlus size={14} /> Add a photo</button></div>
                 <TidyButton onClick={() => resetSectionLayout(sec.id)} />
               </Group>
@@ -942,24 +1096,40 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
             </Group>
 
             {(isImage || isText || isLayout) && (
-              <Group title="Size & position" open={isLayout} testid="live-group-layout">
-                <p className="live-hint live-hint-small">{isText ? "Tip: drag the grip or red handles on the page." : "Tip: drag the grip or red handles on the page, or use the arrow keys (Shift = 10px)."}</p>
-                <div className="live-row">
-                  <label className="live-field">Width (px)<input type="number" value={px(st.width)} placeholder="auto" onChange={(e) => setStyles({ width: e.target.value ? `${e.target.value}px` : "" })} data-testid="live-width" /></label>
+              <Group title="Size & position" open={isLayout && field !== "_section"} testid="live-group-layout">
+                <p className="live-hint live-hint-small">{field === "_section" ? "The section’s width and place across the page are set above (Width of the section)." : isText ? "Tip: drag the grip or red handles on the page." : "Tip: drag the grip or red handles on the page, or use the arrow keys (Shift = 10px)."}</p>
+                {/* a whole section: width above, height with Space above / below (an older minimum height stays changeable) */}
+                {(field !== "_section" || st.height) && <div className="live-row">
+                  {field !== "_section" && <label className="live-field">Width (px)<input type="number" value={px(st.width)} placeholder="auto" onChange={(e) => setStyles({ width: e.target.value ? `${e.target.value}px` : "" })}
+                    onBlur={() => {
+                      // a text is never narrower than its words: the box shows (and keeps) the narrowest width its text fits in
+                      const el = findEl(sel);
+                      if (isImage || !el || !st.width) return;
+                      const least = Math.ceil(minContentWidth(el) / (zoomOf(el) || 1));
+                      if (parseFloat(st.width) < least) setStyles({ width: `${least}px` });
+                    }} data-testid="live-width" /></label>}
                   <label className="live-field">{field === "_section" ? "Minimum height" : "Height"} (px)<input type="number" value={px(st.height)} placeholder="auto" onChange={(e) => setStyles({ height: e.target.value ? `${e.target.value}px` : "" })} data-testid="live-height" /></label>
-                </div>
+                </div>}
                 <div className="live-row">
-                  <label className="live-field">Move X (px)<input type="number" value={px(st.translateX)} placeholder="0" onChange={(e) => setStyles({ translateX: e.target.value ? `${e.target.value}px` : "" })} data-testid="live-move-x" /></label>
+                  <label className="live-field">Move X (px)<input type="number" value={px(st.translateX)} placeholder="0" onChange={(e) => {
+                    const v = e.target.value;
+                    if (field !== "_section" || !v || Number.isNaN(Number(v))) { setStyles({ translateX: v ? `${v}px` : "" }); return; }
+                    // a section only goes as far as the page's edges
+                    const el = findEl(sel), range = el ? sectionRange(el, st, zoomOf(el) || 1) : null;
+                    const t = range ? Math.min(Math.max(Math.round(Number(v)), Math.min(0, range.min)), Math.max(0, range.max)) : Math.round(Number(v));
+                    setStyles({ translateX: t ? `${t}px` : "" });
+                  }} data-testid="live-move-x" /></label>
                   {/* a whole section is moved up/down the page with its grip; its height with Space above/below */}
-                  {(field !== "_section" || st.translateY) && <label className="live-field">Move Y (px)<input type="number" value={px(st.translateY)} placeholder="0" onChange={(e) => setStyles({ translateY: e.target.value ? `${e.target.value}px` : "" })} data-testid="live-move-y" /></label>}
+                  {field !== "_section" && <label className="live-field">Move Y (px)<input type="number" value={px(st.translateY)} placeholder="0" onChange={(e) => setStyles({ translateY: e.target.value ? `${e.target.value}px` : "" })} data-testid="live-move-y" /></label>}
                 </div>
                 <p className="live-label" style={{ marginTop: 4 }}>Padding inside (px)</p>
                 <div className="live-row live-row-4">
-                  {[["paddingTop", "Top"], ["paddingBottom", "Bottom"], ["paddingLeft", "Left"], ["paddingRight", "Right"]].filter(([k]) => field !== "_section" || !/Top|Bottom/.test(k) || st[k]).map(([k, l]) => <label key={k} className="live-field">{l}<input type="number" value={px(st[k])} placeholder={padPH(k)} onChange={(e) => setStyles({ [k]: e.target.value ? `${e.target.value}px` : "" })} data-testid={`live-pad-${l.toLowerCase()}`} /></label>)}
+                  {[["paddingTop", "Top"], ["paddingBottom", "Bottom"], ["paddingLeft", "Left"], ["paddingRight", "Right"]].filter(([k]) => field !== "_section" || !/Top|Bottom/.test(k) || st[k]).map(([k, l]) => <label key={k} className="live-field">{l}<input type="number" min={field === "_section" ? 0 : undefined} value={px(st[k])} placeholder={padPH(k)} onChange={(e) => setStyles({ [k]: e.target.value ? `${field === "_section" ? Math.max(0, Number(e.target.value) || 0) : e.target.value}px` : "" })} data-testid={`live-pad-${l.toLowerCase()}`} /></label>)}
                 </div>
-                <p className="live-label" style={{ marginTop: 4 }}>Margin outside (px)</p>
-                <div className="live-row live-row-4">
-                  {[["marginTop", "Top"], ["marginBottom", "Bottom"], ["marginLeft", "Left"], ["marginRight", "Right"]].map(([k, l]) => <label key={k} className="live-field">{l}<input type="number" value={px(st[k])} placeholder={padPH(k)} onChange={(e) => setStyles({ [k]: e.target.value ? `${e.target.value}px` : "" })} data-testid={`live-mar-${l.toLowerCase()}`} /></label>)}
+                <p className="live-label" style={{ marginTop: 4 }}>{field === "_section" ? "Extra space outside, above and below (px)" : "Margin outside (px)"}</p>
+                <div className={`live-row ${field === "_section" ? "" : "live-row-4"}`}>
+                  {/* sections: never less than nothing (no overlaps); across the page they have their width and place */}
+                  {[["marginTop", "Top"], ["marginBottom", "Bottom"], ["marginLeft", "Left"], ["marginRight", "Right"]].filter(([k]) => field !== "_section" || /Top|Bottom/.test(k)).map(([k, l]) => <label key={k} className="live-field">{l}<input type="number" min={field === "_section" ? 0 : undefined} value={px(st[k])} placeholder={padPH(k)} onChange={(e) => setStyles({ [k]: e.target.value ? `${field === "_section" ? Math.max(0, Number(e.target.value) || 0) : e.target.value}px` : "" })} data-testid={`live-mar-${l.toLowerCase()}`} /></label>)}
                 </div>
                 <div className="live-row" style={{ marginBottom: 0 }}>
                   <button type="button" className="live-btn" onClick={() => setStyles({ width: "", height: "" })} data-testid="live-reset-size"><RotateCcw size={14} /> Size</button>
@@ -1039,7 +1209,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
 function TidyButton({ onClick }) {
   return <div className="live-tidy">
     <button type="button" className="live-btn" onClick={onClick} data-testid="live-tidy-section"><RotateCcw size={14} /> Tidy this section</button>
-    <p className="live-hint live-hint-small">Puts every text and photo in this section back in its standard place and size (keeps your text styles, colours and crops). Use it when things overlap.</p>
+    <p className="live-hint live-hint-small">Puts the section and every text and photo in it back in their standard place and size (keeps your text styles, colours and crops). Use it when things overlap.</p>
   </div>;
 }
 
@@ -1049,6 +1219,75 @@ function Group({ title, open = false, testid, children }) {
       <summary>{title}</summary>
       <div className="live-group-body">{children}</div>
     </details>
+  );
+}
+
+// Width and place of a whole section across the page (desktop design). A narrower section keeps
+// everything inside it: its content is laid out at its width and the text wraps to fit.
+function SectionBox({ secId, st, setStyles, onSlide }) {
+  const [m, setM] = useState(null); // design px: the section's own width, the page's, the current one
+  const [draft, setDraft] = useState(null);
+  useEffect(() => {
+    const el = findSecEl(secId);
+    if (!el) return undefined;
+    let raf = 0;
+    const measure = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const z = zoomOf(el) || 1, g = pageGeometry(el);
+        if (!g) return;
+        const r = el.getBoundingClientRect();
+        const v = { natural: Math.round(naturalWidth(el).width / z), page: Math.round(g.page.width / z), now: Math.round(r.width / z),
+          room: g.page.width - r.width > 2, left: Math.abs(r.left - g.left) < 2 || Math.abs(r.left - g.page.left) < 1, right: Math.abs(r.right - g.right) < 2 || Math.abs(r.right - g.page.right) < 1,
+          centre: Math.abs(r.left + r.width / 2 - (g.page.left + g.page.width / 2)) < 2 };
+        setM((o) => (o && Object.keys(v).every((k) => o[k] === v[k]) ? o : v));
+      });
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    window.addEventListener("resize", measure);
+    return () => { cancelAnimationFrame(raf); observer.disconnect(); window.removeEventListener("resize", measure); };
+  }, [secId, st.width, st.translateX]);
+  if (!m) return null;
+  const least = Math.min(SECTION_MIN, m.natural), most = m.page;
+  const width = st.width ? Math.round(parseFloat(st.width)) : m.natural;
+  const setWidth = (w) => {
+    const el = findSecEl(secId);
+    if (!el || Number.isNaN(w)) return;
+    const z = zoomOf(el) || 1, next = `${Math.min(most, Math.max(least, Math.round(w)))}px`;
+    const t = keepPlace(el, st, next, z);
+    setStyles({ width: next, translateX: t ? `${t}px` : "" });
+  };
+  const place = (where) => {
+    const el = findSecEl(secId), g = pageGeometry(el);
+    if (!el || !g) return;
+    const r = el.getBoundingClientRect(), z = zoomOf(el) || 1;
+    // against the band edges (where the header, footer and coloured bands line up) when it fits between them
+    const fits = r.width <= g.right - g.left + 1, L = fits ? g.left : g.page.left, R = fits ? g.right : g.page.right;
+    const left = where === "left" ? L : where === "right" ? R - r.width : g.page.left + (g.page.width - r.width) / 2;
+    const t = sectionTx(el, st, st.width || "", left, z);
+    setStyles({ translateX: t ? `${t}px` : "" });
+  };
+  const changed = !!(st.width || st.translateX);
+  return (
+    <div className="live-secbox" data-testid="live-sec-box">
+      <label className="live-field">Width of the section (px)
+        <span className="live-secbox-row">
+          <input type="range" min={least} max={most} step={1} value={Math.min(most, Math.max(least, width))} onChange={(e) => setWidth(Number(e.target.value))}
+            onPointerDown={() => onSlide(true)} onPointerUp={() => onSlide(false)} onBlur={() => onSlide(false)} aria-label="Width of the section" data-testid="live-sec-width-range" />
+          <input type="number" min={least} max={most} value={draft ?? String(width)} onChange={(e) => { setDraft(e.target.value); const v = Number(e.target.value); if (e.target.value && v >= least && v <= most) setWidth(v); }}
+            onBlur={() => { if (draft !== null && draft !== "" && !Number.isNaN(Number(draft)) && Math.round(Number(draft)) !== width) setWidth(Number(draft)); setDraft(null); }} data-testid="live-sec-width" />
+        </span>
+      </label>
+      <div className="live-row live-secbox-place" role="group" aria-label="Place across the page">
+        {[["left", AlignLeft, "Left"], ["centre", AlignCenter, "Centre"], ["right", AlignRight, "Right"]].map(([where, I, label]) => (
+          <button key={where} type="button" className={`live-btn ${changed && m.room && m[where] ? "live-on" : ""}`} disabled={!m.room} onClick={() => place(where)} title={`Put the section on the ${where === "centre" ? "middle" : where} of the page`} data-testid={`live-sec-place-${where}`}><I size={14} /> {label}</button>
+        ))}
+        {changed && <button type="button" className="live-btn" onClick={() => setStyles({ width: "", translateX: "" })} title="Back to the section's standard width and place" data-testid="live-sec-width-reset"><RotateCcw size={14} /> Standard</button>}
+      </div>
+      <p className="live-hint live-hint-small">Make the section narrower or wider here or with its left and right handles: everything in it stays inside and the text wraps to fit. A narrower section can be placed left, centre or right (or dragged sideways by its dark grip). Tablets and phones always show sections full width.</p>
+    </div>
   );
 }
 
