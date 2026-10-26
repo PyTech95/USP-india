@@ -73,7 +73,9 @@ Browsers: current Chrome, Safari (Safari 16 / iOS 16 and newer), Firefox and Edg
 **Before going live:** in Admin → Settings, turn on search-engine indexing. Until then every page sends `noindex` and `robots.txt` blocks crawlers.
 
 **Updating the site:** copy the new code, run `.venv/bin/pip install -r requirements.txt` in `backend/` (new versions can add a package, e.g. iPhone photo support), `yarn build` in `frontend/`, then `sudo systemctl restart uspindia`.
-The page shell is never cached and the built CSS/JS files have new names on every build, so visitors get the new design straight away (no old CSS left in browsers).
+The page shell is never cached and the built CSS/JS files have new names on every build, so visitors get the new design straight away (no old CSS left in browsers). The backend picks up a new frontend build by itself (the restart is for backend changes).
+
+**Site shows without its design** (plain blue links, no styling; the browser console says *Refused to apply style … MIME type ('text/html')*): the frontend was rebuilt or replaced while an older backend kept running, so pages asked for the previous build's files. Run `sudo systemctl restart uspindia` and reload the page (Ctrl+Shift+R). Backends from this version on use a new build straight away and answer a missing build file with "not found".
 Everything edited on the server is kept when a new version is deployed — texts, colours, fonts, photos, sizes, positions, section spacing and added photos. On start the new version's content (`backend/content_release.json`) is merged in; where the server and the new version changed the same thing, the server's edit wins. A full backup is taken first (Admin → Import / Export → Content backups).
 
 **Fresh install vs. moving the old database:** a new, empty MongoDB gets exactly the content in `backend/content_release.json` (this version's pages, fonts, colours and photos).

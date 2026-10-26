@@ -96,13 +96,30 @@ from pathlib import Path as _Path
 
 _BUILD = _Path(__file__).resolve().parent.parent / "frontend" / "build"
 if _BUILD.is_dir() and (_BUILD / "index.html").is_file():
-    from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
+    from fastapi.responses import FileResponse, HTMLResponse, PlainTextResponse, RedirectResponse
     import ssr as _ssr
     import routes_public as _public
 
-    _INDEX = (_BUILD / "index.html").read_text()
-    _ssr.SCRIPTS[:] = _re.findall(r'<script[^>]*\ssrc="([^"]+)"', _INDEX)
-    _CSS_TAGS = "".join(f'<link rel="stylesheet" href="{href}">' for href in _re.findall(r'<link[^>]*href="([^"]+\.css)"', _INDEX))
+    # Every frontend build gives the site's script and stylesheet files new names (and removes the
+    # old ones). They are read from frontend/build/index.html again whenever that file changes, so
+    # a new build is used straight away: pages never ask for files a rebuild has removed (which
+    # showed the site without its design until the backend was restarted).
+    _SHELL = {"mtime": None, "css": ""}
+
+    def _page_shell():
+        try:
+            mtime = (_BUILD / "index.html").stat().st_mtime_ns
+        except OSError:  # (in the middle of a build) keep the last complete one
+            return _SHELL
+        if mtime != _SHELL["mtime"]:
+            index = (_BUILD / "index.html").read_text()
+            scripts = _re.findall(r'<script[^>]*\ssrc="([^"]+)"', index)
+            if scripts:  # a complete page (not one still being written)
+                _ssr.SCRIPTS[:] = scripts
+                _SHELL.update(mtime=mtime, css="".join(f'<link rel="stylesheet" href="{href}">' for href in _re.findall(r'<link[^>]*href="([^"]+\.css)"', index)))
+        return _SHELL
+
+    _page_shell()
     _NO_SSR = _re.compile(r"^(admin|api|static)(/|$)")
 
     @app.get("/robots.txt", include_in_schema=False)
@@ -124,9 +141,14 @@ if _BUILD.is_dir() and (_BUILD / "index.html").is_file():
         candidate = (_BUILD / full_path).resolve()
         if full_path and candidate.is_file() and str(candidate).startswith(str(_BUILD)):
             return FileResponse(candidate)
+        if full_path.startswith("static/"):
+            # a built script, stylesheet or image that is not there is "not found" — never the page
+            # itself (browsers refuse a page as a script or stylesheet, and would keep it cached)
+            return PlainTextResponse("Not found", status_code=404, headers={"Cache-Control": "no-store"})
         if _NO_SSR.match(full_path) or "text/html" not in request.headers.get("accept", "text/html"):
             # always re-check the page shell, so a new deployment's CSS/JS is picked up straight away
             return FileResponse(_BUILD / "index.html", headers={"Cache-Control": "no-cache"})
+        shell = _page_shell()  # this build's script and stylesheet names
         try:
             target = "/" + full_path + (f"?{request.url.query}" if request.url.query else "")
             status, html_text, headers = await _ssr.render(target)
@@ -135,4 +157,4 @@ if _BUILD.is_dir() and (_BUILD / "index.html").is_file():
             return FileResponse(_BUILD / "index.html", headers={"Cache-Control": "no-cache"})
         if status in (301, 302, 307, 308) and headers.get("Location"):
             return RedirectResponse(headers["Location"], status_code=status)
-        return HTMLResponse(html_text.replace("</head>", _CSS_TAGS + "</head>", 1), status_code=status, headers={"Cache-Control": "no-cache"})
+        return HTMLResponse(html_text.replace("</head>", shell["css"] + "</head>", 1), status_code=status, headers={"Cache-Control": "no-cache"})
