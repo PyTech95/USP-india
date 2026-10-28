@@ -41,8 +41,8 @@ export const HeaderStyleTag = ({ styles = {} }) => {
   const lines = Object.entries({ "--accent-line-w": styles.accentLineWidth, "--accent-line": styles.accentLineThickness, "--accent-line-gap": styles.accentLineGap })
     .filter(([, v]) => /^\d+(\.\d+)?px$/.test(v || "")).map(([k, v]) => `${k}: ${v} !important`).join("; ");
   if (lines) rules.push(`html body #public-site, html body .fn-overlay { ${lines}; }`);
-  // Footer colours: the footer box and the strip along its bottom ("skirting")
-  const footer = Object.entries({ "--footer-bg": styles.footerBackgroundColor, "--footer-strip": styles.footerStripColor })
+  // Footer colours: the footer box, the strip along its bottom ("skirting") and the line above it
+  const footer = Object.entries({ "--footer-bg": styles.footerBackgroundColor, "--footer-strip": styles.footerStripColor, "--footer-line": styles.footerLineColor })
     .filter(([, v]) => /^(#[0-9a-fA-F]{3,8}|transparent)$/.test(v || "")).map(([k, v]) => `${k}: ${v} !important`).join("; ");
   if (footer) rules.push(`html body #public-site #site-footer { ${footer}; }`);
   return rules.length ? <style data-testid="header-style-overrides">{rules.join("\n")}</style> : null;

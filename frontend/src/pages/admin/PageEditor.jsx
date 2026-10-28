@@ -33,7 +33,9 @@ const newId = () => Math.random().toString(36).slice(2, 12);
 function SectionCard({ s, i, total, ops, readOnly, dragProps }) {
   const [open, setOpen] = useState(false);
   const [label, defaultSchema] = SCHEMAS[s.type];
-  const schema = s.data.layout === "rakhigarhi-ambition-aligned"
+  // About › The Core: each person has a photo, name, short introduction and a full story (the pop-up)
+  const schema = s.data.layout === "about-team" ? [["heading", "text"], ["items", "list:team", "People (add, edit, reorder or remove)"]]
+    : s.data.layout === "rakhigarhi-ambition-aligned"
     ? defaultSchema.flatMap((field) => field[0] === "body_html" ? [1, 2, 3].map((n) => [`body_${n}_html`, "rich", `Text box ${n}`]) : [field])
     : defaultSchema;
   return (

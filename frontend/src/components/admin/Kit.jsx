@@ -180,7 +180,7 @@ export function FieldsFor({ schema, data, onChange, prefix }) {
     const tid = `${prefix}-${k}`;
     if (type === "text") return <TextIn key={k} label={L} value={data[k]} onChange={set(k)} testid={tid} />;
     if (type === "number") return <TextIn key={k} type="number" label={L} value={data[k]} onChange={set(k)} testid={tid} />;
-    if (type === "textarea") return <AreaIn key={k} label={L} value={data[k]} onChange={set(k)} testid={tid} />;
+    if (type === "textarea") return <AreaIn key={k} label={L} value={data[k]} onChange={set(k)} testid={tid} rows={k === "bio" ? 9 : 3} />;
     if (type === "rich") return <RichText key={k} label={L} value={data[k]} onChange={set(k)} testid={tid} />;
     if (type === "image") return <ImageField key={k} label={L} value={data[k]} onChange={set(k)} testid={tid} />;
     if (type === "file") return <FileField key={k} label={L} value={data[k]} onChange={set(k)} />;
@@ -194,6 +194,7 @@ export function FieldsFor({ schema, data, onChange, prefix }) {
 export const LISTS = {
   links: [["label", "text", "Button label"], ["href", "text", "Link address"]],
   gallery: [["image", "image"]],
+  team: [["image", "image", "Photo"], ["name", "text", "Name"], ["intro", "text", "Short introduction (under the photo)"], ["bio", "textarea", "Full story — shown in a pop-up when the + on the photo is clicked (blank line = new paragraph; leave empty for no pop-up)"]],
   work: [["title", "text"], ["subtitle", "text", "Heading line"], ["text", "textarea"], ["href", "text", "Link address"], ["image", "image"]],
   notecards: [["title", "text"], ["text", "textarea"], ["href", "text", "Link address"], ["image", "image"]],
   downloads: [["label", "text"], ["media_id", "file", "PDF file"]],
