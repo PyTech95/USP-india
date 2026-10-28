@@ -10,7 +10,8 @@ const GROUPS = [
     ["hoverBackgroundColor", "Hover background", "#ffffff"], ["activeLineColor", "Current page underline", "#d41445"], ["separatorColor", "Lines between menu items", "#7a7a7a"]]],
   ["Dropdown & mobile menu", [["dropdownBackgroundColor", "Dropdown background", "#ffffff"], ["dropdownColor", "Dropdown text", "#606060"],
     ["dropdownHoverBackgroundColor", "Dropdown hover background", "#f5f3f1"], ["mobileMenuBackgroundColor", "Mobile menu background", "#fdf2ee"]]],
-  ["Footer", [["footerBackgroundColor", "Footer background", "#E4CDAE"], ["footerStripColor", "Strip along the bottom (© and Privacy Policy)", "#e5dad4"]]],
+  ["Footer", [["footerBackgroundColor", "Footer background", "#E4CDAE"], ["footerStripColor", "Strip along the bottom (© and Privacy Policy)", "#e5dad4"],
+    ["footerLineColor", "Line above © and Privacy Policy", "#b9b2a9"]]],
 ];
 // Presets recolour the header only (the footer keeps its own colours)
 const COLOUR_KEYS = GROUPS.filter(([group]) => group !== "Footer").flatMap(([, fields]) => fields.map(([key]) => key));
