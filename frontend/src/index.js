@@ -23,6 +23,7 @@ import "@/styles/lines.css";
 import "@/styles/design-1440.css";
 import "@/styles/theatre-collage.css";
 import "@/styles/section-edits.css";
+import "@/styles/team-story.css";
 import App from "@/App";
 
 const queryClient = new QueryClient({
