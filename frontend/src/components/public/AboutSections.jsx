@@ -3,6 +3,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { Plus, X, ArrowLeft, ArrowRight } from "lucide-react";
 import { HtmlDiv } from "./editor/HtmlDiv";
 import { Photo } from "./Photo";
+import { media } from "../../lib/api";
 
 const Title = ({ data, id, editable }) => <h2 className="h2 about-title" data-testid={`${id}-heading`} {...editable("heading")}>{data.heading}</h2>;
 const Copy = ({ html, id, ed }) => <HtmlDiv className="prose" data-testid={id} {...ed} html={html || ""} />;
@@ -44,6 +45,7 @@ export const AboutTeam = ({ data, id, editable }) => {
 function TeamStory({ people, label, at, onShow, id }) {
   const withStory = people.map((p, i) => (storyOf(p).length ? i : -1)).filter((i) => i >= 0);
   const person = at === null ? null : people[at];
+  const pic = person?.image?.media;
   const k = withStory.indexOf(at);
   const prev = k > 0 ? withStory[k - 1] : withStory[withStory.length - 1];
   const next = k < withStory.length - 1 ? withStory[k + 1] : withStory[0];
@@ -54,8 +56,10 @@ function TeamStory({ people, label, at, onShow, id }) {
       <Dialog.Content className="team-story" aria-describedby={undefined} data-testid="team-story"
         onKeyDown={(e) => { if (!many) return; if (e.key === "ArrowRight") onShow(next); if (e.key === "ArrowLeft") onShow(prev); }}>
         {person && <>
-          <div className="team-story-photo">
-            {person.image?.media ? <Photo ref_={person.image} crop="3/4" cropMobile="4/3" className="team-story-portrait" sizes="(min-width: 900px) 400px, 92vw" testid={`${id}-story-image`} /> : <div className="team-story-noimage" />}
+          {/* the whole photo, uncropped: the column takes the picture's own shape */}
+          <div className="team-story-photo" style={pic?.width && pic?.height ? { "--ar": `${pic.width} / ${pic.height}` } : undefined}>
+            {pic ? <img src={media(pic.src)} srcSet={(pic.srcs || []).map((s) => `${media(s.url)} ${s.w}w`).join(", ") || undefined} sizes="(min-width: 761px) 600px, 100vw"
+              width={pic.width} height={pic.height} alt={person.image.alt ?? pic.alt ?? ""} data-testid={`${id}-story-image`} /> : <div className="team-story-noimage" />}
           </div>
           <div className="team-story-text">
             {label && <p className="team-story-label">{label}</p>}
