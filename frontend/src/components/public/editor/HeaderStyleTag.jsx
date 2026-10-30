@@ -21,7 +21,8 @@ export const HeaderStyleTag = ({ styles = {} }) => {
   rule([" .brand-sub"], { "font-size": styles.subtitleFontSize, color: styles.subtitleColor, "font-family": font(styles.brandFontFamily) });
   rule([" .nav-link", " .dropdown a"], { "font-size": styles.fontSize, "font-weight": styles.fontWeight, "font-family": font(styles.fontFamily),
     "letter-spacing": styles.letterSpacing, "text-transform": styles.textTransform });
-  rule([" .nav-list > li::before"], { "border-left-color": styles.separatorColor });
+  // lines between menu items (desktop menu bar); none unless a colour is chosen
+  if (/^#[0-9a-fA-F]{3,8}$/.test(styles.separatorColor || "")) rules.push(`@media (min-width: 961px) { html body #public-site#public-site#public-site.site #site-header#site-header .nav-list > li + li { border-left-color: ${styles.separatorColor} !important; } }`);
   rule([" .dropdown a"], { color: styles.dropdownColor });
   rule([" nav[aria-label=Main]"], { "padding-left": styles.navPaddingX, "padding-right": styles.navPaddingX });
   rule([" .brand img"], { height: styles.logoHeight });
