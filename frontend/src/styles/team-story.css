@@ -1,3 +1,11 @@
+/* About › The Core: the description under the heading. Empty = not shown (nothing moves); while editing
+   an empty one shows a line to click and type in. Same text style as the rest of the page (.prose). */
+#about-reference .prose.about-core-desc { max-width: calc(760px * var(--dz, 1)); margin: 0 0 calc(52px * var(--dz, 1)); }
+#about-reference .about-core-desc.is-empty { display: none; }
+body.live-editing #about-reference .about-core-desc.is-empty { display: block; min-height: 1.7em; }
+body.live-editing #about-reference .about-core-desc:empty::before { content: "Click here to add a description"; color: #9a948d; font-style: italic; }
+@media (max-width: 700px) { #about-reference .about-core-desc { margin-bottom: 32px; } }
+
 /* About › The Core: the + on a team member's photo and the pop-up with their story (AboutTeam in
    AboutSections.jsx). New classes only, so nothing else on the site changes. The + shows only for
    people who have a "Full story" (Admin → Pages → About → The Core). */

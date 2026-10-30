@@ -19,6 +19,8 @@ export const AboutIntroduction = ({ data, id, editable }) => <section className=
   <Copy html={data.body_html} id={`${id}-body`} ed={editable("body_html")} />
 </section>;
 
+const hasText = (html) => !!String(html || "").replace(/<[^>]*>/g, " ").replace(/&nbsp;/g, " ").trim();
+
 // A team member's story ("Full story" in the admin), blank line = new paragraph.
 const storyOf = (person) => String(person?.bio || "").split(/\n\s*\n/).map((t) => t.trim()).filter(Boolean);
 
@@ -28,6 +30,9 @@ export const AboutTeam = ({ data, id, editable }) => {
   return <section className="about-core" data-testid={id}>
     <div className="about-inner">
       <Title data={data} id={id} editable={editable} />
+      {/* optional description under the heading ("Description" in the admin); takes no room while empty,
+          and shows an "add" line in the live editor so it can be clicked and typed in */}
+      <HtmlDiv className={`prose about-core-desc${hasText(data.body_html) ? "" : " is-empty"}`} data-testid={`${id}-description`} {...editable("body_html")} html={data.body_html || ""} />
       <div className="about-team-grid" data-testid="about-team-grid">
         {people.map((person, i) => <article className="about-team-member" data-testid={`about-team-member-${i}`} key={i}>
           <Photo ref_={person.image} crop="3/4" cropMobile="3/4" className="about-team-portrait" sizes="(min-width: 1440px) 350px, (min-width: 701px) 27vw, 85vw" testid={`${id}-person-${i}-image`} ed={editable(`items.${i}.image`)}
