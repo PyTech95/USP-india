@@ -84,9 +84,9 @@ html body #public-site#public-site .page-connect :is(.hb, .hb > section) { borde
 html body #public-site#public-site .page-connect :is(.hb, .hb > section)::before,
 html body #public-site#public-site .page-connect :is(.hb, .hb > section)::after { content: none !important; }
 
-/* 5px white gap between the header and the page on every page. It belongs to the page itself (not to the
-   first section), so a first section moved up or given "Gap above 0" in the live editor can't close it. */
-html body #public-site#public-site main#main { padding-top: 5px !important; background-color: #fff; }
+/* No space between the header and the page: the first section starts right under the menu bar on every
+   page (the first section's own top margin is 0 below; a negative "Gap above" can't pull it under the header). */
+html body #public-site#public-site main#main { padding-top: 0 !important; }
 html body #public-site#public-site main > div > .hb:first-child:not(.hb-hero[style*="display: none"]) { margin-top: 0 !important; }
 html body #public-site#public-site .page-connect > .hb:first-child { margin-top: 0 !important; }
 html body #public-site#public-site main > .hero-type:first-child,
