@@ -72,8 +72,7 @@ html body #public-site .craft-hero-frame :is(figure, img) { max-width: 100% !imp
 }
 /* Home: hero box and middle band fill the same box as the header */
 html body #public-site#public-site .page-home :is(.hb.hb-hero, .hb.hb-text.band):not([style*="--ed-w"]) { --ed-w: 100% !important; width: 100% !important; max-width: 100% !important; align-self: stretch !important; justify-self: stretch !important; }
-/* 5px white gap between header and the home hero box */
-@media (min-width: 961px) { html body #public-site#public-site .page-home .hb.hb-hero { margin-top: 5px !important; } }
+/* (the 5px white gap under the header is now on every page: boxed-layout.css, main#main) */
 @media (min-width: 961px) {
   html body #public-site#public-site.site #site-header { box-shadow: none !important; border-bottom: 0 !important; }
   html body #public-site#public-site.site #site-header .header-inner { box-shadow: 0 1px 0 rgba(0,0,0,.06) !important; }
