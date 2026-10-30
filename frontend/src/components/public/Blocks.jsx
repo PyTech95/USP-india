@@ -205,10 +205,12 @@ export function outsideGap(node, top) {
   const shown = (el) => el.getClientRects().length && !/^(absolute|fixed)$/.test(getComputedStyle(el).position);
   let edge = null;
   for (let el = node; el && el !== document.body && edge === null; el = el.parentElement) {
+    // above the page's first section: up to the top of the page itself — the white gap under the
+    // header (the page's top padding) is not room to pull into
+    if (top && el === main) { const cs = getComputedStyle(main); edge = main.getBoundingClientRect().top + (parseFloat(cs.borderTopWidth) || 0) + (parseFloat(cs.paddingTop) || 0); break; }
     let near = top ? el.previousElementSibling : el.nextElementSibling;
     while (near && !shown(near)) near = top ? near.previousElementSibling : near.nextElementSibling;
     if (near) { const n = near.getBoundingClientRect(); edge = top ? n.bottom : n.top; }
-    else if (top && el === main) edge = main.getBoundingClientRect().top;
   }
   if (edge === null) return 0;
   return Math.max(0, top ? r.top - edge : edge - r.bottom);

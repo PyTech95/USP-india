@@ -173,6 +173,22 @@ SAMPLE_NOTE_BODY = """<p>This entry is a template preview that shows how a Field
 <p>Observations, quotations, organisational statements and historical references should be written as separate passages, with sources listed under References.</p>"""
 
 
+# One-time header update that ships with a release (asked for by the site owner on 30 Oct 2026): menu bar
+# #F9DCCE, no line and no shadow under the header. It runs once per installation (marked in
+# settings.applied_updates); anything changed afterwards in Edit Header is kept on later restarts. It runs
+# after the content release import at startup (server.py), so a new installation gets it too.
+HEADER_UPDATE = ("2026-10-30-header", {"navBackgroundColor": "#F9DCCE", "borderWidth": "0px", "headerShadow": "none"})
+
+
+async def apply_header_update():
+    mark, values = HEADER_UPDATE
+    site = await db.settings.find_one({"key": "site"}, {"_id": 0, "header_styles": 1, "applied_updates": 1})
+    if site is None or mark in (site.get("applied_updates") or []):
+        return
+    styles = {**(site.get("header_styles") or {}), **values}
+    await db.settings.update_one({"key": "site"}, {"$set": {"header_styles": styles, "updated_at": now()}, "$addToSet": {"applied_updates": mark}})
+
+
 async def seed():
     await db.users.create_index("email", unique=True)
     await db.users.create_index("id", unique=True)

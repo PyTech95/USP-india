@@ -14,7 +14,7 @@ import routes_content_json
 import analytics
 import mailer
 from content_sync import runtime as content_runtime
-from seed import seed
+from seed import seed, apply_header_update
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 app = FastAPI(title="USP India CMS", docs_url=None, redoc_url=None, openapi_url=None)
@@ -72,6 +72,7 @@ async def startup():
     # Target readiness waits for a complete, validated, backup-first import.
     # A failure must not silently serve half-imported/default content.
     await content_runtime.startup()
+    await apply_header_update()  # one-time header update shipped with this release (seed.py)
 
 
 @app.get("/api/health")
