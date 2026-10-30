@@ -34,7 +34,7 @@ function SectionCard({ s, i, total, ops, readOnly, dragProps }) {
   const [open, setOpen] = useState(false);
   const [label, defaultSchema] = SCHEMAS[s.type];
   // About › The Core: each person has a photo, name, short introduction and a full story (the pop-up)
-  const schema = s.data.layout === "about-team" ? [["heading", "text"], ["items", "list:team", "People (add, edit, reorder or remove)"]]
+  const schema = s.data.layout === "about-team" ? [["heading", "text"], ["body_html", "rich", "Description (under the heading, above the photos; leave empty for none)"], ["items", "list:team", "People (add, edit, reorder or remove)"]]
     : s.data.layout === "rakhigarhi-ambition-aligned"
     ? defaultSchema.flatMap((field) => field[0] === "body_html" ? [1, 2, 3].map((n) => [`body_${n}_html`, "rich", `Text box ${n}`]) : [field])
     : defaultSchema;
