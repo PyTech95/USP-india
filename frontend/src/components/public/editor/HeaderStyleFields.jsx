@@ -7,7 +7,7 @@ const GROUPS = [
   ["Header bar", [["backgroundColor", "Header background", "#ffffff"], ["borderColor", "Line under the header", "#e6e1dc"]]],
   ["Logo / brand", [["brandColor", "Brand name (USP)", "#575757"], ["subtitleColor", "Subtitle (Urban Suburban Perspectives)", "#575757"]]],
   ["Menu", [["navBackgroundColor", "Menu bar background", "#ebe7eb"], ["color", "Menu text", "#606060"], ["activeColor", "Hover & current page text", "#d41445"],
-    ["hoverBackgroundColor", "Hover background", "#ffffff"], ["activeLineColor", "Current page underline", "#d41445"], ["separatorColor", "Lines between menu items", "#7a7a7a"]]],
+    ["hoverBackgroundColor", "Hover background", "#ffffff"], ["activeLineColor", "Current page underline", "#d41445"], ["separatorColor", "Lines between menu items (empty = no lines)", "#7a7a7a"]]],
   ["Dropdown & mobile menu", [["dropdownBackgroundColor", "Dropdown background", "#ffffff"], ["dropdownColor", "Dropdown text", "#606060"],
     ["dropdownHoverBackgroundColor", "Dropdown hover background", "#f5f3f1"], ["mobileMenuBackgroundColor", "Mobile menu background", "#fdf2ee"]]],
   ["Footer", [["footerBackgroundColor", "Footer background", "#E4CDAE"], ["footerStripColor", "Strip along the bottom (© and Privacy Policy)", "#e5dad4"],

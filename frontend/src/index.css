@@ -1638,9 +1638,10 @@ body.live-editing .header { z-index: 1; }
   #public-site.site #site-header .nav-list > li > span > a.nav-link {
     padding: 0 clamp(1.1rem, 2.2vw, 2.5rem) !important;
   }
-  /* thin vertical separators between menu items (not before the first) */
+  /* no lines between menu items: the 1px line is kept but invisible, so nothing moves. A colour can be
+     chosen in Edit Header → Style & spacing → "Lines between menu items" to show them again. */
   #public-site.site #site-header .nav-list > li + li {
-    border-left: 1px solid rgba(43, 36, 66, 0.22) !important;
+    border-left: 1px solid transparent !important;
     display: flex !important;
     align-items: center !important;
   }
