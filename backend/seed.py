@@ -173,20 +173,28 @@ SAMPLE_NOTE_BODY = """<p>This entry is a template preview that shows how a Field
 <p>Observations, quotations, organisational statements and historical references should be written as separate passages, with sources listed under References.</p>"""
 
 
-# One-time header update that ships with a release (asked for by the site owner on 30 Oct 2026): menu bar
-# #F9DCCE, no line and no shadow under the header. It runs once per installation (marked in
-# settings.applied_updates); anything changed afterwards in Edit Header is kept on later restarts. It runs
-# after the content release import at startup (server.py), so a new installation gets it too.
-HEADER_UPDATE = ("2026-10-30-header", {"navBackgroundColor": "#F9DCCE", "borderWidth": "0px", "headerShadow": "none"})
+# One-time header updates that ship with a release (asked for by the site owner). Each runs once per
+# installation, in order (marked in settings.applied_updates); anything changed afterwards in Edit Header is
+# kept on later restarts. They run after the content release import at startup (server.py), so a new
+# installation gets them too.
+HEADER_UPDATES = [
+    # 30 Oct 2026: menu bar #F9DCCE, no line and no shadow under the header
+    ("2026-10-30-header", {"navBackgroundColor": "#F9DCCE", "borderWidth": "0px", "headerShadow": "none"}),
+    # 31 Oct 2026: the thin light grey line under the header is back (full width), still no gap
+    ("2026-10-31-header-line", {"borderWidth": "1px", "borderColor": "#e2d5d2"}),
+]
 
 
 async def apply_header_update():
-    mark, values = HEADER_UPDATE
     site = await db.settings.find_one({"key": "site"}, {"_id": 0, "header_styles": 1, "applied_updates": 1})
-    if site is None or mark in (site.get("applied_updates") or []):
+    if site is None:
         return
-    styles = {**(site.get("header_styles") or {}), **values}
-    await db.settings.update_one({"key": "site"}, {"$set": {"header_styles": styles, "updated_at": now()}, "$addToSet": {"applied_updates": mark}})
+    done, styles, new = list(site.get("applied_updates") or []), dict(site.get("header_styles") or {}), []
+    for mark, values in HEADER_UPDATES:
+        if mark not in done:
+            styles.update(values); new.append(mark)
+    if new:
+        await db.settings.update_one({"key": "site"}, {"$set": {"header_styles": styles, "updated_at": now()}, "$addToSet": {"applied_updates": {"$each": new}}})
 
 
 async def seed():
