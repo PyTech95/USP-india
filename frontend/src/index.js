@@ -24,6 +24,7 @@ import "@/styles/design-1440.css";
 import "@/styles/theatre-collage.css";
 import "@/styles/section-edits.css";
 import "@/styles/team-story.css";
+import "@/styles/film.css";
 import App from "@/App";
 
 const queryClient = new QueryClient({

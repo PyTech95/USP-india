@@ -197,6 +197,45 @@ async def apply_header_update():
         await db.settings.update_one({"key": "site"}, {"$set": {"header_styles": styles, "updated_at": now()}, "$addToSet": {"applied_updates": {"$each": new}}})
 
 
+# One-time page updates that ship with a release (same rules as HEADER_UPDATES): each adds fields to one section
+# of a live page (draft and published), only where the section doesn't have them yet, then is marked done.
+PAGE_UPDATES = [
+    # 31 Oct 2026: Workshops & Learning › Student Projects — "Watch An Excerpt" opens the student film in a pop-up
+    ("2026-10-31-student-film", "workshops-learning", "47ef97c9cf5d4d118998a1008520a18b", "Learning That Becomes a Contribution",
+     {"film_url": "/films/student-projects-rakhigarhi.mp4", "film_poster": "/films/student-projects-rakhigarhi.jpg", "film_label": "Watch An Excerpt"}),
+]
+
+
+async def apply_page_updates():
+    site = await db.settings.find_one({"key": "site"}, {"_id": 0, "applied_updates": 1})
+    if site is None:
+        return
+    done = set(site.get("applied_updates") or [])
+    for mark, key, section_id, heading, values in PAGE_UPDATES:
+        if mark in done:
+            continue
+        page = await db.pages.find_one({"key": key}, {"_id": 0, "draft": 1, "published": 1})
+        if not page:
+            continue
+        changed, found = {}, False
+        for version in ("published", "draft"):
+            content = page.get(version) or {}
+            sections = content.get("sections") or []
+            # the section by its id; if it was re-created, by its heading
+            match = [x for x in sections if x.get("id") == section_id] or \
+                [x for x in sections if str((x.get("data") or {}).get("heading", "")).strip().rstrip(".").lower() == heading.rstrip(".").lower()]
+            for sec in match[:1]:
+                found = True
+                data = sec.setdefault("data", {})
+                if not any(data.get(k) for k in values):
+                    data.update(values)
+                    changed[version] = content
+        if changed:
+            await db.pages.update_one({"key": key}, {"$set": {**changed, "updated_at": now()}})
+        if found:  # done (also when the owner had already set it); a missing section is tried again next start
+            await db.settings.update_one({"key": "site"}, {"$addToSet": {"applied_updates": mark}})
+
+
 async def seed():
     await db.users.create_index("email", unique=True)
     await db.users.create_index("id", unique=True)

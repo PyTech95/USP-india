@@ -14,7 +14,7 @@ import routes_content_json
 import analytics
 import mailer
 from content_sync import runtime as content_runtime
-from seed import seed, apply_header_update
+from seed import seed, apply_header_update, apply_page_updates
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 app = FastAPI(title="USP India CMS", docs_url=None, redoc_url=None, openapi_url=None)
@@ -72,7 +72,8 @@ async def startup():
     # Target readiness waits for a complete, validated, backup-first import.
     # A failure must not silently serve half-imported/default content.
     await content_runtime.startup()
-    await apply_header_update()  # one-time header update shipped with this release (seed.py)
+    await apply_header_update()  # one-time updates shipped with the release (seed.py)
+    await apply_page_updates()
 
 
 @app.get("/api/health")
@@ -122,6 +123,33 @@ if _BUILD.is_dir() and (_BUILD / "index.html").is_file():
 
     _page_shell()
     _NO_SSR = _re.compile(r"^(admin|api|static)(/|$)")
+    _VIDEO = {".mp4": "video/mp4", ".webm": "video/webm", ".m4v": "video/mp4"}
+
+    def _video(path, request):
+        """A film (frontend/build/films/…) with byte ranges: phones and Safari only play (and seek in) a
+        video when the server can send part of it."""
+        from fastapi.responses import Response, StreamingResponse
+        size, ctype = path.stat().st_size, _VIDEO[path.suffix.lower()]
+        headers = {"Accept-Ranges": "bytes", "Cache-Control": "public, max-age=86400"}
+        m = _re.fullmatch(r"bytes=(\d*)-(\d*)", (request.headers.get("range") or "").strip())
+        if not m or not (m[1] or m[2]):
+            return FileResponse(path, media_type=ctype, headers=headers)
+        start, end = (int(m[1]), min(int(m[2]) if m[2] else size - 1, size - 1)) if m[1] else (max(0, size - int(m[2])), size - 1)
+        if start >= size or start > end:
+            return Response(status_code=416, headers={"Content-Range": f"bytes */{size}", **headers})
+
+        def chunks():
+            with open(path, "rb") as f:
+                f.seek(start)
+                left = end - start + 1
+                while left > 0:
+                    data = f.read(min(256 * 1024, left))
+                    if not data:
+                        break
+                    left -= len(data)
+                    yield data
+        return StreamingResponse(chunks(), status_code=206, media_type=ctype,
+                                 headers={**headers, "Content-Range": f"bytes {start}-{end}/{size}", "Content-Length": str(end - start + 1)})
 
     @app.get("/robots.txt", include_in_schema=False)
     async def robots_txt():
@@ -141,6 +169,8 @@ if _BUILD.is_dir() and (_BUILD / "index.html").is_file():
             return JSONResponse({"detail": "Not found"}, status_code=404)
         candidate = (_BUILD / full_path).resolve()
         if full_path and candidate.is_file() and str(candidate).startswith(str(_BUILD)):
+            if candidate.suffix.lower() in _VIDEO:
+                return _video(candidate, request)
             return FileResponse(candidate)
         if full_path.startswith("static/"):
             # a built script, stylesheet or image that is not there is "not found" — never the page

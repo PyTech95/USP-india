@@ -17,6 +17,7 @@ import { AboutHero, AboutIntroduction, AboutTeam, AboutApproach } from "./AboutS
 import { SplitHero, PlainHero, WorkRows, ConnectForm } from "./PageSections";
 import { HomeFieldNotes } from "./HomeFieldNotes";
 import { NotesListing } from "./NotesListing";
+import { FilmLink } from "./FilmLink";
 import { isDesignMode, designTranslate, designZoom, zoomOf } from "../../lib/designMode";
 import { LINE_KINDS } from "./editor/lineKinds";
 import { sentences } from "../../lib/utils";
@@ -576,9 +577,13 @@ function TextBlock({ d, s, first, id }) {
   const html = d.layout === "rakhigarhi-ambition-aligned"
     ? <AmbitionBody d={d} s={s} id={id} />
     : <Html html={d.body_html} testid={`${id}-body`} ed={sx(s, "body_html")} />;
-  const body = d.link_label ? <div className="text-block-copy">{html}<div className="text-block-link">
+  // a film under the text ("Watch An Excerpt" → pop-up), when the section has one
+  const film = d.film_url ? <FilmLink url={d.film_url} poster={d.film_poster} label={d.film_label} eyebrow={d.eyebrow} title={d.heading} id={id} ed={sx(s, "film_label")} /> : null;
+  const text = film ? <div className="text-block-copy">{html}{film}</div> : html;
+  // (the film replaces a "Film link pending" placeholder link)
+  const body = d.link_label && !(film && !d.link_href) ? <div className="text-block-copy">{html}{film}<div className="text-block-link">
     {d.link_href ? <Btn href={d.link_href} label={d.link_label} testid={`${id}-link`} ed={sx(s, "link_label")} /> : <><button type="button" className="more-link" disabled aria-describedby={`${id}-link-status`} data-testid={`${id}-link-pending`} data-edit-group="action" {...sx(s, "link_label")}><span data-edit-text>{d.link_label}</span> <ArrowRight size={16} aria-hidden="true" /></button><SiteText name="film_pending" id={`${id}-link-status`} className="link-pending-note" data-testid={`${id}-link-status`} /></>}
-  </div></div> : html;
+  </div></div> : text;
   if (d.style === "stacked")
     return (
       <section className={`wrap section stacked ${d.aside ? "has-aside" : ""}`} data-testid={id}>
