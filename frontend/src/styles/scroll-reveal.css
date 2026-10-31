@@ -1,0 +1,36 @@
+/* Scroll reveal: one style across the whole site, played as each part scrolls into view
+   (lib/useScrollReveal.js adds .reveal / .in-view, and only after it has set html.motion-ready — never
+   while editing, without JavaScript, or for visitors who ask for reduced motion).
+   - Text and blocks fade in and rise; the paragraphs of a text appear one after another.
+   - Photos are revealed from left to right and settle from a slight zoom.
+   Only opacity, transform, scale and clipping change: once something has appeared it sits exactly
+   where it always did, so no layout changes. */
+:root { --rv-ease: cubic-bezier(.16, .84, .3, 1); --rv-wipe: cubic-bezier(.77, 0, .18, 1); }
+
+/* text and blocks */
+html.motion-ready main .reveal {
+  transition: opacity 1.1s var(--rv-ease), transform 1.1s var(--rv-ease);
+  transition-delay: var(--rv-d, 0s);
+}
+html.motion-ready main .reveal:not(.in-view) { opacity: 0; transform: translateY(30px); }
+html.motion-ready main .reveal.in-view { will-change: auto; }
+
+/* the paragraphs of a text, one after another */
+html.motion-ready main .prose.reveal > * { transition: opacity .9s var(--rv-ease), transform .9s var(--rv-ease); }
+html.motion-ready main .prose.reveal:not(.in-view) > * { opacity: 0; transform: translateY(16px); }
+html.motion-ready main .prose.reveal.in-view > :nth-child(2) { transition-delay: calc(var(--rv-d, 0s) + .14s); }
+html.motion-ready main .prose.reveal.in-view > :nth-child(3) { transition-delay: calc(var(--rv-d, 0s) + .28s); }
+html.motion-ready main .prose.reveal.in-view > :nth-child(4) { transition-delay: calc(var(--rv-d, 0s) + .42s); }
+html.motion-ready main .prose.reveal.in-view > :nth-child(n + 5) { transition-delay: calc(var(--rv-d, 0s) + .56s); }
+
+/* photos: the box stays in place and fades in; the picture is revealed left to right */
+html.motion-ready main .reveal.reveal-img { transition: opacity .7s var(--rv-ease); transition-delay: var(--rv-d, 0s); }
+html.motion-ready main .reveal.reveal-img:not(.in-view) { opacity: 0; transform: none; }
+html.motion-ready main .reveal-img img { transition: clip-path 1.35s var(--rv-wipe), scale 1.9s var(--rv-ease); transition-delay: var(--rv-d, 0s); }
+html.motion-ready main .reveal-img:not(.in-view) img { clip-path: inset(0 100% 0 0); scale: 1.08; }
+html.motion-ready main .reveal-img.in-view img { clip-path: inset(0 0 0 0); scale: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  html.motion-ready main .reveal, html.motion-ready main .reveal * { transition: none !important; }
+  html.motion-ready main .reveal:not(.in-view), html.motion-ready main .reveal:not(.in-view) * { opacity: 1 !important; transform: none !important; clip-path: none !important; scale: none !important; }
+}

@@ -1,8 +1,10 @@
 import { useEffect } from "react";
 
-// Images/cards slide in from the left; text blocks rise up — for a varied scroll.
-const LEFT = [".photo", ".collage", ".mosaic", ".gallery", ".work-card", ".note-card", ".note-item"];
-const UP = [".hero-text", ".prose", ".lede", ".eyebrow", ".h1", ".h2", ".h3", ".aside-statement", ".area-strip", ".invite-inner", ".hero-actions", ".split-text", ".image-body", ".pull-quote"];
+// Scroll reveal (styles/scroll-reveal.css): photos are revealed left to right; text and other blocks fade
+// in and rise — each as it scrolls into view, so the whole site moves the same way.
+const PHOTOS = [".photo"];
+const UP = [".hero-text", ".prose", ".lede", ".eyebrow", ".h1", ".h2", ".h3", ".aside-statement", ".area-strip", ".invite-inner", ".hero-actions", ".split-text", ".image-body", ".pull-quote", ".work-card", ".note-card", ".note-item"];
+const STEP = 0.1, MAX_DELAY = 0.5; // things that appear together follow one another (seconds)
 
 export function useScrollReveal(deps = []) {
   useEffect(() => {
@@ -23,33 +25,51 @@ export function useScrollReveal(deps = []) {
 
     const targets = new Set();
     scope.querySelectorAll(".reveal").forEach((el) => targets.add(el));
-    LEFT.forEach((sel) => scope.querySelectorAll(sel).forEach((el) => { el.classList.add("reveal"); targets.add(el); }));
+    PHOTOS.forEach((sel) => scope.querySelectorAll(sel).forEach((el) => { el.classList.add("reveal", "reveal-img"); targets.add(el); }));
     UP.forEach((sel) => scope.querySelectorAll(sel).forEach((el) => { el.classList.add("reveal", "reveal-up"); targets.add(el); }));
 
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting) { e.target.classList.add("in-view"); io.unobserve(e.target); }
-      });
-    }, { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
-
-    targets.forEach((el) => io.observe(el));
-
-    // Immediately reveal anything already within (or above) the viewport. IntersectionObserver
-    // can drop its initial entry when observe() runs right after a route change / repeated
-    // dep-driven re-runs, which previously left SPA-navigated pages stuck invisible.
-    const revealInView = () => {
-      const vh = window.innerHeight || document.documentElement.clientHeight;
-      targets.forEach((el) => {
-        const r = el.getBoundingClientRect();
-        if (r.bottom > 0 && r.top < vh * 0.96) { el.classList.add("in-view"); io.unobserve(el); }
+    // Show a group of elements, top to bottom and left to right, each a moment after the one before.
+    const show = (els) => {
+      const list = els.filter((el) => !el.classList.contains("in-view")).map((el) => [el, el.getBoundingClientRect()])
+        .sort((a, b) => (Math.abs(a[1].top - b[1].top) > 8 ? a[1].top - b[1].top : a[1].left - b[1].left));
+      list.forEach(([el], i) => {
+        el.style.setProperty("--rv-d", `${Math.min(i * STEP, MAX_DELAY).toFixed(2)}s`);
+        el.classList.add("in-view");
+        io.unobserve(el);
+        targets.delete(el);
       });
     };
-    revealInView();
-    const raf = requestAnimationFrame(revealInView);
 
-    // Safety net: if anything is missed, reveal it after a short while.
-    const t = setTimeout(() => targets.forEach((el) => el.classList.add("in-view")), 2600);
+    const io = new IntersectionObserver((entries) => {
+      show(entries.filter((e) => e.isIntersecting).map((e) => e.target));
+    }, { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
+    targets.forEach((el) => io.observe(el));
 
-    return () => { io.disconnect(); clearTimeout(t); cancelAnimationFrame(raf); };
+    // Also check on scroll: shows anything in (or above) the visible part of the page. IntersectionObserver
+    // can drop its first entry right after a route change, and a fast jump (a link to a section further
+    // down) must never leave what is above the screen hidden.
+    let frame = 0;
+    const check = () => {
+      frame = 0;
+      const vh = window.innerHeight || document.documentElement.clientHeight;
+      show([...targets].filter((el) => el.getBoundingClientRect().top < vh * 0.94));
+    };
+    const onScroll = () => { if (!frame) frame = requestAnimationFrame(check); };
+    check();
+    const first = requestAnimationFrame(check);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    // Printing (or saving as PDF) shows everything.
+    const all = () => show([...targets]);
+    window.addEventListener("beforeprint", all);
+
+    return () => {
+      io.disconnect();
+      cancelAnimationFrame(first);
+      if (frame) cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("beforeprint", all);
+    };
   }, deps); // eslint-disable-line react-hooks/exhaustive-deps
 }
