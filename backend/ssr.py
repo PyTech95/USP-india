@@ -68,7 +68,9 @@ def _block(s, d, t, h, head):
         if d.get("layout") == "theatre-production":
             link = buttons([{"href": d["link_href"], "label": d["link_label"]}]) if d.get("link_href") else ""
             return f'<section>{head}{a(d, "body_html")}{link}<p>{E(a(d, "question"))}</p>{a(d, "aside_html")}</section>'
-        return f'<section>{head}{a(d, "body_html")}{("<p>" + E(d["aside"]) + "</p>") if a(d, "aside") else ""}</section>'
+        film = a(d, "film_url")
+        film = f'<p><a href="{E(film)}">{E(a(d, "film_label") or "Watch An Excerpt")}</a></p>' if film.startswith(("/", "https://", "http://")) and not film.startswith("//") else ""
+        return f'<section>{head}{a(d, "body_html")}{film}{("<p>" + E(d["aside"]) + "</p>") if a(d, "aside") else ""}</section>'
     if t == "image_text":
         if d.get("layout") == "theatre-archive":
             link = buttons([{"href": d["link_href"], "label": d["link_label"]}]) if d.get("link_href") else ""
