@@ -129,15 +129,21 @@ def doc(site, title, desc, canonical, body, jsonld, noindex=False, og_image=None
     css = ";".join(f"--c-{k}:{v}" for k, v in c.items())
     og_img = f'<meta property="og:image" content="{SITE_URL}{og_image["src"]}"><meta property="og:image:alt" content="{E(og_image["alt"])}">' if og_image else ""
     fav = f'<link rel="icon" href="{site["favicon"]["src"]}">' if site.get("favicon") else ""
-    scripts = "".join(f'<script defer src="{s}"></script>' for s in SCRIPTS)
+    # if the site's script can't load, show this plain version straight away (see "booting" below)
+    scripts = "".join(f'<script defer src="{s}" onerror="document.documentElement.classList.remove(\'booting\')"></script>' for s in SCRIPTS)
     footer = f'<footer><p>{E(site.get("footer_text") or "")}</p><details><summary>Privacy</summary>{site.get("privacy_html") or ""}</details></footer>'
+    # Visitors with JavaScript never see this plain version: html.booting keeps the page hidden until the site
+    # has drawn the finished page (frontend/src/lib/boot.js), even on a slow connection. It is shown at once if
+    # the site's script fails to load, and after 15 s whatever happens. Search engines and visitors without
+    # JavaScript read it as before.
     return f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{E(title)}</title><meta name="description" content="{E(desc)}"><link rel="canonical" href="{E(canonical)}"><meta name="robots" content="{robots}">
 <meta property="og:title" content="{E(title)}"><meta property="og:description" content="{E(desc)}"><meta property="og:url" content="{E(canonical)}"><meta property="og:type" content="{og_type}"><meta property="og:site_name" content="{E(site["site_name"])}">{og_img}
 <meta property="og:locale" content="en_IN"><meta name="twitter:card" content="{'summary_large_image' if og_image else 'summary'}"><meta name="twitter:title" content="{E(title)}"><meta name="twitter:description" content="{E(desc)}">{('<meta name="twitter:image" content="' + SITE_URL + og_image["src"] + '">') if og_image else ""}{('<meta name="keywords" content="' + E(keywords) + '">') if keywords else ""}{extra_head}{fav}
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@100;200;300;400;500;600;700&family=Cormorant:ital,wght@0,400;0,500;0,600;1,400&family=Literata:ital,opsz,wght@0,7..72,300;0,7..72,400;0,7..72,500;0,7..72,600;1,7..72,400&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
-<style>:root{{{css}}}body{{background:var(--c-background);color:var(--c-text);margin:0}}.ssr{{font-family:'Public Sans',sans-serif;font-weight:300;font-size:18px;line-height:1.6;max-width:1240px;margin:0 auto;padding:0 24px}}.ssr h1,.ssr h2,.ssr h3{{font-weight:300}}.ssr img{{max-width:100%;height:auto}}.ssr a{{color:var(--c-green)}}</style>
+<script>document.documentElement.classList.add("booting");setTimeout(function(){{document.documentElement.classList.remove("booting")}},15000)</script>
+<style>html.booting #root{{opacity:0}}#root{{transition:opacity .35s ease}}:root{{{css}}}body{{background:var(--c-background);color:var(--c-text);margin:0}}.ssr{{font-family:'Public Sans',sans-serif;font-weight:300;font-size:18px;line-height:1.6;max-width:1240px;margin:0 auto;padding:0 24px}}.ssr h1,.ssr h2,.ssr h3{{font-weight:300}}.ssr img{{max-width:100%;height:auto}}.ssr a{{color:var(--c-green)}}</style>
 <script type="application/ld+json">{json.dumps(jsonld)}</script></head>
 <body><div id="root"><div class="ssr"><a href="#main">Skip to content</a><header><p><a href="/">{E(site["site_name"])} — {E(site.get("full_name") or "")}</a></p><nav aria-label="Main"><ul>{menu_html(site["menus"]["main"])}</ul></nav></header>
 <main id="main">{body}</main>{footer}</div></div>{scripts}</body></html>"""
