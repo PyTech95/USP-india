@@ -67,11 +67,28 @@ body.live-editing .about-team-more { display: none; }
 .team-story-close:hover, .team-story-close:focus-visible { background: #a3234a; color: #fff; outline: none; }
 @keyframes team-story-fade { from { opacity: 0; } }
 @keyframes team-story-rise { from { opacity: 0; transform: translate(-50%, calc(-50% + 18px)) scale(.98); } }
-@media (max-width: 760px) {
-  .team-story { flex-direction: column; width: calc(100vw - 24px); height: auto; max-height: calc(100dvh - 24px); }
+/* phones upright: photo above the text */
+@media (max-width: 760px) and (min-height: 501px) {
+  .team-story { flex-direction: column; width: calc(100vw - 24px); height: auto; max-height: calc(100vh - 24px); max-height: calc(100dvh - 24px); }
   .team-story-photo { width: 100%; max-width: none; height: min(46vh, 400px); aspect-ratio: auto; }
   .team-story-text { width: auto; flex: 1 1 auto; min-height: 0; padding: 24px 22px 20px; }
   .team-story-intro, .team-story-bio p { font-size: 16px; }
+}
+/* phones held sideways (short screens): photo beside the text, the whole pop-up inside the screen */
+@media (max-height: 500px) {
+  .team-story { --story-h: calc(100dvh - 24px); max-width: calc(100vw - 24px); }
+  .team-story-photo { max-width: 40vw; }
+  .team-story-text { padding: 26px 56px 18px 28px; }
+  .team-story-label { margin-bottom: 8px; }
+  .team-story-name { font-size: 24px; }
+  .team-story-rule { margin: 16px 0 14px; }
+  .team-story-intro, .team-story-bio p { font-size: 15px; }
+  .team-story-close { top: 10px; right: 10px; }
+}
+/* browsers without the dynamic screen height unit (older iPhones, many TV browsers) */
+@supports not (height: 1dvh) {
+  .team-story { --story-h: min(800px, calc(100vh - 48px)); }
+  @media (max-height: 500px) { .team-story { --story-h: calc(100vh - 24px); } }
 }
 @media (prefers-reduced-motion: reduce) {
   .team-story, .team-story-overlay { animation: none; }
