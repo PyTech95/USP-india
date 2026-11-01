@@ -124,6 +124,26 @@ if _BUILD.is_dir() and (_BUILD / "index.html").is_file():
     _page_shell()
     _NO_SSR = _re.compile(r"^(admin|api|static)(/|$)")
     _VIDEO = {".mp4": "video/mp4", ".webm": "video/webm", ".m4v": "video/mp4"}
+    _TEXT = {".js": "application/javascript", ".css": "text/css", ".json": "application/json", ".svg": "image/svg+xml",
+             ".map": "application/json", ".txt": "text/plain; charset=utf-8", ".xml": "application/xml", ".webmanifest": "application/manifest+json"}
+    _GZ = {}  # path -> (mtime, compressed bytes)
+
+    def _text_file(path, request):
+        """The site's script, stylesheet and other text files, compressed (about a quarter of the size, so pages
+        open much faster on mobile data); files with a build hash in /static/ are kept by browsers for a year
+        (a new build has new file names)."""
+        import gzip
+        headers = {"Vary": "Accept-Encoding"}
+        if "/static/" in str(path):
+            headers["Cache-Control"] = "public, max-age=31536000, immutable"
+        if "gzip" not in (request.headers.get("accept-encoding") or "") or path.stat().st_size < 1024:
+            return FileResponse(path, media_type=_TEXT[path.suffix.lower()], headers=headers)
+        mtime = path.stat().st_mtime_ns
+        cached = _GZ.get(str(path))
+        if not cached or cached[0] != mtime:
+            cached = _GZ[str(path)] = (mtime, gzip.compress(path.read_bytes(), compresslevel=6))
+        from fastapi.responses import Response
+        return Response(cached[1], media_type=_TEXT[path.suffix.lower()], headers={**headers, "Content-Encoding": "gzip"})
 
     def _video(path, request):
         """A film (frontend/build/films/…) with byte ranges: phones and Safari only play (and seek in) a
@@ -171,6 +191,8 @@ if _BUILD.is_dir() and (_BUILD / "index.html").is_file():
         if full_path and candidate.is_file() and str(candidate).startswith(str(_BUILD)):
             if candidate.suffix.lower() in _VIDEO:
                 return _video(candidate, request)
+            if candidate.suffix.lower() in _TEXT:
+                return _text_file(candidate, request)
             return FileResponse(candidate)
         if full_path.startswith("static/"):
             # a built script, stylesheet or image that is not there is "not found" — never the page

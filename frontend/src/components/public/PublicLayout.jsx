@@ -13,6 +13,7 @@ import { SiteTextStyles } from "./editor/TextStyleTag";
 import { SiteText } from "./editor/SiteText";
 import { usePageTracking } from "../../lib/track";
 import { useDesignMode } from "../../lib/designMode";
+import { useBootReveal } from "../../lib/boot";
 
 function Dropdown({ item, onNavigate }) {
   const [open, setOpen] = useState(false);
@@ -170,6 +171,7 @@ export default function PublicLayout({ preview = false }) {
   const site = useSite();
   useHashScroll();
   usePageTracking(preview);
+  useBootReveal(site); // show the finished page in one go when it opens (lib/boot.js)
   return (
     <PreviewCtx.Provider value={preview}><LiveEditorProvider preview={preview}>
       <div className="site" id="public-site">
