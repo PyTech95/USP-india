@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 
-// Scroll reveal (styles/scroll-reveal.css): photos are revealed left to right; text and other blocks fade
-// in and rise — each as it scrolls into view, so the whole site moves the same way.
+// Scroll reveal (styles/scroll-reveal.css): text, blocks and photos fade in gently with a slight rise,
+// each as it scrolls into view ("lazy load"), so the whole site moves the same way.
 const PHOTOS = [".photo"];
 const UP = [".hero-text", ".prose", ".lede", ".eyebrow", ".h1", ".h2", ".h3", ".aside-statement", ".area-strip", ".invite-inner", ".hero-actions", ".split-text", ".image-body", ".pull-quote", ".work-card", ".note-card", ".note-item"];
-const STEP = 0.1, MAX_DELAY = 0.5; // things that appear together follow one another (seconds)
+const STEP = 0.08, MAX_DELAY = 0.4; // things that appear together follow one another (seconds)
 
 export function useScrollReveal(deps = []) {
   useEffect(() => {

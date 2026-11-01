@@ -225,7 +225,7 @@ body { margin: 0; font-family: var(--site-font, "Helvetica Neue", Helvetica, Ari
 .reveal.d1 { animation-delay: .1s; } .reveal.d2 { animation-delay: .2s; } .reveal.d3 { animation-delay: .3s; } .reveal.d4 { animation-delay: .4s; }
 @keyframes reveal { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 /* Scroll-triggered reveal (JS adds .in-view). Only active once JS sets html.motion-ready. The timing and
-   movement are refined in styles/scroll-reveal.css (photos left to right, text rising). */
+   movement are refined in styles/scroll-reveal.css (a soft fade-in with a slight rise for everything). */
 html.motion-ready main .reveal { opacity: 0; transform: translateX(-46px); animation: none; transition: opacity .8s cubic-bezier(.22,.7,.2,1), transform .8s cubic-bezier(.22,.7,.2,1); will-change: opacity, transform; }
 html.motion-ready main .reveal.in-view { opacity: 1; transform: none; }
 html.motion-ready main .reveal.reveal-up { transform: translateY(44px); }
