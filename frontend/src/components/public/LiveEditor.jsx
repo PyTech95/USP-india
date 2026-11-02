@@ -54,6 +54,8 @@ const ADD_TYPES = [
   ["gallery", "Gallery", LayoutGrid], ["quote", "Quote", Square], ["contact_invite", "Call to action", Plus],
   ["hero", "Hero banner", Square],
 ];
+// sections that can be dragged from the panel onto the page
+const PALETTE = [["text", "Text", Type], ["image", "Image", Images], ["image_text", "Image + text", LayoutGrid]];
 const newId = () => Math.random().toString(36).slice(2, 12);
 const clone = (o) => JSON.parse(JSON.stringify(o));
 const getPath = (obj, path) => path.split(".").reduce((o, k) => (o == null ? o : o[k]), obj);
@@ -275,6 +277,8 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
   const [loadAttempt, setLoadAttempt] = useState(0);
   const [picker, setPicker] = useState(false);
   const [addAt, setAddAt] = useState(null);
+  const [addRef, setAddRef] = useState(null); // the section a new one goes above or below (null: the end of the page)
+  const [palette, setPalette] = useState(null); // a new section being dragged from the panel: { type, x, y, at, line }
   const [rect, setRect] = useState(null);
   const [device, setDevice] = useState("desktop");
   const [overlap, setOverlap] = useState(null);
@@ -425,13 +429,94 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
     remount();
   };
   const toggleHide = (id) => patchSec(id, (s) => ({ ...s, hidden: !s.hidden }));
-  const addSection = (type) => {
+  // where a new section goes: above or below a section, or (no section) at the end of the page
+  const openAdd = (refId, where = "above") => {
+    if (refId && idx(refId) >= 0) { setAddRef(refId); setAddAt(idx(refId) + (where === "below" ? 1 : 0)); }
+    else { setAddRef(null); setAddAt(sections.length); }
+  };
+  const insertSection = (type, at) => {
     const s = makeSection(type);
-    const a = [...sections]; a.splice(addAt ?? a.length, 0, s); commit(a);
-    setAddAt(null); remount();
+    const a = [...sections]; a.splice(Math.max(0, Math.min(at ?? a.length, a.length)), 0, s); commit(a);
+    setAddAt(null); setAddRef(null); remount();
     if (["image", "image_text", "hero"].includes(type)) setTimeout(() => { setSel({ sec: s.id, field: "image" }); setPicker(true); }, 50);
     else setSel({ sec: s.id, field: type === "quote" ? "_section" : "heading" });
     toast.success("Section added");
+    setTimeout(() => document.querySelector(`main [data-sec="${s.id}"]`)?.scrollIntoView({ block: "center", behavior: "smooth" }), 150);
+  };
+  const addSection = (type) => insertSection(type, addAt);
+
+  // Drag a new Text / Image / Image + text section from the panel onto the page. A line shows where it lands:
+  // above the section under the pointer (its upper half) or below it (its lower half); near the top or bottom
+  // of the window the page scrolls. Let go over the panel (or press Esc) to cancel. A click without dragging
+  // adds it above the selected section (or at the end of the page).
+  const panelRect = () => document.querySelector("[data-testid=live-editor-panel]")?.getBoundingClientRect();
+  const dropTarget = (x, y) => {
+    const p = panelRect();
+    if (p && p.width && x >= p.left && x <= p.right && y >= p.top && y <= p.bottom) return null;
+    const nodes = [...document.querySelectorAll("main [data-sec]")].filter((n) => !n.parentElement.closest("[data-sec]") && n.getClientRects().length && idx(n.dataset.sec) >= 0);
+    if (!nodes.length) return { at: sections.length, line: null };
+    // the section under the pointer (when two sit side by side, the one the pointer is over, or the nearer one)
+    const gap = (r) => (x < r.left ? r.left - x : x > r.right ? x - r.right : 0);
+    let over = null;
+    for (const n of nodes) {
+      const r = n.getBoundingClientRect();
+      if (y >= r.top && y <= r.bottom && (!over || gap(r) < gap(over.r))) over = { n, r };
+    }
+    if (over) {
+      const { r } = over, below = y > r.top + r.height / 2;
+      return { at: idx(over.n.dataset.sec) + (below ? 1 : 0), line: { y: below ? r.bottom : r.top, left: r.left, width: r.width } };
+    }
+    // between sections or past the first / last one: the nearest edge
+    let best = null, dist = Infinity;
+    for (const n of nodes) {
+      const r = n.getBoundingClientRect(), i = idx(n.dataset.sec);
+      for (const [edge, at] of [[r.top, i], [r.bottom, i + 1]]) { const d = Math.abs(y - edge); if (d < dist) { dist = d; best = { at, line: { y: edge, left: r.left, width: r.width } }; } }
+    }
+    return best;
+  };
+  const startPalette = (type) => (e) => {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* the drag still works without it */ }
+    const x0 = e.clientX, y0 = e.clientY;
+    let moved = false, raf = 0, last = { x: x0, y: y0 };
+    const scroll = () => {
+      raf = 0;
+      // the bottom edge of the page area (on phones the panel covers the lower part of the screen)
+      const p = panelRect(), vh = window.innerHeight;
+      const bottom = p && p.width && p.left < 40 && p.right > window.innerWidth - 40 && p.top > vh / 3 ? p.top : vh;
+      const v = last.y < 80 ? -Math.ceil((80 - last.y) / 3) : last.y > bottom - 80 && last.y < bottom + 4 ? Math.ceil((last.y - (bottom - 80)) / 3) : 0;
+      if (!v || !moved) return;
+      window.scrollBy(0, v);
+      const t = dropTarget(last.x, last.y);
+      setPalette((cur) => cur && { ...cur, at: t ? t.at : null, line: t ? t.line : null });
+      raf = requestAnimationFrame(scroll);
+    };
+    const onMove = (ev) => {
+      last = { x: ev.clientX, y: ev.clientY };
+      if (!moved && Math.hypot(ev.clientX - x0, ev.clientY - y0) < 5) return;
+      if (!moved) document.body.classList.add("live-palette-dragging");
+      moved = true;
+      const t = dropTarget(ev.clientX, ev.clientY);
+      setPalette({ type, x: ev.clientX, y: ev.clientY, at: t ? t.at : null, line: t ? t.line : null });
+      if (!raf) raf = requestAnimationFrame(scroll);
+    };
+    const finish = (ev, cancel) => {
+      window.removeEventListener("pointermove", onMove); window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onCancel); window.removeEventListener("keydown", onKey, true);
+      if (raf) cancelAnimationFrame(raf);
+      document.body.classList.remove("live-palette-dragging");
+      setPalette(null);
+      if (cancel) return;
+      if (!moved) { insertSection(type, sel?.sec && idx(sel.sec) >= 0 ? idx(sel.sec) : sections.length); return; }
+      const t = dropTarget(ev.clientX, ev.clientY);
+      if (t && t.at !== null && t.at !== undefined) insertSection(type, t.at);
+    };
+    const onUp = (ev) => finish(ev, false);
+    const onCancel = (ev) => finish(ev, true);
+    const onKey = (ev) => { if (ev.key === "Escape") { ev.preventDefault(); ev.stopPropagation(); finish(ev, true); } };
+    window.addEventListener("pointermove", onMove); window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onCancel); window.addEventListener("keydown", onKey, true);
   };
 
   useEffect(() => { registerDirty(dirty); return () => registerDirty(false); }, [dirty, registerDirty]);
@@ -957,7 +1042,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
             <SelectionToolbar section={sec} wholeSection={field === "_section"} container={(isLayout && field !== "_section") || fixed} locked={lockedSection}
               onMove={(direction) => field === "_section" ? move(sec.id, direction) : setStyles({ translateY: `${num(st.translateY) + direction * 10}px` })}
               onDuplicate={() => dup(sec.id)} onHide={() => { const hiding = !sec.hidden; toggleHide(sec.id); if (hiding) { setSel(null); toast("Section hidden. Show it again from the editor panel: Hidden sections."); } }} onDelete={remove}
-              onAdd={() => setAddAt(idx(sec.id) + 1)} onSelectSection={() => selectField({ sec: sec.id, field: "_section" })} onAddPhoto={() => setAddPhoto(sec.id)}
+              onAdd={(where) => openAdd(sec.id, where)} onSelectSection={() => selectField({ sec: sec.id, field: "_section" })} onAddPhoto={() => setAddPhoto(sec.id)}
               lines={{ above: !!st.lineAbove, below: !!st.lineBelow }}
               onLine={(where) => { const k = where === "above" ? "lineAbove" : "lineBelow"; setStyles({ [k]: st[k] ? "" : (field === "_section" ? "divider" : "accent") }); }} />
           )}
@@ -989,6 +1074,7 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
           <>
             <ul className="live-tips" data-testid="live-hint">
               <li><b>Text:</b> click it and type.</li>
+              <li><b>Add a section:</b> drag Text or Image from the bottom of this panel onto the page.</li>
               <li><b>Photo:</b> click it to replace, crop or zoom.</li>
               <li><b>Move / resize:</b> drag the dark grip or the red handles.</li>
               <li><b>Things overlapping?</b> Click the section, then “Tidy this section”.</li>
@@ -1158,13 +1244,27 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
         )}
 
         {!noteId && <div className="live-add-block">
-          <button type="button" className="live-btn live-add-btn" onClick={() => setAddAt(sections.length)} data-testid="live-add-section"><Plus size={14} /> Add a new section</button>
+          <p className="live-palette-hint">Drag onto the page — or click to add {sel?.sec ? "above the selected section" : "at the end of the page"}:</p>
+          <div className="live-palette" data-testid="live-palette">
+            {PALETTE.map(([type, label, I]) => (
+              <button key={type} type="button" className="live-palette-item" onPointerDown={startPalette(type)}
+                onClick={(e) => { if (e.detail === 0) insertSection(type, sel?.sec && idx(sel.sec) >= 0 ? idx(sel.sec) : sections.length); }}
+                title={`Drag a new ${label} section onto the page`} data-testid={`live-palette-${type}`}><GripVertical size={12} className="live-palette-grip" aria-hidden="true" /><I size={16} aria-hidden="true" /><span>{label}</span></button>
+            ))}
+          </div>
+          <button type="button" className="live-btn live-add-btn" onClick={() => openAdd(sel?.sec, "above")} data-testid="live-add-section"><Plus size={14} /> Add a new section</button>
         </div>}
       </div></aside>
 
       {addAt !== null && (
         <div className="live-ui live-add-menu" data-testid="live-add-menu" role="dialog" aria-label="Add a section">
-          <div className="live-add-head"><strong>Add a section</strong><button type="button" className="live-btn" onClick={() => setAddAt(null)} data-testid="live-add-close"><X size={14} /></button></div>
+          <div className="live-add-head"><strong>Add a section</strong><button type="button" className="live-btn" onClick={() => { setAddAt(null); setAddRef(null); }} data-testid="live-add-close"><X size={14} /></button></div>
+          {addRef && idx(addRef) >= 0 && (
+            <div className="live-add-where" role="group" aria-label="Where the new section goes" data-testid="live-add-where">
+              <button type="button" className={addAt === idx(addRef) ? "live-on" : ""} aria-pressed={addAt === idx(addRef)} onClick={() => setAddAt(idx(addRef))} data-testid="live-add-above">Above the selected section</button>
+              <button type="button" className={addAt === idx(addRef) + 1 ? "live-on" : ""} aria-pressed={addAt === idx(addRef) + 1} onClick={() => setAddAt(idx(addRef) + 1)} data-testid="live-add-below">Below it</button>
+            </div>
+          )}
           <div className="live-add-grid">
             {ADD_TYPES.map(([type, label, I]) => (
               <button key={type} type="button" className="live-add-item" onClick={() => addSection(type)} data-testid={`live-add-${type}`}><I size={20} /><span>{label}</span></button>
@@ -1172,6 +1272,11 @@ function Editor({ pageKey, content, setContent, original, remount, noteId }) {
           </div>
         </div>
       )}
+
+      {palette && createPortal(<>
+        {palette.line && <div className="live-ui live-drop-line" style={{ top: palette.line.y - 2, left: palette.line.left, width: palette.line.width }} data-testid="live-drop-line"><span>New {(PALETTE.find((p) => p[0] === palette.type) || [])[1]} section here</span></div>}
+        <div className="live-ui live-drag-ghost" style={{ left: palette.x + 14, top: palette.y + 14 }} data-testid="live-drag-ghost">{(PALETTE.find((p) => p[0] === palette.type) || [])[1]}</div>
+      </>, document.body)}
 
       <MediaPicker open={picker} onClose={() => { setPicker(false); setPickerFor(null); }} onPick={(m) => (pickerFor ? addExtra(m, pickerFor) : setImage(m))} />
       <input ref={extraFileRef} type="file" accept="image/*,.heic,.heif" hidden onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; uploadExtra(f, addPhoto); }} data-testid="live-add-photo-input" />

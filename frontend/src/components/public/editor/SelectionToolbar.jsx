@@ -1,4 +1,4 @@
-import { ArrowUp, ArrowDown, ArrowUpToLine, ArrowDownToLine, Copy, Eye, EyeOff, ImagePlus, LayoutGrid, Plus, Trash2 } from "lucide-react";
+import { ArrowUp, ArrowDown, ArrowUpToLine, ArrowDownToLine, BetweenHorizontalStart, BetweenHorizontalEnd, Copy, Eye, EyeOff, ImagePlus, LayoutGrid, Trash2 } from "lucide-react";
 
 export const SelectionToolbar = ({ section, wholeSection, container, locked, onMove, onDuplicate, onHide, onDelete, onAdd, onSelectSection, onAddPhoto, lines, onLine }) => (
   <div className="live-sectools" data-testid="live-section-tools">
@@ -14,8 +14,10 @@ export const SelectionToolbar = ({ section, wholeSection, container, locked, onM
       <button type="button" className={lines?.below ? "live-on" : ""} title={lines?.below ? "Remove the line below" : "Add a red line below"} aria-label={lines?.below ? "Remove line below" : "Add line below"} onClick={() => onLine("below")} data-testid="live-tb-line-below"><ArrowDownToLine size={14} /></button>
     </>}
     {onAddPhoto && <button type="button" title="Add a photo to this section" aria-label="Add a photo to this section" onClick={onAddPhoto} data-testid="live-add-photo"><ImagePlus size={14} /></button>}
-    {wholeSection
-      ? <button type="button" title="Add section below" aria-label="Add section below" onClick={onAdd} data-testid="live-sec-add-below"><Plus size={14} /></button>
-      : <button type="button" title="Select whole section" aria-label="Select whole section" onClick={onSelectSection} data-testid="live-select-section"><LayoutGrid size={14} /></button>}
+    {onAdd && <>
+      <button type="button" title="Add a new section above this section" aria-label="Add section above" onClick={() => onAdd("above")} data-testid="live-sec-add-above"><BetweenHorizontalStart size={14} /></button>
+      <button type="button" title="Add a new section below this section" aria-label="Add section below" onClick={() => onAdd("below")} data-testid="live-sec-add-below"><BetweenHorizontalEnd size={14} /></button>
+    </>}
+    {!wholeSection && <button type="button" title="Select whole section" aria-label="Select whole section" onClick={onSelectSection} data-testid="live-select-section"><LayoutGrid size={14} /></button>}
   </div>
 );
