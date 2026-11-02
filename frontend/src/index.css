@@ -1639,10 +1639,10 @@ body.live-editing .header { z-index: 1; }
   #public-site.site #site-header .nav-list > li > span > a.nav-link {
     padding: 0 clamp(1.1rem, 2.2vw, 2.5rem) !important;
   }
-  /* no lines between menu items: the 1px line is kept but invisible, so nothing moves. A colour can be
-     chosen in Edit Header → Style & spacing → "Lines between menu items" to show them again. */
+  /* thin vertical lines between menu items (not before the first). Their colour can be changed in Edit Header
+     → Style & spacing → "Lines between menu items" (empty = this light grey). */
   #public-site.site #site-header .nav-list > li + li {
-    border-left: 1px solid transparent !important;
+    border-left: 1px solid rgba(43, 36, 66, 0.22) !important;
     display: flex !important;
     align-items: center !important;
   }
