@@ -528,7 +528,7 @@ export function Block(props) {
     if (style.borderRadius) style["--sec-radius"] = style.borderRadius;
     delete style.backgroundColor; delete style.borderRadius;
   }
-  const extras = (d.extras || []).some((x) => x?.image);
+  const extras = (d.extras || []).some((x) => x?.image || typeof x?.text_html === "string");
   return <div data-boxed-band={boxedBand || undefined} id={d.anchor || undefined} className={`hb hb-${t} ${d.band ? "band" : ""} ${boxed ? "hb-bg" : ""} ${extras ? "has-extras" : ""}`} data-block-type={t} data-sec={props.s.id} style={style} ref={(node) => {
     clearSpace(node);
     applyProps(node, style || {}, [...LAYOUT_PROPS, "backgroundColor", "borderRadius", "--section-pt", "--section-pb", "--sec-bg", "--sec-radius"]);
@@ -549,12 +549,16 @@ export function Block(props) {
     applySpace(node, secStyle);
   }} data-testid={`block-${props.i}-wrap`}>{el}{extras && <SectionExtras s={props.s} />}</div>;
 }
-// Photos added to a section with the live editor's "Add a photo" button. On the desktop design they
-// sit where they were dragged (move, resize and crop them like any photo); tablets and phones show
-// them one after another under the section's content.
+// Photos and texts added to a section with the live editor ("Add a photo", "Add a text"). On the desktop
+// design they sit where they were dragged (move, resize and style them like any photo or text); tablets
+// and phones show them one after another under the section's content.
 function SectionExtras({ s }) {
   return <div className="hb-extras" data-testid={`extras-${s.id}`}>
-    {(s.data?.extras || []).map((x, k) => x?.image ? <Photo key={k} ref_={x.image} sizes="(min-width: 1200px) 40vw, 100vw" className="hb-extra" testid={`extra-${s.id}-${k}`} ed={sx(s, `extras.${k}.image`)} /> : null)}
+    {(s.data?.extras || []).map((x, k) => (x?.image
+      ? <Photo key={k} ref_={x.image} sizes="(min-width: 1200px) 40vw, 100vw" className="hb-extra" testid={`extra-${s.id}-${k}`} ed={sx(s, `extras.${k}.image`)} />
+      : typeof x?.text_html === "string"
+        ? <HtmlDiv key={k} className="hb-extra hb-extra-text" html={x.text_html} data-testid={`extra-${s.id}-${k}`} {...sx(s, `extras.${k}.text_html`)} />
+        : null))}
   </div>;
 }
 // The boxes that are a section's own background (a hero's panel): a section colour fills them.

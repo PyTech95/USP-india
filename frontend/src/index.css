@@ -1061,21 +1061,20 @@ body.live-editing main [data-sec]:hover { outline: 1px dashed rgba(52,76,64,.4);
 .live-add-item:disabled { opacity: .6; cursor: progress; }
 .live-add-item { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 18px 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 12px; color: #2d302b; transition: all .15s; }
 .live-add-item:hover { border-color: #D41445; color: #D41445; transform: translateY(-2px); }
-/* Add a section: Text / Image / Image + text tiles stay at the bottom of the panel; drag one onto the page
-   (a red line shows where it lands) or click it to add it above the selected section */
+/* Text / Photo tiles stay at the bottom of the panel: drag one onto any section (it lands where it is let go)
+   or click it to add it to the selected section */
 .live-panel .live-add-block { position: sticky; bottom: -14px; z-index: 2; background: #fff; margin-bottom: -14px; padding-bottom: 14px; box-shadow: 0 -12px 14px -14px rgba(0,0,0,.35); }
 .live-palette-hint { margin: 0 0 8px; font-size: 11.5px; line-height: 1.35; color: #6b6b6b; }
-.live-palette { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 8px; }
+.live-palette { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 8px; }
 .live-palette-item { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 56px; padding: 8px 4px 7px; border: 1px dashed #b9b2a6; border-radius: 6px; background: #faf8f5; color: #2d302b; font-size: 11.5px; line-height: 1.15; text-align: center; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; transition: border-color .15s, color .15s, background-color .15s, transform .15s; }
 .live-palette-item:hover, .live-palette-item:focus-visible { border-color: #D41445; border-style: solid; color: #D41445; background: #fff; transform: translateY(-1px); outline: none; }
 .live-palette-grip { position: absolute; top: 4px; left: 3px; opacity: .45; }
 body.live-palette-dragging, body.live-palette-dragging * { cursor: grabbing !important; user-select: none !important; -webkit-user-select: none !important; }
-.live-drop-line { position: fixed; height: 4px; background: #D41445; border-radius: 2px; pointer-events: none; z-index: 100060; box-shadow: 0 0 0 3px rgba(212, 20, 69, .18); }
-.live-drop-line::before, .live-drop-line::after { content: ""; position: absolute; top: -4px; width: 12px; height: 12px; border-radius: 50%; background: #D41445; }
-.live-drop-line::before { left: -2px; }
-.live-drop-line::after { right: -2px; }
-.live-drop-line span { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); padding: 4px 11px; border-radius: 999px; background: #D41445; color: #fff; font-size: 11.5px; font-weight: 600; white-space: nowrap; box-shadow: 0 4px 12px rgba(0,0,0,.2); }
-.live-drag-ghost { position: fixed; pointer-events: none; z-index: 100061; padding: 6px 10px; border-radius: 6px; background: #2d302b; color: #fff; font-size: 12px; font-weight: 600; box-shadow: 0 8px 20px rgba(0,0,0,.25); }
+/* while Text / Photo is dragged: the section it will go into lights up; the box marks where its top-left corner lands */
+.live-drop-sec { position: fixed; pointer-events: none; z-index: 100040; outline: 2px dashed #D41445; outline-offset: -2px; background: rgba(212, 20, 69, .05); }
+.live-drop-sec span { position: absolute; left: 50%; transform: translateX(-50%); margin-top: 8px; padding: 4px 11px; border-radius: 999px; background: #D41445; color: #fff; font-size: 11.5px; font-weight: 600; white-space: nowrap; box-shadow: 0 4px 12px rgba(0,0,0,.2); }
+.live-drag-ghost { position: fixed; pointer-events: none; z-index: 100061; display: inline-flex; align-items: center; gap: 6px; min-width: 120px; padding: 8px 12px; border: 2px dashed #D41445; border-radius: 4px; background: rgba(255,255,255,.92); color: #2d302b; font-size: 13px; font-weight: 600; box-shadow: 0 8px 20px rgba(0,0,0,.18); }
+.live-drag-ghost.is-off { opacity: .55; border-color: #999; }
 /* the add menu: above or below the selected section */
 .live-add-where { display: grid; grid-template-columns: 1fr 1fr; margin: -4px 0 12px; border: 1px solid #ddd; border-radius: 6px; overflow: hidden; }
 .live-add-where button { padding: 8px 6px; background: #fff; color: #2d302b; font-size: 12px; transition: background-color .15s; }
