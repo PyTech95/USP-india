@@ -206,6 +206,39 @@ PAGE_UPDATES = [
 ]
 
 
+# One-time style updates (same rules): change one style value of one section of a live page, only where it is
+# still the value it had when the update was asked for (a later change in the live editor is left alone).
+STYLE_UPDATES = [
+    # 2 Nov 2026: Who We Are › The Core Team — a little more space between the line above the section and its
+    # heading ("Space above" -78px → -48px: 7.5px → 37.5px at the desktop design size)
+    ("2026-11-02-core-team-space", "about", "fedb0c5f6247445abc90b25f06274c54", "_section", "spaceTop", "-78px", "-48px"),
+]
+
+
+async def apply_style_updates():
+    site = await db.settings.find_one({"key": "site"}, {"_id": 0, "applied_updates": 1})
+    if site is None:
+        return
+    done = set(site.get("applied_updates") or [])
+    for mark, key, section_id, field, prop, old, new in STYLE_UPDATES:
+        if mark in done:
+            continue
+        page = await db.pages.find_one({"key": key}, {"_id": 0, "draft": 1, "published": 1})
+        if not page:
+            continue
+        changed = {}
+        for version in ("published", "draft"):
+            content = page.get(version) or {}
+            for sec in content.get("sections") or []:
+                style = ((sec.get("styles") or {}).get(field) or {}) if sec.get("id") == section_id else None
+                if style is not None and style.get(prop) == old:
+                    style[prop] = new
+                    changed[version] = content
+        if changed:
+            await db.pages.update_one({"key": key}, {"$set": {**changed, "updated_at": now()}})
+        await db.settings.update_one({"key": "site"}, {"$addToSet": {"applied_updates": mark}})
+
+
 async def apply_page_updates():
     site = await db.settings.find_one({"key": "site"}, {"_id": 0, "applied_updates": 1})
     if site is None:

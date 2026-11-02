@@ -31,6 +31,9 @@ export const HeaderStyleTag = ({ styles = {} }) => {
   const ly = /^-?\d+(\.\d+)?px$/.test(styles.logoOffsetY || "") ? styles.logoOffsetY : "0px";
   if (lx !== "0px" || ly !== "0px") rules.push(`@media (min-width: 961px) { html body #public-site#public-site#public-site.site #site-header#site-header .brand img { position: relative !important; z-index: 2 !important; transform: translate(${lx}, ${ly}) !important; } }`);
   rule([" nav[aria-label=Main]", " .nav-list"], { background: styles.navBackgroundColor });
+  // the same colour wherever the stylesheets use the menu colour: the phone menu, its "Our Work" list, the
+  // header band (they read --nav-peach, which otherwise stays the old lavender)
+  if (/^#[0-9a-fA-F]{3,8}$/.test(styles.navBackgroundColor || "")) rules.push(`html body #public-site#public-site#public-site.site { --nav-peach: ${styles.navBackgroundColor} !important; }`);
   rule([" .nav-list"], { gap: styles.navGap });
   rule([" .dropdown"], { background: styles.dropdownBackgroundColor });
   if (styles.mobileMenuBackgroundColor) rules.push(`@media (max-width: 960px) { html body #public-site#public-site#public-site.site #site-header#site-header .nav-list.open { background: ${styles.mobileMenuBackgroundColor} !important; } }`);
