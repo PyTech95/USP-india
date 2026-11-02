@@ -192,3 +192,10 @@
     .live-ui { display: none !important; }
   }
 }
+
+/* Home › Field Notes cards: on tablets and phones the photos keep the near-square shape they have on the
+   desktop (a wide 4:3 strip cut portrait photos down to about half). */
+@media (max-width: 1200px) {
+  html body #public-site#public-site#public-site#public-site#public-site main #home-reference .hfn .hfn-card .photo img,
+  html body #public-site#public-site .page-home .note-card .photo img { aspect-ratio: 15 / 16 !important; }
+}

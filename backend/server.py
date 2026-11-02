@@ -14,7 +14,7 @@ import routes_content_json
 import analytics
 import mailer
 from content_sync import runtime as content_runtime
-from seed import seed, apply_header_update, apply_page_updates
+from seed import seed, apply_header_update, apply_page_updates, apply_style_updates
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 app = FastAPI(title="USP India CMS", docs_url=None, redoc_url=None, openapi_url=None)
@@ -74,6 +74,7 @@ async def startup():
     await content_runtime.startup()
     await apply_header_update()  # one-time updates shipped with the release (seed.py)
     await apply_page_updates()
+    await apply_style_updates()
 
 
 @app.get("/api/health")

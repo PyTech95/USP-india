@@ -61,10 +61,13 @@ cd ../frontend && yarn install && yarn build   # required when the code comes fr
 # Service + web server
 sudo chown -R www-data /var/www/uspindia/backend/storage
 sudo cp ../deploy/uspindia.service /etc/systemd/system/ && sudo systemctl daemon-reload && sudo systemctl enable --now uspindia
+sudo certbot certonly --nginx -d uspindia.org -d www.uspindia.org   # one certificate for both names, first
 sudo cp ../deploy/nginx.conf /etc/nginx/sites-available/uspindia
-sudo ln -s /etc/nginx/sites-available/uspindia /etc/nginx/sites-enabled/ && sudo nginx -t && sudo systemctl reload nginx
-sudo certbot --nginx -d uspindia.org -d www.uspindia.org
+sudo ln -sf /etc/nginx/sites-available/uspindia /etc/nginx/sites-enabled/ && sudo nginx -t && sudo systemctl reload nginx
 ```
+
+`deploy/nginx.conf` sends every address — `http://` or `https://`, with or without `www` — to the one main
+address, `https://www.uspindia.org` (`SITE_URL` in `backend/.env`, the address given to search engines).
 
 HTTPS is required in production (login cookies are marked secure).
 
