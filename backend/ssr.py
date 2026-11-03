@@ -49,6 +49,8 @@ def block(s, first):
     h = "h1" if first and t == "hero" else "h2"
     head = (f'<p>{E(a(d, "eyebrow"))}</p>' if a(d, "eyebrow") and t != "hero" else "") + (f'<{h}>{E(a(d, "heading"))}</{h}>' if a(d, "heading") else "") + (f'<p>{E(a(d, "subheading"))}</p>' if a(d, "subheading") else "")
     html = _block(s, d, t, h, head)
+    # texts added to the section with the live editor ("Add a text"; already cleaned when saved)
+    html += "".join(f"<div>{x['text_html']}</div>" for x in d.get("extras") or [] if isinstance(x, dict) and a(x, "text_html"))
     return f'<div id="{E(d["anchor"])}">{html}</div>' if a(d, "anchor") and html else html
 
 

@@ -13,7 +13,7 @@ html body #public-site#public-site main .hb.hb-paint::before {
 html body #public-site#public-site main :is(.about-intro-grid, .rak-use-grid) > .hb.hb-paint::before,
 html body #public-site#public-site main .hb.hb-paint[style*="--ed-w"]::before { left: 0; width: 100%; }
 
-/* Photos added to a section with the editor's "Add a photo" button (SectionExtras in Blocks.jsx).
+/* Photos (and texts) added to a section with the editor's "Add a photo" / "Add a text" buttons (SectionExtras in Blocks.jsx).
    Desktop design: free-standing on top of the section, placed from its top-left corner by the
    editor's position and size. Tablets and phones: one after another under the section's content. */
 html body #public-site#public-site main .hb.has-extras { position: relative; }
@@ -21,6 +21,15 @@ html.ed-design body #public-site#public-site main .hb-extras { position: absolut
 html.ed-design body #public-site#public-site main .hb-extras > .hb-extra { position: absolute !important; left: 0 !important; top: 0 !important; width: calc(360px * var(--dz, 1)); max-width: none !important; margin: 0 !important; pointer-events: auto; }
 html.ed-fluid body #public-site#public-site main .hb-extras { display: grid; gap: 16px; padding: 0 var(--content-l, 20px) 32px; }
 html.ed-fluid body #public-site#public-site main .hb-extras > .hb-extra { width: 100% !important; max-width: 640px !important; margin: 0 auto; transform: none !important; }
+/* texts added the same way ("Add a text"): the site's body text; size, weight and colour from the editor */
+html body #public-site#public-site main .hb-extras > .hb-extra-text { font-size: calc(18px * var(--dz, 1)); line-height: 1.55; overflow-wrap: break-word; }
+html.ed-design body #public-site#public-site main .hb-extras > .hb-extra-text { width: calc(420px * var(--dz, 1)); height: auto; }
+html body #public-site#public-site main .hb-extras > .hb-extra-text > * { margin: 0 0 .7em; }
+html body #public-site#public-site main .hb-extras > .hb-extra-text > :last-child { margin-bottom: 0; }
+html.ed-fluid body #public-site#public-site main .hb-extras > .hb-extra-text { font-size: 17px; }
+body:not(.live-editing) #public-site#public-site main .hb-extras > .hb-extra-text:empty { display: none; }
+body.live-editing #public-site main .hb-extras > .hb-extra-text:empty { min-height: calc(28px * var(--dz, 1)); outline: 1px dashed #D41445; }
+body.live-editing #public-site main .hb-extras > .hb-extra-text:empty::before { content: "Empty text — type here, or delete it"; opacity: .5; }
 
 /* A section given its own width in the live editor (desktop design) lays its content out as the
    design at that width. fitSection() in Blocks.jsx sets --sec-r (the section's width / its standard

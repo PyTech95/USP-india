@@ -1,6 +1,6 @@
-import { ArrowUp, ArrowDown, ArrowUpToLine, ArrowDownToLine, Copy, Eye, EyeOff, ImagePlus, LayoutGrid, Plus, Trash2 } from "lucide-react";
+import { ArrowUp, ArrowDown, ArrowUpToLine, ArrowDownToLine, BetweenHorizontalStart, BetweenHorizontalEnd, Copy, Type, Eye, EyeOff, ImagePlus, LayoutGrid, Trash2 } from "lucide-react";
 
-export const SelectionToolbar = ({ section, wholeSection, container, locked, onMove, onDuplicate, onHide, onDelete, onAdd, onSelectSection, onAddPhoto, lines, onLine }) => (
+export const SelectionToolbar = ({ section, wholeSection, container, locked, onMove, onDuplicate, onHide, onDelete, onAdd, onSelectSection, onAddPhoto, onAddText, lines, onLine }) => (
   <div className="live-sectools" data-testid="live-section-tools">
     <button type="button" title={wholeSection ? "Move section up" : "Move selected element up 10px"} aria-label={wholeSection ? "Move section up" : "Move selected element up"} onClick={() => onMove(-1)} data-testid="live-sec-up"><ArrowUp size={14} /></button>
     <button type="button" title={wholeSection ? "Move section down" : "Move selected element down 10px"} aria-label={wholeSection ? "Move section down" : "Move selected element down"} onClick={() => onMove(1)} data-testid="live-sec-down"><ArrowDown size={14} /></button>
@@ -13,9 +13,12 @@ export const SelectionToolbar = ({ section, wholeSection, container, locked, onM
       <button type="button" className={lines?.above ? "live-on" : ""} title={lines?.above ? "Remove the line above" : "Add a red line above"} aria-label={lines?.above ? "Remove line above" : "Add line above"} onClick={() => onLine("above")} data-testid="live-tb-line-above"><ArrowUpToLine size={14} /></button>
       <button type="button" className={lines?.below ? "live-on" : ""} title={lines?.below ? "Remove the line below" : "Add a red line below"} aria-label={lines?.below ? "Remove line below" : "Add line below"} onClick={() => onLine("below")} data-testid="live-tb-line-below"><ArrowDownToLine size={14} /></button>
     </>}
-    {onAddPhoto && <button type="button" title="Add a photo to this section" aria-label="Add a photo to this section" onClick={onAddPhoto} data-testid="live-add-photo"><ImagePlus size={14} /></button>}
-    {wholeSection
-      ? <button type="button" title="Add section below" aria-label="Add section below" onClick={onAdd} data-testid="live-sec-add-below"><Plus size={14} /></button>
-      : <button type="button" title="Select whole section" aria-label="Select whole section" onClick={onSelectSection} data-testid="live-select-section"><LayoutGrid size={14} /></button>}
+    {onAddText && <button type="button" title="Add a text to this section (it goes on the section; drag it anywhere in it)" aria-label="Add a text to this section" onClick={onAddText} data-testid="live-add-text-box"><Type size={14} /></button>}
+    {onAddPhoto && <button type="button" title="Add a photo to this section (it goes on the section; drag it anywhere in it)" aria-label="Add a photo to this section" onClick={onAddPhoto} data-testid="live-add-photo"><ImagePlus size={14} /></button>}
+    {onAdd && wholeSection && <>
+      <button type="button" title="Add a new section above this section" aria-label="Add section above" onClick={() => onAdd("above")} data-testid="live-sec-add-above"><BetweenHorizontalStart size={14} /></button>
+      <button type="button" title="Add a new section below this section" aria-label="Add section below" onClick={() => onAdd("below")} data-testid="live-sec-add-below"><BetweenHorizontalEnd size={14} /></button>
+    </>}
+    {!wholeSection && <button type="button" title="Select whole section" aria-label="Select whole section" onClick={onSelectSection} data-testid="live-select-section"><LayoutGrid size={14} /></button>}
   </div>
 );
