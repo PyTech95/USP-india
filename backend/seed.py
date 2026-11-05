@@ -197,6 +197,34 @@ async def apply_header_update():
         await db.settings.update_one({"key": "site"}, {"$set": {"header_styles": styles, "updated_at": now()}, "$addToSet": {"applied_updates": {"$each": new}}})
 
 
+# One-time footer link updates that ship with a release (same rules as HEADER_UPDATES): each sets where a footer
+# icon (Facebook / Instagram) opens, replacing an earlier link for that network. Changed later in the live editor
+# (Site text → the icon), the new link is kept.
+SOCIAL_UPDATES = [
+    # 5 Nov 2026: the footer Instagram icon opens USP's Instagram page
+    ("2026-11-05-instagram", "instagram", "https://www.instagram.com/urbansuburbanperspectives1/"),
+]
+
+
+async def apply_social_updates():
+    site = await db.settings.find_one({"key": "site"}, {"_id": 0, "social": 1, "applied_updates": 1})
+    if site is None:
+        return
+    done, new = set(site.get("applied_updates") or []), []
+    items = [x for x in (site.get("social") or []) if isinstance(x, dict)]
+    for mark, key, url in SOCIAL_UPDATES:
+        if mark in done:
+            continue
+        at = next((i for i, x in enumerate(items) if key in f"{x.get('label', '')} {x.get('url', '')}".lower()), None)
+        if at is None:
+            items.append({"label": key.capitalize(), "url": url})
+        else:
+            items[at] = {**items[at], "url": url}
+        new.append(mark)
+    if new:
+        await db.settings.update_one({"key": "site"}, {"$set": {"social": items, "updated_at": now()}, "$addToSet": {"applied_updates": {"$each": new}}})
+
+
 # One-time page updates that ship with a release (same rules as HEADER_UPDATES): each adds fields to one section
 # of a live page (draft and published), only where the section doesn't have them yet, then is marked done.
 PAGE_UPDATES = [
