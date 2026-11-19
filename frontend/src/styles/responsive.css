@@ -199,3 +199,14 @@
   html body #public-site#public-site#public-site#public-site#public-site main #home-reference .hfn .hfn-card .photo img,
   html body #public-site#public-site .page-home .note-card .photo img { aspect-ratio: 15 / 16 !important; }
 }
+
+/* Touch screens: small footer links and icons get a finger-sized tap area (about 44px), drawn
+   invisibly around them, so nothing moves or changes look. */
+@media (pointer: coarse) {
+  html body #public-site #site-footer :is(.usp-footer-social a, .footer-privacy > summary, .usp-footer-email),
+  html body #public-site main .hfn-feature-title a { position: relative; }
+  html body #public-site #site-footer .usp-footer-social a::after { content: ""; position: absolute; inset: -13px -12px; }
+  html body #public-site #site-footer .footer-privacy > summary::after { content: ""; position: absolute; inset: -13px -10px; }
+  html body #public-site #site-footer .usp-footer-email::after,
+  html body #public-site main .hfn-feature-title a::after { content: ""; position: absolute; inset: -9px -4px; }
+}

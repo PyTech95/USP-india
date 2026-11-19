@@ -5,14 +5,15 @@ const keys = ["fontSize", "fontWeight", "fontStyle", "color", "textAlign", "text
 const kebab = (key) => key.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
 // A size typed in the editor is shown exactly on every desktop and laptop screen. Only on
 // tablets and phones (fluid mode, where --fz-exact is 0) do large headings (24px and up)
-// scale down smoothly with the screen; body-size text always stays as typed.
+// scale down smoothly with the screen; body-size text always stays as typed. A very large
+// heading is also kept to 11% of the page width there, so its longest word fits on a phone.
 const fluidSize = (value) => {
   const m = /^(\d+(?:\.\d+)?)px$/.exec(String(value).trim());
   if (!m) return String(value);
   const v = parseFloat(m[1]);
   if (v < 24) return String(value);
   const r = (n) => Math.round(n * 100) / 100;
-  return `max(calc(${v}px * var(--fz-exact, 1)), min(${v}px, max(${r(v * 0.65)}px, calc(2.4cqw + ${r(v * 0.45)}px))))`;
+  return `max(calc(${v}px * var(--fz-exact, 1)), min(${v}px, max(${r(v * 0.65)}px, calc(2.4cqw + ${r(v * 0.45)}px)), max(24px, 11cqw)))`;
 };
 export function applyTypography(node, styles = {}) {
   if (!node) return;
