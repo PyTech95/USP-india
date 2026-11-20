@@ -99,11 +99,26 @@ export function layoutStyle(raw, field) {
     // a section's place across the page is its width and sideways position (side margins could
     // push it off the page); the space between sections never goes below nothing (no overlaps)
     if (section && /^margin(Left|Right)$/.test(k)) return;
+    // tablets and phones: spacing typed on the desktop design shrinks with the screen (see fluidSpace)
+    const v = design ? raw[k] : fluidSpace(raw[k], /Left|Right/.test(k));
     // (a section's gaps are design px like its spacing; a negative one is applied by fitMargins)
-    o[k] = section && /^margin/.test(k) ? `max(0px, calc(${raw[k]} * var(--dz, 1)))` : raw[k];
+    o[k] = section && /^margin/.test(k) ? `max(0px, ${design ? `calc(${raw[k]} * var(--dz, 1))` : v})` : v;
   });
-  Object.assign(o, lineStyle(raw));
+  // lines above / below add their gap to the (possibly shrunk) padding
+  Object.assign(o, lineStyle({ ...raw, paddingTop: o.paddingTop || raw.paddingTop, paddingBottom: o.paddingBottom || raw.paddingBottom }));
   return o;
+}
+// Tablets and phones (fluid mode): padding and margins typed in the editor belong to the 1440px desktop
+// design. Side spacing shrinks in proportion to the screen (120px on the desktop is about 30px on a phone),
+// so a text indented on the desktop is never squeezed into a narrow strip; space above and below shrinks
+// to no less than half. Never more than what was typed. Desktop and laptop screens are unchanged.
+export function fluidSpace(value, side) {
+  const m = /^(-?\d+(?:\.\d+)?)px$/.exec(String(value).trim());
+  if (!m || !parseFloat(m[1])) return value;
+  const n = parseFloat(m[1]), vw = `${Math.round((n / 14.4) * 1000) / 1000}vw`;
+  if (side) return n > 0 ? `min(${n}px, ${vw})` : `max(${n}px, ${vw})`;
+  const half = `${Math.round(n * 50) / 100}px`;
+  return n > 0 ? `max(${half}, min(${n}px, ${vw}))` : `min(${half}, max(${n}px, ${vw}))`;
 }
 // Lines added in the live editor ("Line above / below") and the built-in red lines / dividers.
 function lineStyle(raw) {

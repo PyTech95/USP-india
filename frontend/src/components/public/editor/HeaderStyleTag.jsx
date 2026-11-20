@@ -35,6 +35,19 @@ export const HeaderStyleTag = ({ styles = {} }) => {
   // header band (they read --nav-peach, which otherwise stays the old lavender)
   if (/^#[0-9a-fA-F]{3,8}$/.test(styles.navBackgroundColor || "")) rules.push(`html body #public-site#public-site#public-site.site { --nav-peach: ${styles.navBackgroundColor} !important; }`);
   rule([" .nav-list"], { gap: styles.navGap });
+  // Tablets and phones (narrower than the desktop design): side padding and menu spacing chosen in the header
+  // editor shrink with the screen (in proportion to the 1440px design), so the logo and every menu item fit.
+  // Desktop and laptop screens (1201px and up) are unchanged.
+  const shrink = (v) => { const m = /^(\d+(?:\.\d+)?)px$/.exec(v || ""); return m && parseFloat(m[1]) > 0 ? `min(${m[1]}px, ${Math.round((parseFloat(m[1]) / 14.4) * 1000) / 1000}vw)` : ""; };
+  const narrow = [];
+  const fit = (selector, declarations) => {
+    const css = Object.entries(declarations).filter(([, v]) => v).map(([k, v]) => `${k}: ${v} !important`).join("; ");
+    if (css) narrow.push(`html body #public-site#public-site#public-site.site #site-header#site-header${selector} { ${css}; }`);
+  };
+  fit(" .header-inner", { "padding-left": shrink(styles.paddingLeft), "padding-right": shrink(styles.paddingRight) });
+  fit(" nav[aria-label=Main]", { "padding-left": shrink(styles.navPaddingX), "padding-right": shrink(styles.navPaddingX) });
+  fit(" .nav-list", { gap: shrink(styles.navGap) });
+  if (narrow.length) rules.push(`@media (max-width: 1200.98px) { ${narrow.join(" ")} }`);
   rule([" .dropdown"], { background: styles.dropdownBackgroundColor });
   if (styles.mobileMenuBackgroundColor) rules.push(`@media (max-width: 960px) { html body #public-site#public-site#public-site.site #site-header#site-header .nav-list.open { background: ${styles.mobileMenuBackgroundColor} !important; } }`);
   rule([" .nav-link[aria-current=page]", " .nav-link:hover", " .dropdown a:hover"], { color: styles.activeColor });
